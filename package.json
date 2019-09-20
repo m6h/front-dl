@@ -1,0 +1,28 @@
+{
+  "name": "youtube-dl",
+  "version": "1.0.0",
+  "description": "youtube-dl web app front-end",
+  "main": "app.js",
+  "scripts": {
+    "build": "babel ./src --out-dir ./bin",
+    "bundle": "webpack -d ./bin/main.js --output ./bin/lib/bundle.js",
+    "make": "npm run build && npm run bundle"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "dependencies": {
+    "ejs": "^2.7.1",
+    "express": "^4.17.1"
+  }
+}
