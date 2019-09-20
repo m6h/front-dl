@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "ejs": "^2.7.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "node-cmd": "^3.0.0"
   }
 }
