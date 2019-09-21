@@ -1,15 +1,19 @@
 import m from './lib/mithril'
-import {youtube_dl} from './components/youtube_dl'
+import {navbar} from './components/navbar'
+import {audio} from './components/audio'
+import {video} from './components/video'
 
 function appRoute(c) {
     return {
-        view: () => m('div', {id: 'main'}, [
-            // m(navbar),
+        view: () => [
+            m(navbar),
             m(c),
-        ])
+        ]
     }
 }
 
 m.route(document.body, '/', {
-    '/':        appRoute(youtube_dl),
+    '/':        {view: () => m(navbar)},
+    '/audio':   appRoute(audio),
+    '/video':   appRoute(video),
 })
