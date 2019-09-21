@@ -1,4 +1,5 @@
 node_modules/
 bin/
+mockups/
 package-lock.json
 *.code-workspace
