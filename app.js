@@ -1,5 +1,5 @@
 const express = require('express')
-const cmd = require('node-cmd')
+const exec = require('child_process').exec
 const app = express()
 const port = 3000
 
