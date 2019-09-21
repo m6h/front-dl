@@ -11,3 +11,17 @@ app.use('/lib', express.static('./bin/lib/'))
 app.get('/', (req, res) => {
     res.render('./index.ejs')
 })
+
+app.get('/api/ydl/:outputString/:url', (req, res) => {
+    var command = `echo ${req.params.outputString} ${req.params.url}`
+
+    var cmd = exec(command, (error, stdout, stderr) => {
+        // stdout ? res.send('done') : res.send(error)
+        res.send(stdout)
+    })
+
+    // event listener
+    cmd.stdout.on('data', (data) => {
+        console.log(data)
+    })
+})
