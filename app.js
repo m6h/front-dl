@@ -4,12 +4,20 @@ const app = express()
 const port = 3000
 
 app.listen(port, () => console.log(`listening on http://localhost:${port}`))
-app.set('view engine', 'ejs')
 app.use('/public', express.static('./public/'))
 app.use('/lib', express.static('./bin/lib/'))
 
 app.get('/', (req, res) => {
-    res.render('./index.ejs')
+    res.send(`
+        <html>
+        <head>
+            <link rel="stylesheet" href="/public/styles.css">
+        </head>
+        <body>
+            <script src="/lib/bundle.js"></script>
+        </body>
+        </html>
+    `)
 })
 
 app.get('/api/ydl/:outputString/:url', (req, res) => {
