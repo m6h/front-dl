@@ -9,9 +9,12 @@ app.use('/lib', express.static('./bin/lib/'))
 
 app.get('/', (req, res) => {
     res.send(`
+        <!DOCTYPE html>
         <html>
         <head>
-            <link rel="stylesheet" href="/public/styles.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="/public/bulma.css">
+            <script src="/public/all.min.js"></script>
         </head>
         <body>
             <script src="/lib/bundle.js"></script>
