@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" href="/public/bulma.css">
+            <link rel="stylesheet" href="/public/bulma.min.css">
             <script src="/public/all.min.js"></script>
         </head>
         <body>
