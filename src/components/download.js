@@ -6,7 +6,7 @@ function typeSelect(vnode) {
     document.getElementById('t1').classList.remove('is-info')
     document.getElementById('t2').classList.remove('is-info')
     vnode.target.classList.add('is-info')
-    type = vnode.target.text
+    type = vnode.target.innerText
 }
 
 function go() {
@@ -36,7 +36,7 @@ export var download = {
                                 class: 'input',
                                 type:'text',
                                 placeholder: 'e.g. ERB - James Bond vs Austin Powers',
-                                onkeyup: vnode => output = vnode.target.value
+                                oninput: vnode => output = vnode.target.value
                             })
                         ])
                     ]),
