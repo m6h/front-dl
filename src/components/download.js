@@ -1,6 +1,5 @@
 import m from '../lib/mithril'
-var type = ''
-var output = ''
+var type = '', output = ''
 
 function typeSelect(vnode) {
     // remove 'is-info' class from all buttons, then add it to the clicked button
@@ -8,7 +7,6 @@ function typeSelect(vnode) {
     document.getElementById('t2').classList.remove('is-info')
     vnode.target.classList.add('is-info')
     type = vnode.target.text
-    console.log(vnode)
 }
 
 function go() {
