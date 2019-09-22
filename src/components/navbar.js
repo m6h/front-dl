@@ -24,6 +24,6 @@ export var navbar = {
                 m('div', {class: 'navbar-end'}, '')
             ])
         ]),
-        m('hr', {style: 'margin-top: 0'})
+        m('hr', {style: 'margin: 0'})
     ]
 }
