@@ -1,7 +1,7 @@
 import m from './lib/mithril'
 import {navbar} from './components/navbar'
-import {audio} from './components/audio'
-import {video} from './components/video'
+import {download} from './components/download'
+import {about} from './components/about'
 
 function appRoute(c) {
     return {
@@ -13,7 +13,6 @@ function appRoute(c) {
 }
 
 m.route(document.body, '/', {
-    '/':        {view: () => m(navbar)},
-    '/audio':   appRoute(audio),
-    '/video':   appRoute(video),
+    '/':        appRoute(download),
+    '/about':   appRoute(about),
 })

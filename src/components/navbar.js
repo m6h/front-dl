@@ -18,8 +18,8 @@ export var navbar = {
             ]),
             m('div', {class: 'navbar-menu'}, [
                 m('div', {class: 'navbar-start'}, [
-                    m('a', {class: 'navbar-item', href: '#!/audio'}, 'audio'),
-                    m('a', {class: 'navbar-item', href: '#!/video'}, 'video'),
+                    m('a', {class: 'navbar-item', href: '#!/'}, 'Home'),
+                    m('a', {class: 'navbar-item', href: '#!/about'}, 'About'),
                 ]),
                 m('div', {class: 'navbar-end'}, '')
             ])

@@ -1,6 +1,6 @@
 import m from '../lib/mithril'
 
-export var video = {
+export var about = {
     view: () => [
         m('div', 'content')
     ]
