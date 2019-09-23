@@ -24,9 +24,8 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/browse', (req, res) => {
-    exec(`find "./bin/${req.query.path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
-        console.log(stdout)
-        console.log(stderr)
+    var path = (req.query.path).replace(/\.+/g, '.') // prevent browsing to parent directories using ../
+    exec(`find "./bin/${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
         res.json(stdout)
     })
     // var find = spawn('find', [`./node_modules/${req.query.path}`, '-maxdepth', '1', '-mindepth', '1', '-type', 'd', '-printf', '%f/'])
