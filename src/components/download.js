@@ -1,7 +1,7 @@
 import m from '../lib/mithril'
 
 var dl = {
-    url: '', title: '', type: '', path: '',
+    url: '', title: '', type: '', path: 'base', directory: [],
     command: () => {
         if(dl.type == 'audio') {
             return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.title}.%(ext)s" ${dl.url}`
@@ -18,7 +18,22 @@ function typeSelect(vnode) {
     vnode.target.classList.add('is-info')
     dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
 }
+
+function getDirectory() {
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: `/api/browse?path=${dl.path}`
+    })
+    .then(response => {
+        console.log(response)
+        dl.directory = response.split('/')
+    })
+    .catch(e => e)
+}
+
 function go() {
+    getDirectory()
     console.log(dl)
 }
 
@@ -75,18 +90,16 @@ export var download = {
                                 oninput: vnode => dl.path = vnode.target.value
                             })
                         ]),
-                        m('a', {class: 'panel-block'}, [
+                        m('a', {class: 'panel-block', onclick: vnode => dl.path+= `/${vnode.target.innerText}`}, [
                             m('span', {class: 'panel-icon'}, m('i', {class: 'fas fa-folder'})),
                             m('span', 'Folder A')
                         ]),
-                        m('a', {class: 'panel-block'}, [
-                            m('span', {class: 'panel-icon'}, m('i', {class: 'fas fa-folder'})),
-                            m('span', 'Folder B')
-                        ]),
-                        m('a', {class: 'panel-block'}, [
-                            m('span', {class: 'panel-icon'}, m('i', {class: 'fas fa-folder'})),
-                            m('span', 'Folder C')
-                        ])
+                        dl.directory.map(item => 
+                            m('a', {class: 'panel-block', onclick: vnode => dl.path+= `/${vnode.target.innerText}`}, [
+                                m('span', {class: 'panel-icon'}, m('i', {class: 'fas fa-folder'})),
+                                m('span', `${item}`)
+                            ])
+                        )
                     ]),
                 ]),
                 m('div', {class: 'column'}, [

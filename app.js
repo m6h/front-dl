@@ -23,12 +23,22 @@ app.get('/', (req, res) => {
     `)
 })
 
+app.get('/api/browse', (req, res) => {
+    exec(`find ./node_modules/${req.query.path} -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
+        console.log(stdout)
+        res.json(stdout)
+    })
+    // exec(`ls -F ./node_modules/${req.query.path} | grep "/$"`, (error, stdout, stderr) => {
+    //     res.send(stdout)
+    // })
+})
+
 app.get('/api/ydl/:outputString/:url', (req, res) => {
     var command = `echo ${req.params.outputString} ${req.params.url}`
 
     var cmd = exec(command, (error, stdout, stderr) => {
         // stdout ? res.send('done') : res.send(error)
-        res.send(stdout)
+        res.json(stdout)
     })
 
     // event listener
