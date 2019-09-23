@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/browse', (req, res) => {
-    exec(`find "./node_modules/${req.query.path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
+    exec(`find "./bin/${req.query.path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
         console.log(stdout)
         console.log(stderr)
         res.json(stdout)
