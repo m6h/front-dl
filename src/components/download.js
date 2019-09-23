@@ -1,12 +1,15 @@
 import m from '../lib/mithril'
 
 var dl = {
-    url: '', title: '', type: '', path: 'base', directory: [],
+    url: '', title: '', type: '', path: [], directory: [],
+    fullPath: () => {
+        return dl.path.join('/') + '/' + dl.title
+    },
     command: () => {
         if(dl.type == 'audio') {
-            return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.title}.%(ext)s" ${dl.url}`
+            return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.%(ext)s" ${dl.url}`
         } else if(dl.type == 'video') {
-            return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.title}.%(ext)s" ${dl.url}`
+            return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.%(ext)s" ${dl.url}`
         }
     }
 }
@@ -17,19 +20,20 @@ function typeSelect(vnode) {
     document.getElementById('t2').classList.remove('is-info')
     vnode.target.classList.add('is-info')
     dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
+    getDirectory()
 }
 
 function getDirectory() {
     m.request({
         method: 'GET',
         responseType: 'json',
-        url: `/api/browse?path=${dl.path}`
+        url: `/api/browse?path=${dl.path.join('/')}`
     })
     .then(response => {
-        console.log(response)
         dl.directory = response.split('/')
+        dl.directory.pop() // remove empty last element from using split()
     })
-    .catch(e => e)
+    .catch(e => console.error(e))
 }
 
 function go() {
@@ -78,7 +82,7 @@ export var download = {
                     m('nav', {class: 'panel'}, [
                         m('p', {class: 'panel-heading'}, 'Destination'),
                         m('div', {class: 'panel-block'}, [
-                            m('a', {class: 'button is-small', onclick: vnode => alert('back')}, [
+                            m('a', {class: 'button is-small', onclick: vnode => {dl.path.pop(); getDirectory()}}, [
                                 m('span', {class: 'icon is-small'}, m('i', {class: 'fas fa-arrow-left'})),
                             ]),
                             m('input', {
@@ -86,16 +90,11 @@ export var download = {
                                 type:'text',
                                 readonly: true,
                                 placeholder: 'path',
-                                value: dl.path,
-                                oninput: vnode => dl.path = vnode.target.value
+                                value: dl.path.join('/')
                             })
                         ]),
-                        m('a', {class: 'panel-block', onclick: vnode => dl.path+= `/${vnode.target.innerText}`}, [
-                            m('span', {class: 'panel-icon'}, m('i', {class: 'fas fa-folder'})),
-                            m('span', 'Folder A')
-                        ]),
                         dl.directory.map(item => 
-                            m('a', {class: 'panel-block', onclick: vnode => dl.path+= `/${vnode.target.innerText}`}, [
+                            m('a', {class: 'panel-block', onclick: vnode => {dl.path.push(vnode.target.innerText); getDirectory()}}, [
                                 m('span', {class: 'panel-icon'}, m('i', {class: 'fas fa-folder'})),
                                 m('span', `${item}`)
                             ])
