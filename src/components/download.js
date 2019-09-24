@@ -20,7 +20,7 @@ function typeSelect(vnode) {
     document.getElementById('t2').classList.remove('is-info')
     vnode.target.classList.add('is-info')
     dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
-    getDirectory()
+    getDirectory() // update directory browser
 }
 
 function getDirectory() {
@@ -80,7 +80,7 @@ export var download = {
                         ]),
                     ]),
                     m('nav', {class: 'panel'}, [
-                        m('p', {class: 'panel-heading'}, 'Destination'),
+                        m('p', {class: 'panel-heading'}, 'Directory'),
                         m('div', {class: 'panel-block'}, [
                             m('a', {class: 'button is-small', onclick: vnode => {dl.path.pop(); getDirectory()}}, [
                                 m('span', {class: 'icon is-small'}, m('i', {class: 'fas fa-arrow-left'})),
