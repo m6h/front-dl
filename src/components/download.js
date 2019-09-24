@@ -3,7 +3,8 @@ import m from '../lib/mithril'
 var dl = {
     url: '', title: '', type: '', path: [], directory: [],
     fullPath: () => {
-        return dl.path.join('/') + '/' + dl.title
+        var fullPath = [...dl.path, dl.title] // clone dl.path and append dl.title
+        return fullPath.join('/')
     },
     command: () => {
         if(dl.type == 'audio') {
