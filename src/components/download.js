@@ -1,4 +1,5 @@
 import m from '../lib/mithril'
+import * as qs from 'querystring'
 
 var dl = {
     url: '', title: '', type: '', path: [], directory: [],
@@ -29,17 +30,32 @@ function getDirectory() {
         method: 'GET',
         responseType: 'json',
         url: `/api/browse?path=${dl.path.join('/')}`
-    })
-    .then(response => {
+    }).then(response => {
         dl.directory = response.split('/')
         dl.directory.pop() // remove empty last element from using split()
-    })
-    .catch(e => console.error(e))
+    }).catch(e => console.error(e))
 }
 
 function go() {
     getDirectory()
+
+    var sendDL = {
+        url: dl.url,
+        type: dl.type,
+        path: dl.fullPath()
+    }
+
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: `/api/ydl?${qs.stringify(sendDL)}`
+    }).then(response => {
+        console.log(response)
+    }).catch(e => console.error(e))
+
     console.log(dl)
+    console.log(sendDL)
+    console.log(qs.stringify(sendDL))
 }
 
 export var download = {
