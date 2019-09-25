@@ -24,6 +24,17 @@ app.get('/', (req, res) => {
     `)
 })
 
+function formatPath(queryPath) {
+    // prepend root directory. return error if any '/../' in path. clean up path using normalize
+    const path = './bin/' + queryPath
+    if (path.match(/\/\.\.\//)) {
+        throw new Error("Navigation to parent directories is not allowed")
+    } else {
+        return posix.normalize(path)
+    }
+}
+
+// Get folder names for the directory browser
 app.get('/api/browse', (req, res) => {
     // replace any amount of dots with 1 dot to prevent browsing to parent directories using ../
     // alternative is matching only ../ with /\.\.\/+/g
