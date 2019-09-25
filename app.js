@@ -36,12 +36,16 @@ function formatPath(queryPath) {
 
 // Get folder names for the directory browser
 app.get('/api/browse', (req, res) => {
-    // replace any amount of dots with 1 dot to prevent browsing to parent directories using ../
-    // alternative is matching only ../ with /\.\.\/+/g
-    var path = (req.query.path).replace(/\.+/g, '.') 
-    exec(`find "./bin/${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
+    try {
+        const path = formatPath(req.query.path)
+
+        exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
         res.json(stdout)
     })
+    } catch (error) {
+        console.log(error)
+        res.json('')
+    }
     // var find = spawn('find', [`./node_modules/${req.query.path}`, '-maxdepth', '1', '-mindepth', '1', '-type', 'd', '-printf', '%f/'])
     // console.log(find.spawnargs)
     // find.stdout.once('data', data => {
