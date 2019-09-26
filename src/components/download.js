@@ -123,7 +123,7 @@ export var download = {
                         m('div', {class: 'field'}, [
                             m('label', {class: 'label'}, 'Artist'),
                             m('div', {class: 'control has-icons-left'}, [
-                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
+                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-music'})),
                                 m('input', {
                                     class: 'input',
                                     type:'text',
@@ -136,7 +136,7 @@ export var download = {
                         m('div', {class: 'field'}, [
                             m('label', {class: 'label'}, 'Title'),
                             m('div', {class: 'control has-icons-left'}, [
-                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
+                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-music'})),
                                 m('input', {
                                     class: 'input',
                                     type:'text',
@@ -149,7 +149,7 @@ export var download = {
                         m('div', {class: 'field'}, [
                             m('label', {class: 'label'}, 'Genre'),
                             m('div', {class: 'control has-icons-left'}, [
-                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
+                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-music'})),
                                 m('input', {
                                     class: 'input',
                                     type:'text',
