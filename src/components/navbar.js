@@ -7,7 +7,7 @@ function toggleNavBurger() {
 
 export var navbar = {
     view: () => [
-        m('nav', {class: 'navbar'}, [
+        m('nav', {class: 'navbar', style: 'border-top: #209cee 0.3em solid'}, [
             m('div', {class: 'navbar-brand'} , [
                 m('a', {class: 'navbar-item', href:'#!/'}, [
                     m('a', {class: 'title'}, 'youtube-dl')
