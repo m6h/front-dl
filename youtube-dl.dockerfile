@@ -30,8 +30,8 @@ RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtu
     chmod +xr /usr/local/bin/youtube-dl
 
 # Add app files
-ADD ./bin/lib/bundle.js /node/bin/lib/bundle.js
 ADD ./public/ /node/public/
+ADD ./src/ /node/src/
 ADD ./app.js /node/
 ADD ./package.json /node/
 ADD ./LICENSE /node/
@@ -39,8 +39,9 @@ ADD ./README.md /node/
 
 WORKDIR /node/
 
-# npm dependencies
-RUN npm install --production
+# npm dependencies and make
+RUN npm install && \
+    npm run make
 
 # Run foreground process
 CMD node app.js
