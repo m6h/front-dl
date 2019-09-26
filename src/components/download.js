@@ -22,11 +22,19 @@ var dl = {
 }
 
 function typeSelect(vnode) {
+    dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
+
     // remove 'is-info' class from all buttons, then add it to the clicked button
     document.getElementById('t1').classList.remove('is-info')
     document.getElementById('t2').classList.remove('is-info')
     vnode.target.classList.add('is-info')
-    dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
+
+    // show metadata tag fields if audio is selected
+    if(dl.type == 'audio') {
+        document.getElementById('tags').classList.remove('is-hidden')
+    } else {
+        document.getElementById('tags').classList.add('is-hidden')
+    }
 }
 
  // update directory browser listings
@@ -111,6 +119,48 @@ export var download = {
                             m('a', {id: 't2', class: 'button is-fullwidth', onclick: vnode => typeSelect(vnode)}, 'Video')
                         ]),
                     ]),
+                    m('div', {id: 'tags', class: 'field is-hidden'}, [
+                        m('div', {class: 'field'}, [
+                            m('label', {class: 'label'}, 'Artist'),
+                            m('div', {class: 'control has-icons-left'}, [
+                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
+                                m('input', {
+                                    class: 'input',
+                                    type:'text',
+                                    placeholder: 'e.g. Rootkit',
+                                    value: dl.tags.artist,
+                                    oninput: vnode => dl.tags.artist = vnode.target.value
+                                })
+                            ])
+                        ]),
+                        m('div', {class: 'field'}, [
+                            m('label', {class: 'label'}, 'Title'),
+                            m('div', {class: 'control has-icons-left'}, [
+                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
+                                m('input', {
+                                    class: 'input',
+                                    type:'text',
+                                    placeholder: 'e.g. Taking Me Higher',
+                                    value: dl.tags.title,
+                                    oninput: vnode => dl.tags.title = vnode.target.value
+                                })
+                            ])
+                        ]),
+                        m('div', {class: 'field'}, [
+                            m('label', {class: 'label'}, 'Genre'),
+                            m('div', {class: 'control has-icons-left'}, [
+                                m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
+                                m('input', {
+                                    class: 'input',
+                                    type:'text',
+                                    placeholder: 'e.g. House',
+                                    value: dl.tags.genre,
+                                    oninput: vnode => dl.tags.genre = vnode.target.value
+                                })
+                            ])
+                        ]),
+                    ]),
+                ]),
                 m('div', {class: 'column'}, [
                     m('nav', {class: 'panel'}, [
                         m('p', {class: 'panel-heading'}, 'Directory'),
