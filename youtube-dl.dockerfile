@@ -6,12 +6,12 @@ ENV NODE_VER='v12.10.0'
 
 # Download prerequisites
 RUN apt update && \
-	apt install -y \
+    apt install -y \
         curl \
         xz-utils \
-		python \
-		ffmpeg \
-		atomicparsley
+        python \
+        ffmpeg \
+        atomicparsley
 
 # Download Node.js
 RUN mkdir -p /media/dl/ && \
@@ -27,7 +27,7 @@ RUN mkdir -p /media/dl/ && \
 
 # Download latest youtube-dl version
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
-	chmod +xr /usr/local/bin/youtube-dl
+    chmod +xr /usr/local/bin/youtube-dl
 
 # Add app files
 ADD ./bin/lib/bundle.js /node/bin/lib/bundle.js
