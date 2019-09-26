@@ -106,6 +106,7 @@ export var download = {
                             m('a', {id: 't2', class: 'button is-fullwidth', onclick: vnode => typeSelect(vnode)}, 'Video')
                         ]),
                     ]),
+                m('div', {class: 'column'}, [
                     m('nav', {class: 'panel'}, [
                         m('p', {class: 'panel-heading'}, 'Directory'),
                         m('div', {class: 'panel-block'}, [
@@ -127,8 +128,6 @@ export var download = {
                             ])
                         )
                     ]),
-                ]),
-                m('div', {class: 'column'}, [
                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'Command'),
                         m('div', {class: 'control has-icons-left'}, [
