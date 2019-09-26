@@ -62,6 +62,16 @@ export var download = {
     oninit: () => {
         getDirectory()
     },
+    onupdate: () => {
+        // If fields have a value then enable download button
+        if(dl.url && dl.type && dl.fullPath().length) {
+            document.getElementById('download').classList.add('is-info')
+            document.getElementById('download').removeAttribute('disabled')
+        } else {
+            document.getElementById('download').classList.remove('is-info')
+            document.getElementById('download').setAttribute('disabled', 'true')
+        }
+    },
     view: () => m('div', {class: 'container'}, [
         m('div', {class: 'section'}, [
             m('div', {class: 'columns'}, [
