@@ -59,6 +59,9 @@ function go() {
 }
 
 export var download = {
+    oninit: () => {
+        getDirectory()
+    },
     view: () => m('div', {class: 'container'}, [
         m('div', {class: 'section'}, [
             m('div', {class: 'columns'}, [
