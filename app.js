@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
 function formatPath(queryPath) {
     // prepend root directory. return error if any '/../' in path. clean up path using normalize
-    const path = './bin/' + queryPath
+    const path = '/node/' + queryPath
     if (path.match(/\/\.\.\//)) {
         throw new Error("Navigation to parent directories is not allowed")
     } else {
