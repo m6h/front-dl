@@ -5,5 +5,9 @@ services:
     build:
       context: ./
       dockerfile: youtube-dl.dockerfile
+    volumes:
+      - type: bind
+        source: /mnt/cephfs/media
+        target: /mnt/ydl
     ports:
       - '3001:3000'
