@@ -2,9 +2,14 @@ import m from '../lib/mithril'
 import * as qs from 'querystring'
 
 var dl = {
-    url: '', title: '', type: '', path: [], directory: [],
+    url: '', fileName: '', type: '', path: [], directory: [],
+    tags: {
+        artist: '',
+        title: '',
+        genre: ''
+    },
     fullPath: () => {
-        var fullPath = [...dl.path, dl.title] // clone dl.path and append dl.title
+        var fullPath = [...dl.path, dl.fileName] // clone dl.path and append dl.fileName
         return fullPath.join('/')
     },
     command: () => {
@@ -87,15 +92,15 @@ export var download = {
                         ])
                     ]),
                     m('div', {class: 'field'}, [
-                        m('label', {class: 'label'}, 'Title'),
+                        m('label', {class: 'label'}, 'File Name'),
                         m('div', {class: 'control has-icons-left'}, [
                             m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
                             m('input', {
                                 class: 'input',
                                 type:'text',
                                 placeholder: 'e.g. ERB - James Bond vs Austin Powers',
-                                value: dl.title,
-                                oninput: vnode => dl.title = vnode.target.value
+                                value: dl.fileName,
+                                oninput: vnode => dl.fileName = vnode.target.value
                             })
                         ])
                     ]),
