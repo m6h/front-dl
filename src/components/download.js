@@ -22,9 +22,9 @@ function typeSelect(vnode) {
     document.getElementById('t2').classList.remove('is-info')
     vnode.target.classList.add('is-info')
     dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
-    getDirectory() // update directory browser
 }
 
+ // update directory browser listings
 function getDirectory() {
     m.request({
         method: 'GET',
@@ -36,8 +36,9 @@ function getDirectory() {
     }).catch(e => console.error(e))
 }
 
+// 
 function go() {
-    getDirectory()
+    document.getElementById('download').classList.add('is-loading')
 
     var sendDL = {
         url: dl.url,
@@ -50,12 +51,8 @@ function go() {
         responseType: 'json',
         url: `/api/ydl?${qs.stringify(sendDL)}`
     }).then(response => {
-        console.log(response)
+        document.getElementById('download').classList.remove('is-loading')
     }).catch(e => console.error(e))
-
-    console.log(dl)
-    console.log(sendDL)
-    console.log(qs.stringify(sendDL))
 }
 
 export var download = {
@@ -145,7 +142,7 @@ export var download = {
                             })
                         ])
                     ]),
-                    m('a', {class: 'button is-fullwidth', onclick: go}, 'Go')
+                    m('button', {id: 'download', class: 'button is-fullwidth', disabled: 'true', onclick: go}, 'Go')
                 ])
             ])
         ])
