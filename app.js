@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <script src="/public/all.min.js"></script>
             <link rel="stylesheet" href="/public/bulma.min.css">
+            <link rel="stylesheet" href="/public/bulma-tooltip.min.css">
         </head>
         <body>
             <script src="/lib/bundle.js"></script>
