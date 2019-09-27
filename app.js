@@ -73,13 +73,14 @@ app.get('/api/ydl', (req, res) => {
             cmd = `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${path}.m4a" ${req.query.url}`
             cmd2 = `AtomicParsley "${path}.m4a" --overWrite --artist "${req.query.tags.artist}" --title "${req.query.tags.title}" --genre "${req.query.tags.genre}"`
             exec(cmd, (error, stdout, stderr) => {
-                // send response once download has completed
-                res.json(stdout)
-                // afterwards add metadata to audio file
-                exec(cmd2, (error, stdout, stderr) => {})
+                res.json(stdout) // send response once download has completed
+                exec(cmd2, (error, stdout, stderr) => {}) // afterwards add metadata to audio file
             })
         } else if(req.query.type == 'video') {
             cmd = `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${path}.mkv" ${req.query.url}`
+            exec(cmd, (error, stdout, stderr) => {
+                res.json(stdout) // send response once download has completed
+            })
         } else {
             res.json('')
         }
