@@ -1,5 +1,5 @@
 import m from '../lib/mithril'
-import * as qs from 'querystring'
+import * as qs from 'qs'
 
 var dl = {
     url: '', fileName: '', type: '', path: [], directory: [],
