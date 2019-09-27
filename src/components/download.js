@@ -14,9 +14,9 @@ var dl = {
     },
     command: () => {
         if(dl.type == 'audio') {
-            return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.%(ext)s" ${dl.url}`
+            return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`
         } else if(dl.type == 'video') {
-            return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.%(ext)s" ${dl.url}`
+            return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`
         }
     }
 }
