@@ -23,6 +23,7 @@
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "qs": "^6.9.0"
   }
 }
