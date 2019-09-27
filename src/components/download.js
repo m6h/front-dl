@@ -110,7 +110,7 @@ export var download = {
                 m('div', {class: 'column'}, [
                     m('div', {class: 'field is-grouped'}, [
                         m('a', {
-                            class: 'button is-outlined is-danger tooltip is-tooltip-right',
+                            class: 'button is-outlined is-danger tooltip',
                             style: 'margin: 0.1em',
                             'data-tooltip': 'Clear page',
                             onclick: vnode => {dl = initDL(); getDirectory()},
