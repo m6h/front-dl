@@ -132,8 +132,18 @@ export var download = {
                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'Type'),
                         m('div', {class: 'field is-grouped'}, [
-                            m('a', {id: 't1', class: 'button is-fullwidth', onclick: vnode => typeSelect(vnode)}, 'Audio'),
-                            m('a', {id: 't2', class: 'button is-fullwidth', onclick: vnode => typeSelect(vnode)}, 'Video')
+                            m('a', {
+                                id: 't1',
+                                class: 'button is-fullwidth',
+                                style: 'margin: 0.1em',
+                                onclick: vnode => typeSelect(vnode)
+                            }, 'Audio'),
+                            m('a', {
+                                id: 't2',
+                                class: 'button is-fullwidth',
+                                style: 'margin: 0.1em',
+                                onclick: vnode => typeSelect(vnode)
+                            }, 'Video')
                         ]),
                     ]),
                     m('div', {id: 'tags', class: 'field is-hidden'}, [
