@@ -67,6 +67,7 @@ function go() {
     var sendDL = {
         url: dl.url,
         type: dl.type,
+        tags: dl.tags,
         path: dl.fullPath()
     }
 
