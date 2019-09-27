@@ -1,22 +1,25 @@
 import m from '../lib/mithril'
 import * as qs from 'qs'
+var dl = initDL()
 
-var dl = {
-    url: '', fileName: '', type: '', path: [], directory: [],
-    tags: {
-        artist: '',
-        title: '',
-        genre: ''
-    },
-    fullPath: () => {
-        var fullPath = [...dl.path, dl.fileName] // clone dl.path and append dl.fileName
-        return fullPath.join('/')
-    },
-    command: () => {
-        if(dl.type == 'audio') {
-            return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`
-        } else if(dl.type == 'video') {
-            return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`
+function initDL() {
+    return {
+        url: '', fileName: '', type: '', path: [], directory: [],
+        tags: {
+            artist: '',
+            title: '',
+            genre: ''
+        },
+        fullPath: () => {
+            var fullPath = [...dl.path, dl.fileName] // clone dl.path and append dl.fileName
+            return fullPath.join('/')
+        },
+        command: () => {
+            if(dl.type == 'audio') {
+                return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`
+            } else if(dl.type == 'video') {
+                return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`
+            }
         }
     }
 }
@@ -49,6 +52,7 @@ function getDirectory() {
     }).catch(e => console.error(e))
 }
 
+// enable or disable Go button
 function goState(s) {
     if(s) {
         // if true then enable go button
@@ -61,6 +65,7 @@ function goState(s) {
     }
 }
 
+// send xhr to begin download
 function go() {
     document.getElementById('download').classList.add('is-loading')
 
@@ -103,6 +108,19 @@ export var download = {
         m('div', {class: 'section'}, [
             m('div', {class: 'columns'}, [
                 m('div', {class: 'column'}, [
+                    m('div', {class: 'field is-grouped'}, [
+                        m('a', {
+                            class: 'button is-outlined is-danger tooltip is-tooltip-right',
+                            style: 'margin: 0.1em',
+                            'data-tooltip': 'Clear page',
+                            onclick: vnode => {dl = initDL(); getDirectory()},
+                        }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-times'}))),
+                        m('a', {
+                            class: 'button is-outlined is-info is-fullwidth',
+                            style: 'margin: 0.1em',
+                            onclick: vnode => {}
+                        }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-question'})))
+                    ]),
                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'URL'),
                         m('div', {class: 'control has-icons-left'}, [
