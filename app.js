@@ -62,20 +62,26 @@ app.get('/api/browse', (req, res) => {
 
 // Download
 app.get('/api/ydl', (req, res) => {
-    // Query string: {url: '', type: '', path: ''}
+    // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: ''}
     try {
-        var cmd = ''
+        var cmd = '', cmd2 = ''
         const path = formatPath(req.query.path)
         
+        // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         if(req.query.type == 'audio') {
-            cmd = `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${path}.%(ext)s" ${req.query.url}`
-        } else if(req.query.type == 'video') {
-            cmd = `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${path}.%(ext)s" ${req.query.url}`
-        }
-
+            cmd = `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${path}.m4a" ${req.query.url}`
+            cmd2 = `AtomicParsley "${path}.m4a" --overWrite --artist "${req.query.tags.artist}" --title "${req.query.tags.title}" --genre "${req.query.tags.genre}"`
         exec(cmd, (error, stdout, stderr) => {
+                // send response once download has completed
             res.json(stdout)
+                // afterwards add metadata to audio file
+                exec(cmd2, (error, stdout, stderr) => {})
         })
+        } else if(req.query.type == 'video') {
+            cmd = `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${path}.mkv" ${req.query.url}`
+        } else {
+            res.json('')
+        }
     } catch (error) {
         console.log(error)
         res.json('')
