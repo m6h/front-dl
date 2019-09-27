@@ -49,7 +49,18 @@ function getDirectory() {
     }).catch(e => console.error(e))
 }
 
-// 
+function goState(s) {
+    if(s) {
+        // if true then enable go button
+        document.getElementById('download').classList.add('is-info')
+        document.getElementById('download').removeAttribute('disabled')
+    } else {
+        // else disable go button
+        document.getElementById('download').classList.remove('is-info')
+        document.getElementById('download').setAttribute('disabled', 'true')
+    }
+}
+
 function go() {
     document.getElementById('download').classList.add('is-loading')
 
@@ -74,12 +85,17 @@ export var download = {
     },
     onupdate: () => {
         // If fields have a value then enable download button
-        if(dl.url && dl.type && dl.fullPath().length) {
-            document.getElementById('download').classList.add('is-info')
-            document.getElementById('download').removeAttribute('disabled')
+        if(dl.url && dl.fileName && dl.type) {
+            // if audio then check tag values exist
+            if(dl.type == 'audio' && dl.tags.artist && dl.tags.title && dl.tags.genre) {
+                goState(true)
+            } else if(dl.type == 'video') {
+                goState(true)
+            } else {
+                goState(false)
+            }
         } else {
-            document.getElementById('download').classList.remove('is-info')
-            document.getElementById('download').setAttribute('disabled', 'true')
+            goState(false)
         }
     },
     view: () => m('div', {class: 'container'}, [
