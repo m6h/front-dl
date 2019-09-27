@@ -40,6 +40,15 @@ function typeSelect(vnode) {
     }
 }
 
+// recreate the main object, reset buttons, and fetch directories
+function clearPage() {
+    dl = initDL()
+    document.getElementById('t1').classList.remove('is-info')
+    document.getElementById('t2').classList.remove('is-info')
+    document.getElementById('tags').classList.add('is-hidden')
+    getDirectory()
+}
+
  // update directory browser listings
 function getDirectory() {
     m.request({
@@ -113,7 +122,7 @@ export var download = {
                             class: 'button is-outlined is-danger tooltip',
                             style: 'margin: 0.1em',
                             'data-tooltip': 'Clear page',
-                            onclick: vnode => {dl = initDL(); getDirectory()},
+                            onclick: vnode => clearPage(),
                         }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-times'}))),
                         m('a', {
                             class: 'button is-outlined is-info is-fullwidth',
