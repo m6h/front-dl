@@ -1,15 +1,15 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=EST5EDT
-RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && \
+ENV TZ=US/Eastern
+RUN apt update && apt install -y tzdata && \
+    ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
 # Node.js version to use
 ENV NODE_VER='v12.10.0'
 
 # Download prerequisites
-RUN apt update && \
-    apt install -y \
+RUN apt install -y \
         curl \
         xz-utils \
         python \
