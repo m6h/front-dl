@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=EST5EDT
+RUN ln -sf /usr/share/zoneinfo/EST5EDT /etc/localtime
 
 # Node.js version to use
 ENV NODE_VER='v12.10.0'
