@@ -31,10 +31,6 @@ RUN mkdir -p /media/dl/ && \
     cp -r ./share/* /usr/share/ && \
     rm -r /media/dl/
 
-# Download latest youtube-dl version
-RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
-    chmod +xr /usr/local/bin/youtube-dl
-
 # Add app files
 ADD ./public/ /node/public/
 ADD ./src/ /node/src/
@@ -48,6 +44,11 @@ WORKDIR /node/
 # npm dependencies and make
 RUN npm install && \
     npm run make
+
+# Download latest youtube-dl version
+ARG Y=
+RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
+    chmod +xr /usr/local/bin/youtube-dl
 
 # Run foreground process
 CMD node app.js
