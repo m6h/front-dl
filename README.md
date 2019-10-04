@@ -16,7 +16,7 @@ The intended use case is to mount a media library folder as a volume at `/mnt/yd
 The root directory visible in the app is based on the `path` variable in `app.js`, which is set to `/mnt/ydl/` inside the Docker container. 
 
 ## Install
-Clone the repository then navigate into the directory and run docker-compose
+Clone the repository then navigate into the directory and run docker-compose. Verify that the volume source path in `docker-compose.yml` is correct for your environment.
 ```sh
 docker-compose up -d
 ```
