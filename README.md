@@ -1,6 +1,6 @@
 ![](public/screenshot.png)
 # Web app front-end for [youtube-dl][ydl] 
-I wanted a faster and easier way to interact with youtube-dl, rather than what i used to do which is SSHing into a server and copy pasting commands. This app simply runs a youtube-dl command and places the downloaded file at the specified directory in the container. It doesn't download to the web browser or play any media.
+I created this web app because i wanted a faster and easier way to interact with youtube-dl. This app simply runs a youtube-dl command and places the downloaded file at the specified directory in the container. It doesn't download to the web browser or play any media.
 
 ## Tech
 Client-side: [Mithril.js][m], [Bulma][bu], [Font Awesome][fa]
@@ -24,14 +24,15 @@ docker-compose up -d
 ## Updating youtube-dl
 youtube-dl tends to need frequent updates to remain functional as websites regularly change and update. To update the youtube-dl version in this app, rebuild it and the latest version will be fetched.
 
-Note: The `--build-arg Y=$RANDOM` used here is just a trick to use cached image layers before the youtube-dl download in order to avoid rebuilding the heavy apt packages. Rebuilding the image with no cache also works.
+Note: The `--build-arg Y=$RANDOM` used here is to create a change in the dockerfile right before the youtube-dl download layer so that it will never run from cache, while everything preceding it will use image layer caches. This is done to avoid rebuilding the heavy apt packages.
+
 ```sh
 docker-compose build --build-arg Y=$RANDOM node.js && docker-compose up -d
 ```
 
 **or**
 
-if you don't want to rebuild, you can jump into the container and grab the updated binary manually
+if you don't want to rebuild, you can jump into the container and grab the updated youtube-dl binary manually
 ```sh
 docker exec -it {container_name} bash
 ```
