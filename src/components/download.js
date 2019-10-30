@@ -64,11 +64,14 @@ function getDirectory() {
 
 // fetch video thumbnail
 function getThumbnail() {
+    document.getElementById('url-control').classList.add('is-loading')
+
     m.request({
         method: 'GET',
         responseType: 'json',
         url: `/api/thumbnail?url=${dl.url}`
     }).then(response => {
+        document.getElementById('url-control').classList.remove('is-loading')
         if (response) {
             dl.thumbnail = response
         } else {
@@ -148,7 +151,7 @@ export var download = {
                     ]),
                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'URL'),
-                        m('div', {class: 'control has-icons-left'}, [
+                        m('div', {id: 'url-control', class: 'control has-icons-left has-icons-right'}, [
                             m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-link'})),
                             m('input', {
                                 class: 'input',
