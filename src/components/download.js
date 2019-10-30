@@ -69,7 +69,11 @@ function getThumbnail() {
         responseType: 'json',
         url: `/api/thumbnail?url=${dl.url}`
     }).then(response => {
-        dl.thumbnail = response
+        if (response) {
+            dl.thumbnail = response
+        } else {
+            dl.thumbnail = '/public/blank.png'
+        }
     }).catch(e => console.error(e))
 }
 

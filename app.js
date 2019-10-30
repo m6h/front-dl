@@ -73,8 +73,8 @@ app.get('/api/thumbnail', (req, res) => {
         fileName = fileName.digest('hex')
 
         exec(`youtube-dl --write-thumbnail --skip-download -o "./public/cache/${fileName}.jpg" ${req.query.url}`, (error, stdout, stderr) => {
-            // respond with string containing location of image. domain.com/public/cache/{fileName}.jpg
-            res.json(`/public/cache/${fileName}.jpg`)
+            // If no error, respond with string containing location of image. domain.com/public/cache/{fileName}.jpg
+            error ? res.json('') : res.json(`/public/cache/${fileName}.jpg`)
         })
     } catch (error) {
         console.log(error)
