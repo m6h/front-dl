@@ -5,6 +5,7 @@ var dl = initDL()
 function initDL() {
     return {
         url: '', fileName: '', type: '', path: [], directory: [],
+        thumbnail: '/public/blank.png',
         tags: {
             artist: '',
             title: '',
@@ -58,6 +59,17 @@ function getDirectory() {
     }).then(response => {
         dl.directory = response.split('/')
         dl.directory.pop() // remove empty last element from using split()
+    }).catch(e => console.error(e))
+}
+
+// fetch video thumbnail
+function getThumbnail() {
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: `/api/thumbnail?url=${dl.url}`
+    }).then(response => {
+        dl.thumbnail = response
     }).catch(e => console.error(e))
 }
 
@@ -139,8 +151,13 @@ export var download = {
                                 type:'text',
                                 placeholder: 'e.g. https://youtu.be/Iy7xDGi5lp4',
                                 value: dl.url,
-                                oninput: vnode => dl.url = vnode.target.value
+                                oninput: vnode => {dl.url = vnode.target.value; getThumbnail()}
                             })
+                        ])
+                    ]),
+                    m('div', {class: 'box', style: 'padding: 0.5em'}, [
+                        m('figure', {class: 'image is-16by9'}, [
+                            m('img', {src: dl.thumbnail})
                         ])
                     ]),
                     m('div', {class: 'field'}, [

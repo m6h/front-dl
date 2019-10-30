@@ -1,6 +1,7 @@
 const express = require('express')
 const { exec } = require('child_process')
 const { posix } = require('path')
+const crypto = require('crypto')
 const app = express()
 const port = 3000
 
@@ -59,6 +60,26 @@ app.get('/api/browse', (req, res) => {
     //     console.log('')
     //     res.json('')
     // })
+})
+
+// Fetch video thumbnail
+app.get('/api/thumbnail', (req, res) => {
+    // Query string: {url: ''}
+    try {
+        // Hash query string url with sha256 to generate file name in cache folder
+        // Create hash object and input (update) the string to hash
+        var fileName = crypto.createHash('sha256').update(req.query.url)
+        // Calculate output (digest) of the hash function as a standard hex string
+        fileName = fileName.digest('hex')
+
+        exec(`youtube-dl --write-thumbnail --skip-download -o "./public/cache/${fileName}.jpg" ${req.query.url}`, (error, stdout, stderr) => {
+            // respond with string containing location of image. domain.com/public/cache/{fileName}.jpg
+            res.json(`/public/cache/${fileName}.jpg`)
+        })
+    } catch (error) {
+        console.log(error)
+        res.json('')
+    }
 })
 
 // Download
