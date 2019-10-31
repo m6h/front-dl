@@ -2,6 +2,7 @@ const express = require('express')
 const { exec } = require('child_process')
 const { posix } = require('path')
 const crypto = require('crypto')
+const fs = require('fs')
 const app = express()
 const port = 3000
 
@@ -68,13 +69,25 @@ app.get('/api/thumbnail', (req, res) => {
     try {
         // Hash query string url with sha256 to generate file name in cache folder
         // Create hash object and input (update) the string to hash
-        var fileName = crypto.createHash('sha256').update(req.query.url)
         // Calculate output (digest) of the hash function as a standard hex string
-        fileName = fileName.digest('hex')
+        const fileName = crypto.createHash('sha256').update(req.query.url).digest('hex')
 
-        exec(`youtube-dl --write-thumbnail --skip-download -o "./public/cache/${fileName}.jpg" ${req.query.url}`, (error, stdout, stderr) => {
-            // If no error, respond with string containing location of image. domain.com/public/cache/{fileName}.jpg
-            error ? res.json('') : res.json(`/public/cache/${fileName}.jpg`)
+        const filePath = `./public/cache/${fileName}.jpg`
+
+        // If image at calculated path can be read (it exists) then return existing image path
+        fs.access(filePath, fs.constants.R_OK, (error) => {
+            if (error) {
+                console.log('image fetched')
+                // Image can't be read (it doesn't exist). Fetch thumbnail image
+                exec(`youtube-dl --write-thumbnail --skip-download -o "${filePath}" ${req.query.url}`, (error, stdout, stderr) => {
+                    // If valid url respond with path to image
+                    error ? res.json('') : res.json(filePath)
+                })
+            } else {
+                // Image already exists. Respond with path to image
+                res.json(filePath)
+                console.log('cache used')
+            }
         })
     } catch (error) {
         console.log(error)
