@@ -77,7 +77,6 @@ app.get('/api/thumbnail', (req, res) => {
         // If image at calculated path can be read (it exists) then return existing image path
         fs.access(filePath, fs.constants.R_OK, (error) => {
             if (error) {
-                console.log('image fetched')
                 // Image can't be read (it doesn't exist). Fetch thumbnail image
                 exec(`youtube-dl --write-thumbnail --skip-download -o "${filePath}" ${req.query.url}`, (error, stdout, stderr) => {
                     // If valid url respond with path to image
@@ -86,7 +85,6 @@ app.get('/api/thumbnail', (req, res) => {
             } else {
                 // Image already exists. Respond with path to image
                 res.json(filePath)
-                console.log('cache used')
             }
         })
     } catch (error) {
