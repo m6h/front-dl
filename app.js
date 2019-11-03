@@ -50,17 +50,6 @@ app.get('/api/browse', (req, res) => {
         console.log(error)
         res.json('')
     }
-    // var find = spawn('find', [`./node_modules/${req.query.path}`, '-maxdepth', '1', '-mindepth', '1', '-type', 'd', '-printf', '%f/'])
-    // console.log(find.spawnargs)
-    // find.stdout.once('data', data => {
-    //     console.log(data.toString())
-    //     res.json(data.toString())
-    // })
-    // if folder is empty will return exit code 0
-    // find.on('exit', data => {
-    //     console.log('')
-    //     res.json('')
-    // })
 })
 
 // Fetch video thumbnail
