@@ -5,6 +5,7 @@ services:
     build:
       context: ./
       dockerfile: youtube-dl.dockerfile
+    restart: unless-stopped
     volumes:
       - type: bind
         source: /mnt/cephfs/media
