@@ -24,15 +24,13 @@ docker-compose up -d
 ## Updating [youtube-dl][ydl] 
 youtube-dl tends to need frequent updates to remain functional as websites regularly change and update. To update the youtube-dl version in this app, rebuild it and the latest version will be fetched.
 
-Note: The `--build-arg Y=$RANDOM` used here is to create a change in the dockerfile right before the youtube-dl download layer so it will never run from cache, while everything preceding it will use image layer caches. This is done to avoid rebuilding the heavy apt packages.
-
 ```sh
-docker-compose build --build-arg Y=$RANDOM node.js && docker-compose up -d
+docker-compose build --no-cache && docker-compose up -d
 ```
 
 **or**
 
-if you don't want to rebuild, you can jump into the container and grab the updated youtube-dl binary manually
+alternatively, you can jump into the container and grab the updated youtube-dl binary manually
 ```sh
 docker exec -it {container_name} bash
 ```
