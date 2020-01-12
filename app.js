@@ -98,18 +98,39 @@ app.get('/api/ydl', (req, res) => {
         if(req.query.type == 'audio') {
             var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${path}.m4a`, `${req.query.url}`])
             
-            youtubeDl.stdout.setEncoding('utf-8') // Set encoding so output can be read
+            // Set encoding so outputs can be read
+            youtubeDl.stdout.setEncoding('utf-8') 
+            youtubeDl.stderr.setEncoding('utf-8')
 
-            // Emit command stdout stream to socket
+            // Emit command stdout stream to socket, and console log
             youtubeDl.stdout.on('data', data => {
+                console.log(`ydl stdout: ${data}`)
                 io.to(req.query.socketId).emit('console_stdout', data)
             })
 
-            // Once download is complete, add metadata to audio file, then send http response 
+            // Log stderr if exists
+            youtubeDl.stderr.on('data', data => {
+                console.error(`ydl stderr: ${data}`)
+            })
+
+            // Once youtube-dl download is complete, add metadata to audio file with AtomicParsley, then send http response and log exit code
             youtubeDl.on('close', exitCode => {
+                console.log(`youtube-dl exited with code ${exitCode}`)
+
                 var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${req.query.tags.artist}`, '--title', `${req.query.tags.title}`, '--genre', `${req.query.tags.genre}`])
                 
+                // stdout to log
+                atomicParsley.stdout.on('data', data => {
+                    console.log(`AP stdout: ${data}`)
+                })
+
+                 // Log stderr if exists
+                youtubeDl.stderr.on('data', data => {
+                    console.error(`AP stderr: ${data}`)
+                })
+
                 atomicParsley.on('close', exitCode => {
+                    console.log(`AtomicParsley exited with code ${exitCode}`)
                     res.json(exitCode)
                 })
             })
@@ -118,14 +139,22 @@ app.get('/api/ydl', (req, res) => {
             
             // Set encoding so outputs can be read
             youtubeDl.stdout.setEncoding('utf-8') 
+            youtubeDl.stderr.setEncoding('utf-8')
 
-            // Emit command stdout stream to socket
+            // Emit command stdout stream to socket, and console log
             youtubeDl.stdout.on('data', data => {
+                console.log(`ydl stdout: ${data}`)
                 io.to(req.query.socketId).emit('console_stdout', data)
             })
 
-            // Send http response once download has completed
+            // Log stderr if exists
+            youtubeDl.stderr.on('data', data => {
+                console.error(`ydl stderr: ${data}`)
+            })
+
+            // Send http response once download has completed, and log exit code
             youtubeDl.on('close', exitCode => {
+                console.log(`youtube-dl exited with code ${exitCode}`)
                 res.json(exitCode) 
             })
         } else {
