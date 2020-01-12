@@ -1,12 +1,13 @@
 const express = require('express')
-const { exec } = require('child_process')
+const { exec, spawn } = require('child_process')
 const { posix } = require('path')
 const crypto = require('crypto')
 const fs = require('fs')
 const app = express()
 const port = 3000
+const server = app.listen(port, () => console.log(`listening on http://localhost:${port}`))
+const io = require('socket.io').listen(server)
 
-app.listen(port, () => console.log(`listening on http://localhost:${port}`))
 app.use('/public', express.static('./public/'))
 app.use('/bin', express.static('./bin/'))
 
@@ -84,23 +85,45 @@ app.get('/api/thumbnail', (req, res) => {
 
 // Download
 app.get('/api/ydl', (req, res) => {
-    // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: ''}
+    // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', socketId: ''}
+    
+    // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
+
     try {
         var cmd = '', cmd2 = ''
         const path = formatPath(req.query.path)
         
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         if(req.query.type == 'audio') {
-            cmd = `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${path}.m4a" ${req.query.url}`
-            cmd2 = `AtomicParsley "${path}.m4a" --overWrite --artist "${req.query.tags.artist}" --title "${req.query.tags.title}" --genre "${req.query.tags.genre}"`
-            exec(cmd, (error, stdout, stderr) => {
-                res.json(stdout) // send response once download has completed
-                exec(cmd2, (error, stdout, stderr) => {}) // afterwards add metadata to audio file
+            var youtubeDl = spawn('youtube-dl', ['-f', '"bestaudio[ext=m4a]"', '--embed-thumbnail', '-o', `"${path}.m4a"`, `"${req.query.url}"`])
+            
+            youtubeDl.stdout.setEncoding('utf-8') // Set encoding so output can be read
+
+            // Emit command stdout stream to socket
+            youtubeDl.stdout.on('data', data => {
+                io.to(req.query.socketId).emit('console_stdout', data)
+            })
+
+            // Once download is complete, add metadata to audio file, then send http response 
+            youtubeDl.on('close', exitCode => {
+                var atomicParsley = spawn('AtomicParsley', [`"${path}.m4a"`, '--overWrite', '--artist', `"${req.query.tags.artist}"`, '--title', `"${req.query.tags.title}"`, '--genre', `"${req.query.tags.genre}"`])
+                
+                atomicParsley.on('close', exitCode => {
+                    res.json(exitCode)
+                })
             })
         } else if(req.query.type == 'video') {
-            cmd = `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${path}.mkv" ${req.query.url}`
-            exec(cmd, (error, stdout, stderr) => {
-                res.json(stdout) // send response once download has completed
+            var youtubeDl = spawn('youtube-dl', ['-f', '"bestvideo[height<=?1080]+bestaudio"', '--merge-output-format', '"mkv"', '--write-thumbnail', '-o', `"${path}.mkv"`, `"${req.query.url}"`])
+            youtubeDl.stdout.setEncoding('utf-8') // Set encoding so output can be read
+
+            // Emit command stdout stream to socket
+            youtubeDl.stdout.on('data', data => {
+                io.to(req.query.socketId).emit('console_stdout', data)
+            })
+
+            // Send http response once download has completed
+            youtubeDl.on('close', exitCode => {
+                res.json(exitCode) 
             })
         } else {
             res.json('')
