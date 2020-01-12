@@ -8,7 +8,7 @@ const port = 3000
 
 app.listen(port, () => console.log(`listening on http://localhost:${port}`))
 app.use('/public', express.static('./public/'))
-app.use('/lib', express.static('./bin/lib/'))
+app.use('/bin', express.static('./bin/'))
 
 app.get('/', (req, res) => {
     res.send(`
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
             <link rel="stylesheet" href="/public/bulma-tooltip.min.css">
         </head>
         <body>
-            <script src="/lib/bundle.js"></script>
+            <script src="/bin/bundle.js"></script>
         </body>
         </html>
     `)

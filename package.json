@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "babel ./src --out-dir ./bin",
-    "bundle": "webpack -d ./bin/main.js --output ./bin/lib/bundle.js",
+    "bundle": "webpack -d ./bin/main.js --output ./bin/bundle.js",
     "make": "npm run build && npm run bundle",
     "start": "node app.js"
   },
