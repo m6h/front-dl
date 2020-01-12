@@ -1,4 +1,4 @@
-import m from '../lib/mithril'
+import m from 'mithril'
 
 function toggleNavBurger() {
     document.querySelector('.navbar-burger').classList.toggle('is-active')

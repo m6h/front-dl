@@ -1,4 +1,4 @@
-import m from '../lib/mithril'
+import m from 'mithril'
 
 export var about = {
     view: () => [

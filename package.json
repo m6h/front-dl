@@ -24,6 +24,6 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "qs": "^6.9.0"
+    "mithril": "^2.0.4",
   }
 }

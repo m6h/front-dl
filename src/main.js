@@ -1,4 +1,4 @@
-import m from './lib/mithril'
+import m from 'mithril'
 import {navbar} from './components/navbar'
 import {download} from './components/download'
 import {about} from './components/about'
