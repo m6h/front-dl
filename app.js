@@ -113,9 +113,10 @@ app.get('/api/ydl', (req, res) => {
                 console.error(`ydl stderr: ${data}`)
             })
 
-            // Once youtube-dl download is complete, add metadata to audio file with AtomicParsley, then send http response and log exit code
+            // Once youtube-dl download is complete, add metadata to audio file, send http response, emit "Done" message to client socket, and log exit code
             youtubeDl.on('close', exitCode => {
                 console.log(`youtube-dl exited with code ${exitCode}`)
+                io.to(req.query.socketId).emit('console_stdout', 'Done')
 
                 var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${req.query.tags.artist}`, '--title', `${req.query.tags.title}`, '--genre', `${req.query.tags.genre}`])
                 
@@ -152,9 +153,10 @@ app.get('/api/ydl', (req, res) => {
                 console.error(`ydl stderr: ${data}`)
             })
 
-            // Send http response once download has completed, and log exit code
+            // Send http response once download has completed, emit "Done" message to client socket, and log exit code
             youtubeDl.on('close', exitCode => {
                 console.log(`youtube-dl exited with code ${exitCode}`)
+                io.to(req.query.socketId).emit('console_stdout', 'Done')
                 res.json(exitCode) 
             })
         } else {
