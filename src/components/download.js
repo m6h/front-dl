@@ -1,10 +1,13 @@
 import m from 'mithril'
 import * as qs from 'qs'
+import io from 'socket.io-client'
+
 var dl = initDL()
+const socket = io()
 
 function initDL() {
     return {
-        url: '', fileName: '', type: '', path: [], directory: [],
+        url: '', fileName: '', type: '', path: [], directory: [], stdout: '',
         thumbnail: '/public/blank.png',
         tags: {
             artist: '',
@@ -16,7 +19,9 @@ function initDL() {
             return fullPath.join('/')
         },
         command: () => {
-            if(dl.type == 'audio') {
+            if (dl.stdout) {
+                return dl.stdout
+            } else if(dl.type == 'audio') {
                 return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`
             } else if(dl.type == 'video') {
                 return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`
@@ -101,7 +106,8 @@ function go() {
         url: dl.url,
         type: dl.type,
         tags: dl.tags,
-        path: dl.fullPath()
+        path: dl.fullPath(),
+        socketId: socket.id
     }
 
     m.request({
@@ -116,6 +122,15 @@ function go() {
 export var download = {
     oninit: () => {
         getDirectory()
+    },
+    oncreate: () => {
+        // Listen on socket. Sockets automatically join a room identified by their id. This room is where the server emits the stdout stream.
+        socket.on('connect', () => {
+            socket.on('console_stdout', data => {
+                dl.stdout = data
+                m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
+            })
+        })
     },
     onupdate: () => {
         // If fields have a value then enable download button
@@ -267,7 +282,7 @@ export var download = {
                             m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-terminal'})),
                             m('textarea', {
                                 class: 'textarea',
-                                style:'padding-left: 2.2em',
+                                style:'padding-left: 2.2em; font-family: monospace',
                                 readonly: true,
                                 rows: 6,
                                 value: dl.command()
