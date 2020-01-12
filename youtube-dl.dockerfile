@@ -31,24 +31,22 @@ RUN mkdir -p /media/dl/ && \
     cp -r ./share/* /usr/share/ && \
     rm -r /media/dl/
 
-# Add app files
-ADD ./public/ /node/public/
-ADD ./src/ /node/src/
-ADD ./app.js /node/
-ADD ./package.json /node/
-ADD ./LICENSE /node/
-ADD ./README.md /node/
-
 WORKDIR /node/
+
+# Copy app files to /node/
+COPY ["./public/", "/node/public/"]
+COPY ["./src/", "/node/src/"]
+COPY [".babelrc", "app.js", "LICENSE", "package.json", "package-lock.json", "README.md", "/node/"]
+
+EXPOSE 3000
 
 # npm dependencies and make
 RUN npm install && \
     npm run make
 
 # Download latest youtube-dl version
-ARG Y=
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
     chmod +xr /usr/local/bin/youtube-dl
 
 # Run foreground process
-CMD node app.js
+CMD ["node", "app.js"]
