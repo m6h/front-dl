@@ -96,7 +96,7 @@ app.get('/api/ydl', (req, res) => {
         
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         if(req.query.type == 'audio') {
-            var youtubeDl = spawn('youtube-dl', ['-f', '"bestaudio[ext=m4a]"', '--embed-thumbnail', '-o', `"${path}.m4a"`, `"${req.query.url}"`])
+            var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${path}.m4a`, `${req.query.url}`])
             
             youtubeDl.stdout.setEncoding('utf-8') // Set encoding so output can be read
 
@@ -107,15 +107,17 @@ app.get('/api/ydl', (req, res) => {
 
             // Once download is complete, add metadata to audio file, then send http response 
             youtubeDl.on('close', exitCode => {
-                var atomicParsley = spawn('AtomicParsley', [`"${path}.m4a"`, '--overWrite', '--artist', `"${req.query.tags.artist}"`, '--title', `"${req.query.tags.title}"`, '--genre', `"${req.query.tags.genre}"`])
+                var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${req.query.tags.artist}`, '--title', `${req.query.tags.title}`, '--genre', `${req.query.tags.genre}`])
                 
                 atomicParsley.on('close', exitCode => {
                     res.json(exitCode)
                 })
             })
         } else if(req.query.type == 'video') {
-            var youtubeDl = spawn('youtube-dl', ['-f', '"bestvideo[height<=?1080]+bestaudio"', '--merge-output-format', '"mkv"', '--write-thumbnail', '-o', `"${path}.mkv"`, `"${req.query.url}"`])
-            youtubeDl.stdout.setEncoding('utf-8') // Set encoding so output can be read
+            var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${path}.mkv`, `${req.query.url}`])
+            
+            // Set encoding so outputs can be read
+            youtubeDl.stdout.setEncoding('utf-8') 
 
             // Emit command stdout stream to socket
             youtubeDl.stdout.on('data', data => {
