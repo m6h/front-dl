@@ -87,11 +87,9 @@ app.get('/api/thumbnail', (req, res) => {
 // Download
 app.get('/api/ydl', (req, res) => {
     // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', socketId: ''}
-    
     // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
 
     try {
-        var cmd = '', cmd2 = ''
         const path = formatPath(req.query.path)
         
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
@@ -104,7 +102,10 @@ app.get('/api/ydl', (req, res) => {
 
             // Emit command stdout stream to socket, and console log
             youtubeDl.stdout.on('data', data => {
-                console.log(`ydl stdout: ${data}`)
+                // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
+                //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
+                (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+
                 io.to(req.query.socketId).emit('console_stdout', data)
             })
 
@@ -144,7 +145,10 @@ app.get('/api/ydl', (req, res) => {
 
             // Emit command stdout stream to socket, and console log
             youtubeDl.stdout.on('data', data => {
-                console.log(`ydl stdout: ${data}`)
+                // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
+                //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
+                (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+                
                 io.to(req.query.socketId).emit('console_stdout', data)
             })
 
