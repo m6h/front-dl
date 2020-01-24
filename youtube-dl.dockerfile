@@ -17,7 +17,7 @@ RUN apt install -y \
         atomicparsley
 
 # Node.js version to use
-ENV NODE_VER='v12.10.0'
+ENV NODE_VER='v12.14.1'
 
 # Download Node.js
 RUN mkdir -p /media/dl/ && \
