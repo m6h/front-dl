@@ -42,7 +42,7 @@ EXPOSE 3000
 
 # npm dependencies and make
 RUN npm install && \
-    npm run make
+    npm run bundle-prod
 
 # Download latest youtube-dl version
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
