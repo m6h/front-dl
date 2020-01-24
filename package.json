@@ -1,5 +1,5 @@
 {
-  "name": "youtube-dl",
+  "name": "front-dl",
   "version": "1.0.0",
   "description": "youtube-dl web app front-end",
   "main": "app.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/m6h/front-dl.git"
   },
   "author": "",
   "license": "ISC",

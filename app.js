@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>youtube-dl</title>
+            <title>front-dl</title>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <script src="/public/all.min.js"></script>
             <link rel="stylesheet" href="/public/bulma.min.css">
