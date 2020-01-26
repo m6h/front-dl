@@ -113,7 +113,7 @@ function go() {
     m.request({
         method: 'GET',
         responseType: 'json',
-        url: `/api/ydl?${qs.stringify(sendDL)}`
+        url: `/api/download?${qs.stringify(sendDL)}`
     }).then(response => {
         document.getElementById('download').classList.remove('is-loading')
     }).catch(e => console.error(e))
