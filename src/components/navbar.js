@@ -20,7 +20,7 @@ export var navbar = {
                 m('div', {class: 'navbar-menu'}, [
                     m('div', {class: 'navbar-start'}, [
                         m('a', {class: 'navbar-item', href: '#!/'}, 'Home'),
-                        m('a', {class: 'navbar-item', href: '#!/about'}, 'About'),
+                        m('a', {class: 'navbar-item', href: '#!/settings'}, 'Settings'),
                     ]),
                     m('div', {class: 'navbar-end'}, '')
                 ])

@@ -1,7 +1,7 @@
 import m from 'mithril'
 import {navbar} from './components/navbar'
 import {download} from './components/download'
-import {about} from './components/about'
+import {settings} from './components/settings'
 
 function appRoute(c) {
     return {
@@ -14,5 +14,5 @@ function appRoute(c) {
 
 m.route(document.body, '/', {
     '/':        appRoute(download),
-    '/about':   appRoute(about),
+    '/settings':   appRoute(settings),
 })
