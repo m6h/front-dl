@@ -34,6 +34,7 @@ RUN mkdir -p /media/dl/ && \
 WORKDIR /node/
 
 # Copy app files to /node/
+COPY ["./controllers/", "/node/controllers/"]
 COPY ["./public/", "/node/public/"]
 COPY ["./src/", "/node/src/"]
 COPY [".babelrc", "app.js", "LICENSE", "package.json", "package-lock.json", "README.md", "/node/"]
