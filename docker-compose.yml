@@ -4,7 +4,7 @@ services:
   node.js:
     build:
       context: ./
-      dockerfile: youtube-dl.dockerfile
+      dockerfile: front-dl.dockerfile
     restart: unless-stopped
     volumes:
       - type: bind
