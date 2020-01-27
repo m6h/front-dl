@@ -3,6 +3,9 @@ import io from 'socket.io-client'
 
 const socket = io()
 var settings = {}
+var tooltips = {
+    htmlDownload: "Downloads will appear in the browser's download area instead of a directory."
+}
 
 function getYdlVersion() {
     m.request({
@@ -27,7 +30,7 @@ export var settings = {
     view: () => [
         m('div', {class: 'container'}, m('div', {class: 'section'}, [
             m('div', {class: 'columns is-centered'}, [
-                m('div', {class: 'column'}, [
+                m('div', {class: 'column is-narrow'}, [
                     m('div', {class: 'box'}, [
                         m('div', {class: 'subtitle'}, 'Versions'),
                         m('div', [
@@ -36,7 +39,7 @@ export var settings = {
                         ])
                     ])
                 ]),
-                m('div', {class: 'column'}, [
+                m('div', {class: 'column is-narrow'}, [
                     m('div', {class: 'box'}, [
                         m('a', {
                             class: 'button field is-fullwidth',
@@ -58,19 +61,43 @@ export var settings = {
                         }, 'Clear thumbnail cache')
                     ])
                 ]),
-                m('div', {class: 'column'}, [
+                m('div', {class: 'column is-narrow is-unselectable'}, [
                     m('div', {class: 'box'}, [
                         m('div', {class: 'field'}, [
+                            m('span', {class: 'has-tooltip-multiline', 'data-tooltip': tooltips.htmlDownload}, 'Download to browser'),
+                            m('input', {id: 'htmlDownload', type: 'checkbox', class: 'switch is-hidden', checked: settings.htmlDownload}),
+                            m('label', {
+                                for: 'htmlDownload',
+                                class: 'is-pulled-right',
+                                style: 'margin-left: 1em',
+                                onclick: vnode => {
+                                    // send xhr
+                                    switch(!settings.htmlDownload) {
+                                        case true:
+                                            m.request({
+                                                method: 'PUT',
+                                                responseType: 'json',
+                                                url: '/api/settings?htmlDownload=true'
+                                            }).then(response => {}).catch(e => console.error(e))
+                                            break
+                                        case false:
+                                            m.request({
+                                                method: 'PUT',
+                                                responseType: 'json',
+                                                url: '/api/settings?htmlDownload=false'
+                                            }).then(response => {}).catch(e => console.error(e))
+                                            break
+                                    }
+                                }
+                            })
+                        ]),
+                        m('div', {class: 'field'}, [
                             m('span', {class: 'is-unselectable'}, 'Clear page after download'),
-                            m('input', {
-                                id: 'autoClear',
-                                type: 'checkbox',
-                                class: 'switch is-hidden',
-                                checked: settings.autoClear,
-                            }),
+                            m('input', {id: 'autoClear', type: 'checkbox', class: 'switch is-hidden', checked: settings.autoClear}),
                             m('label', {
                                 for: 'autoClear',
                                 class: 'is-pulled-right',
+                                style: 'margin-left: 1em',
                                 onclick: vnode => {
                                     // send xhr
                                     switch(!settings.autoClear) {
