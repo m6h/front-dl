@@ -24,7 +24,7 @@ exports.browse = (req, res) => {
             res.json(stdout)
         })
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.json('')
     }
 }
@@ -54,7 +54,7 @@ exports.thumbnail = (req, res) => {
             }
         })
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.json('')
     }
 }
@@ -72,7 +72,7 @@ exports.download = (req, res) => {
             var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${path}.m4a`, `${req.query.url}`])
             
             // Set encoding so outputs can be read
-            youtubeDl.stdout.setEncoding('utf-8') 
+            youtubeDl.stdout.setEncoding('utf-8')
             youtubeDl.stderr.setEncoding('utf-8')
 
             // Emit command stdout stream to socket, and console log
@@ -96,6 +96,10 @@ exports.download = (req, res) => {
 
                 var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${req.query.tags.artist}`, '--title', `${req.query.tags.title}`, '--genre', `${req.query.tags.genre}`])
                 
+                // Set encoding so outputs can be read
+                atomicParsley.stdout.setEncoding('utf-8')
+                atomicParsley.stderr.setEncoding('utf-8')
+
                 // stdout to log
                 atomicParsley.stdout.on('data', data => {
                     console.log(`AP stdout: ${data}`)
@@ -115,7 +119,7 @@ exports.download = (req, res) => {
             var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${path}.mkv`, `${req.query.url}`])
             
             // Set encoding so outputs can be read
-            youtubeDl.stdout.setEncoding('utf-8') 
+            youtubeDl.stdout.setEncoding('utf-8')
             youtubeDl.stderr.setEncoding('utf-8')
 
             // Emit command stdout stream to socket, and console log
@@ -142,7 +146,7 @@ exports.download = (req, res) => {
             res.json('')
         }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.json('')
     }
 }
