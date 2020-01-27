@@ -4,7 +4,7 @@ import io from 'socket.io-client'
 const socket = io()
 var settings = {}
 var tooltips = {
-    htmlDownload: "Downloads will appear in the browser's download area instead of a directory."
+    htmlDownload: "Send downloads to the browser instead of a directory."
 }
 
 function getYdlVersion() {
