@@ -151,20 +151,7 @@ export var download = {
         m('div', {class: 'section'}, [
             m('div', {class: 'columns'}, [
                 m('div', {class: 'column'}, [
-                    m('div', {class: 'field is-grouped'}, [
-                        m('a', {
-                            class: 'button is-outlined is-danger tooltip',
-                            style: 'margin: 0.1em',
-                            'data-tooltip': 'Clear page',
-                            onclick: vnode => clearPage(),
-                        }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-times'}))),
-                        m('a', {
-                            class: 'button is-outlined is-info is-fullwidth',
-                            style: 'margin: 0.1em',
-                            onclick: vnode => {}
-                        }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-question'})))
-                    ]),
-                    m('div', {class: 'field'}, [
+                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'URL'),
                         m('div', {id: 'url-control', class: 'control has-icons-left has-icons-right'}, [
                             m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-link'})),
@@ -289,7 +276,15 @@ export var download = {
                             })
                         ])
                     ]),
-                    m('button', {id: 'download', class: 'button is-fullwidth', disabled: 'true', onclick: go}, 'Go')
+                    m('div', {class: 'field is-grouped'}, [
+                        m('button', {id: 'download', class: 'button is-fullwidth', disabled: 'true', onclick: go}, 'Go'),
+                        m('a', {
+                            class: 'button is-outlined is-danger',
+                            style: 'margin-left: 1em',
+                            'data-tooltip': 'Clear page',
+                            onclick: vnode => clearPage(),
+                        }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-times'}))),
+                    ])
                 ])
             ])
         ])
