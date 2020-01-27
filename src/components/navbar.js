@@ -7,7 +7,7 @@ function toggleNavBurger() {
 
 export var navbar = {
     view: () => [
-        m('nav', {class: 'navbar has-shadow', style: 'border-top: #209cee 0.3em solid'}, [
+        m('nav', {class: 'navbar has-shadow is-unselectable', style: 'border-top: #209cee 0.3em solid'}, [
             m('div', {class: 'container'}, [
                 m('div', {class: 'navbar-brand'} , [
                     m('a', {class: 'navbar-item', href:'#!/'}, [
