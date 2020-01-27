@@ -150,3 +150,37 @@ exports.download = (req, res) => {
         res.json('')
     }
 }
+
+// Get youtube-dl version
+exports.version = (req, res) => {
+    try {
+        exec('youtube-dl --version', (error, stdout, stderr) => {
+            if (error) {
+                console.error(error)
+                res.json('Unknown')
+            } else {
+                res.json(stdout)
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        res.json('Unknown')
+    }
+}
+
+// Update youtube-dl
+exports.update = (req, res) => {
+    try {
+        exec('curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && chmod +xr /usr/local/bin/youtube-dl', (error, stdout, stderr) => {
+            if (error) {
+                console.error(error)
+                res.json('')
+            } else {
+                res.json(stdout)
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        res.json('')
+    }
+}

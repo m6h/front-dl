@@ -44,3 +44,6 @@ const ydlController = require('./controllers/youtube-dl')
 app.get('/api/browse', ydlController.browse)
 app.get('/api/thumbnail', ydlController.thumbnail)
 app.get('/api/download', ydlController.download)
+app.get('/api/version/ydl', ydlController.version)
+app.get('/api/update/ydl', ydlController.update)
+
