@@ -1,7 +1,5 @@
 import m from 'mithril'
-import io from 'socket.io-client'
 
-const socket = io()
 var settings = {}
 var tooltips = {
     htmlDownload: "Send downloads to the browser instead of a directory."
@@ -19,13 +17,16 @@ function getYdlVersion() {
 
 export var settings = {
     oncreate: () => {
-        // socket.on('connect', () => {
-        //     socket.on('settings_update', data => {
-        //         settings = data
-        //         m.redraw() // manually trigger mithril redraw to update checkboxes after event
-        //     })
-        // })
         getYdlVersion()
+
+        // Get settings
+        m.request({
+            method: 'GET',
+            responseType: 'json',
+            url: '/api/settings'
+        }).then(response => {
+            settings = response
+        }).catch(e => console.error(e))
     },
     view: () => [
         m('div', {class: 'container'}, m('div', {class: 'section'}, [
@@ -71,8 +72,9 @@ export var settings = {
                                 class: 'is-pulled-right',
                                 style: 'margin-left: 1em',
                                 onclick: vnode => {
+                                    settings.htmlDownload = !settings.htmlDownload
                                     // send xhr
-                                    switch(!settings.htmlDownload) {
+                                    switch(settings.htmlDownload) {
                                         case true:
                                             m.request({
                                                 method: 'PUT',
@@ -99,8 +101,9 @@ export var settings = {
                                 class: 'is-pulled-right',
                                 style: 'margin-left: 1em',
                                 onclick: vnode => {
+                                    settings.autoClear = !settings.autoClear
                                     // send xhr
-                                    switch(!settings.autoClear) {
+                                    switch(settings.autoClear) {
                                         case true:
                                             m.request({
                                                 method: 'PUT',

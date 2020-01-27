@@ -41,6 +41,7 @@ app.get('/', (req, res) => {
 
 // Import youtube-dl controller
 const ydlController = require('./controllers/youtube-dl')
+const settingsController = require('./controllers/settings')
 
 app.get('/api/browse', ydlController.browse)
 app.get('/api/thumbnail', ydlController.thumbnail)
@@ -48,3 +49,6 @@ app.get('/api/download', ydlController.download)
 app.get('/api/version/ydl', ydlController.version)
 app.get('/api/update/ydl', ydlController.update)
 
+app.route('/api/settings')
+    .get(settingsController.getSettings)
+    .put(settingsController.updateSettings)
