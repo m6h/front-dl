@@ -166,6 +166,13 @@ export var download = {
                     ]),
                     m('div', {class: 'box', style: 'padding: 0.5em'}, [
                         m('figure', {class: 'image is-16by9'}, [
+                            m('span', {
+                                class: 'has-text-weight-light is-unselectable',
+                                style: `position: absolute;
+                                        top: 50%;
+                                        left: 50%;
+                                        transform: translate(-50%, -50%);`,
+                            }, 'Thumbnail preview'),
                             m('img', {src: dl.thumbnail})
                         ])
                     ]),
