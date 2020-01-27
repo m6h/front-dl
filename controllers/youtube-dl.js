@@ -2,8 +2,7 @@ const { exec, spawn } = require('child_process')
 const { posix } = require('path')
 const crypto = require('crypto')
 const fs = require('fs')
-const { server } = require('../app')
-const io = require('socket.io').listen(server)
+const { io } = require('../app')
 
 function formatPath(queryPath) {
     // prepend root directory. return error if any '/../' in path. clean up path using normalize.

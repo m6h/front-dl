@@ -5,8 +5,8 @@ const server = app.listen(port, () => console.log(`listening on http://localhost
 const io = require('socket.io').listen(server)
 
 
-// Export server for Socket.io
-exports.server = server
+// Export Socket.io
+exports.io = io
 
 // Static resources
 app.use('/public', express.static('./public/'))
