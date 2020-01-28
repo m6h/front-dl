@@ -53,10 +53,17 @@ exports.thumbnail = (req, res) => {
                 res.json(filePath)
             }
         })
-    } catch (error) {
-        console.error(error)
-        res.json('')
-    }
+
+// Delete all .jpg's from the cache folder
+exports.clearThumbnailCache = (req, res) => {
+    exec('rm ./public/cache/*.jpg', (error, stdout, stderr) => {
+        if (error) {
+            console.error(error)
+            res.json('')
+        } else {
+            res.json('')
+        }
+    })
 }
 
 // Download
