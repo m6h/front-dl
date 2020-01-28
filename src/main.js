@@ -13,6 +13,6 @@ function appRoute(c) {
 }
 
 m.route(document.body, '/', {
-    '/':        appRoute(download),
-    '/settings':   appRoute(settings),
+    '/':            appRoute(download),
+    '/settings':    appRoute(settings),
 })
