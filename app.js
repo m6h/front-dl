@@ -50,5 +50,5 @@ app.get('/api/version/ydl', ydlController.version)
 app.get('/api/update/ydl', ydlController.update)
 
 app.route('/api/settings')
-    .get(settingsController.getSettings)
-    .put(settingsController.updateSettings)
+    .get(settingsController.get)
+    .put(settingsController.update)

@@ -6,11 +6,13 @@ var settings = {
     autoClear: false
 }
 
-exports.getSettings = (req, res) => {
+// GET
+exports.get = (req, res) => {
     res.json(settings)
 }
 
-exports.updateSettings = (req, res) => {
+// PUT
+exports.update = (req, res) => {
     switch(req.query.htmlDownload) {
         case 'true':
             settings.htmlDownload = true
