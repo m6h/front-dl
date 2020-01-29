@@ -17,15 +17,11 @@ function formatPath(queryPath) {
 
 // Get folder names for the directory browser
 exports.browse = (req, res) => {
-    if (req.query.path) {
-        const path = formatPath(req.query.path)
-    
-        exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
-            error ? console.error(error) : res.json(stdout)
-        })
-    } else {
-        res.json('')
-    }
+    const path = formatPath(req.query.path)
+
+    exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
+        error ? console.error(error) : res.json(stdout)
+    })
 }
 
 // Fetch video thumbnail
