@@ -75,87 +75,90 @@ exports.download = (req, res) => {
     
     const q = req.query
 
-    // Ensure query strings have values
-    if (q.url && (q.type == 'audio' || q.type == 'video') && q.tags.artist && q.tags.title && q.tags.genre && q.path && q.socketId) {
-        
+    // Ensure minimum required query strings have values
+    if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title && q.tags.genre) || q.type == 'video') && q.path && q.socketId) {
+
         // Format and validate path
         const path = formatPath(q.path)
-        
+
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
-        if(q.type == 'audio') {
-            var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${path}.m4a`, `${q.url}`])
-            
-            // Set encoding so outputs can be read
-            youtubeDl.stdout.setEncoding('utf-8')
-            youtubeDl.stderr.setEncoding('utf-8')
-
-            // Emit command stdout stream to socket, and console log
-            youtubeDl.stdout.on('data', data => {
-                // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
-                //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
-                (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
-
-                io.to(q.socketId).emit('console_stdout', data)
-            })
-
-            // Log stderr if exists
-            youtubeDl.stderr.on('data', data => {
-                console.error(`ydl stderr: ${data}`)
-            })
-
-            // Once youtube-dl download is complete, add metadata to audio file, send http response, emit "Done" message to client socket, and log exit code
-            youtubeDl.on('close', exitCode => {
-                console.log(`youtube-dl exited with code ${exitCode}`)
-                io.to(q.socketId).emit('console_stdout', 'Done')
-
-                var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
+        switch (q.type) {
+            case 'audio':
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${path}.m4a`, `${q.url}`])
                 
                 // Set encoding so outputs can be read
-                atomicParsley.stdout.setEncoding('utf-8')
-                atomicParsley.stderr.setEncoding('utf-8')
+                youtubeDl.stdout.setEncoding('utf-8')
+                youtubeDl.stderr.setEncoding('utf-8')
 
-                // stdout to log
-                atomicParsley.stdout.on('data', data => {
-                    console.log(`AP stdout: ${data}`)
+                // Emit command stdout stream to socket, and console log
+                youtubeDl.stdout.on('data', data => {
+                    // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
+                    //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
+                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+
+                    io.to(q.socketId).emit('console_stdout', data)
                 })
 
                 // Log stderr if exists
                 youtubeDl.stderr.on('data', data => {
-                    console.error(`AP stderr: ${data}`)
+                    console.error(`ydl stderr: ${data}`)
                 })
 
-                atomicParsley.on('close', exitCode => {
-                    console.log(`AtomicParsley exited with code ${exitCode}`)
-                    res.json(exitCode)
+                // Once youtube-dl download is complete, add metadata to audio file, send http response, emit "Done" message to client socket, and log exit code
+                youtubeDl.on('close', exitCode => {
+                    console.log(`youtube-dl exited with code ${exitCode}`)
+                    io.to(q.socketId).emit('console_stdout', 'Done')
+
+                    var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
+                    
+                    // Set encoding so outputs can be read
+                    atomicParsley.stdout.setEncoding('utf-8')
+                    atomicParsley.stderr.setEncoding('utf-8')
+
+                    // stdout to log
+                    atomicParsley.stdout.on('data', data => {
+                        console.log(`AP stdout: ${data}`)
+                    })
+
+                    // Log stderr if exists
+                    youtubeDl.stderr.on('data', data => {
+                        console.error(`AP stderr: ${data}`)
+                    })
+
+                    atomicParsley.on('close', exitCode => {
+                        console.log(`AtomicParsley exited with code ${exitCode}`)
+                        res.json(exitCode)
+                    })
                 })
-            })
-        } else if(q.type == 'video') {
-            var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${path}.mkv`, `${q.url}`])
-            
-            // Set encoding so outputs can be read
-            youtubeDl.stdout.setEncoding('utf-8')
-            youtubeDl.stderr.setEncoding('utf-8')
-
-            // Emit command stdout stream to socket, and console log
-            youtubeDl.stdout.on('data', data => {
-                // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
-                //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
-                (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
-                
-                io.to(q.socketId).emit('console_stdout', data)
-            })
-
-            // Log stderr if exists
-            youtubeDl.stderr.on('data', data => {
-                console.error(`ydl stderr: ${data}`)
-            })
-
-            // Send http response once download has completed, emit "Done" message to client socket, and log exit code
-            youtubeDl.on('close', exitCode => {
-                console.log(`youtube-dl exited with code ${exitCode}`)
-                io.to(q.socketId).emit('console_stdout', 'Done')
-                res.json(exitCode) 
-            })
+                break
+            case 'video':
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${path}.mkv`, `${q.url}`])
+        
+                // Set encoding so outputs can be read
+                youtubeDl.stdout.setEncoding('utf-8')
+                youtubeDl.stderr.setEncoding('utf-8')
+        
+                // Emit command stdout stream to socket, and console log
+                youtubeDl.stdout.on('data', data => {
+                    // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
+                    //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
+                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+                    
+                    io.to(q.socketId).emit('console_stdout', data)
+                })
+        
+                // Log stderr if exists
+                youtubeDl.stderr.on('data', data => {
+                    console.error(`ydl stderr: ${data}`)
+                })
+        
+                // Send http response once download has completed, emit "Done" message to client socket, and log exit code
+                youtubeDl.on('close', exitCode => {
+                    console.log(`youtube-dl exited with code ${exitCode}`)
+                    io.to(q.socketId).emit('console_stdout', 'Done')
+                    res.json(exitCode) 
+                })
+                break
         }
     } else {
         res.json('')
