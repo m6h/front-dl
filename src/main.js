@@ -1,7 +1,7 @@
 import m from 'mithril'
-import {navbar} from './components/navbar'
-import {download} from './components/download'
-import {settings} from './components/settings'
+import navbar from './components/navbar'
+import download from './components/download'
+import settings from './components/settings'
 
 function appRoute(c) {
     return {

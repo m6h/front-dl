@@ -119,7 +119,7 @@ function go() {
     }).catch(e => console.error(e))
 }
 
-export var download = {
+export default {
     oninit: () => {
         getDirectory()
     },

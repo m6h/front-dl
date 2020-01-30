@@ -15,7 +15,7 @@ function getYdlVersion() {
     }).catch(e => console.error(e))
 }
 
-export var settings = {
+export default {
     oncreate: () => {
         getYdlVersion()
 

@@ -5,7 +5,7 @@ function toggleNavBurger() {
     document.querySelector('.navbar-menu').classList.toggle('is-active')
 }
 
-export var navbar = {
+export default {
     view: () => [
         m('nav', {class: 'navbar has-shadow is-unselectable', style: 'border-top: #209cee 0.3em solid'}, [
             m('div', {class: 'container'}, [
