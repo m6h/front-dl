@@ -35,17 +35,6 @@ exports.atomicparsleyVersion = (req, res) => {
     })
 }
 
-exports.pythonVersion = (req, res) => {
-    exec('python --version', (error, stdout, stderr) => {
-        if (error) {
-            console.error(error)
-            res.json('Unknown')
-        } else {
-            res.json(stdout.split(' ')[1])
-        }
-    })
-}
-
 
 
 // PUT

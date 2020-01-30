@@ -44,14 +44,6 @@ export default {
             }).then(response => {
                 settings.version.atomicparsley = response
             }).catch(e => console.error(e))
-
-            m.request({
-                method: 'GET',
-                responseType: 'json',
-                url: '/api/version/python'
-            }).then(response => {
-                settings.version.python = response
-            }).catch(e => console.error(e))
         }).catch(e => console.error(e))
     },
     oncreate: () => {
@@ -74,10 +66,6 @@ export default {
                         m('div', [
                             m('span', 'AtomicParsley: '),
                             m('span', {class: 'has-text-success'}, settings.version.atomicparsley)
-                        ]),
-                        m('div', [
-                            m('span', 'Python: '),
-                            m('span', {class: 'has-text-success'}, settings.version.python)
                         ])
                     ])
                 ]),
