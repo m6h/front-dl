@@ -1,6 +1,7 @@
 import m from 'mithril'
 
 var settings = {}
+
 var tooltips = {
     htmlDownload: "Send downloads to the browser instead of a directory."
 }
@@ -11,14 +12,12 @@ function getYdlVersion() {
         responseType: 'json',
         url: '/api/version/ydl'
     }).then(response => {
-        settings.ydlVersion = response
+        settings.version.ydl = response
     }).catch(e => console.error(e))
 }
 
 export default {
-    oncreate: () => {
-        getYdlVersion()
-
+    oninit: () => {
         // Get settings
         m.request({
             method: 'GET',
@@ -26,7 +25,37 @@ export default {
             url: '/api/settings'
         }).then(response => {
             settings = response
+
+            // Get versions
+            getYdlVersion()
+
+            m.request({
+                method: 'GET',
+                responseType: 'json',
+                url: '/api/version/ffmpeg'
+            }).then(response => {
+                settings.version.ffmpeg = response
+            }).catch(e => console.error(e))
+
+            m.request({
+                method: 'GET',
+                responseType: 'json',
+                url: '/api/version/atomicparsley'
+            }).then(response => {
+                settings.version.atomicparsley = response
+            }).catch(e => console.error(e))
+
+            m.request({
+                method: 'GET',
+                responseType: 'json',
+                url: '/api/version/python'
+            }).then(response => {
+                settings.version.python = response
+            }).catch(e => console.error(e))
         }).catch(e => console.error(e))
+    },
+    oncreate: () => {
+
     },
     view: () => [
         m('div', {class: 'container'}, m('div', {class: 'section'}, [
@@ -36,7 +65,19 @@ export default {
                         m('div', {class: 'subtitle'}, 'Versions'),
                         m('div', [
                             m('span', 'youtube-dl: '),
-                            m('span', {class: 'has-text-success'}, settings.ydlVersion)
+                            m('span', {class: 'has-text-success'}, settings.version.ydl)
+                        ]),
+                        m('div', [
+                            m('span', 'ffmpeg: '),
+                            m('span', {class: 'has-text-success'}, settings.version.ffmpeg)
+                        ]),
+                        m('div', [
+                            m('span', 'AtomicParsley: '),
+                            m('span', {class: 'has-text-success'}, settings.version.atomicparsley)
+                        ]),
+                        m('div', [
+                            m('span', 'Python: '),
+                            m('span', {class: 'has-text-success'}, settings.version.python)
                         ])
                     ])
                 ]),

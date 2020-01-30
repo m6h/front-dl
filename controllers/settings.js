@@ -1,7 +1,9 @@
 const { db } = require('../app')
+const { exec } = require('child_process')
 
 // Track settings
 var settings = {
+    version: {},
     htmlDownload: false,
     autoClear: false
 }
@@ -10,6 +12,41 @@ var settings = {
 exports.get = (req, res) => {
     res.json(settings)
 }
+
+exports.ffmpegVersion = (req, res) => {
+    exec("ffmpeg -version | awk '/ffmpeg version/ {print$3}'", (error, stdout, stderr) => {
+        if (error) {
+            console.error(error)
+            res.json('Unknown')
+        } else {
+            res.json(stdout)
+        }
+    })
+}
+
+exports.atomicparsleyVersion = (req, res) => {
+    exec("AtomicParsley --version | awk '{print$3}'", (error, stdout, stderr) => {
+        if (error) {
+            console.error(error)
+            res.json('Unknown')
+        } else {
+            res.json(stdout)
+        }
+    })
+}
+
+exports.pythonVersion = (req, res) => {
+    exec('python --version', (error, stdout, stderr) => {
+        if (error) {
+            console.error(error)
+            res.json('Unknown')
+        } else {
+            res.json(stdout.split(' ')[1])
+        }
+    })
+}
+
+
 
 // PUT
 exports.update = (req, res) => {
