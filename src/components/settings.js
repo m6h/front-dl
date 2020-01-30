@@ -1,6 +1,8 @@
 import m from 'mithril'
 
-var settings = {}
+var settings = {
+    version: {}
+}
 
 var tooltips = {
     htmlDownload: "Send downloads to the browser instead of a directory."
@@ -17,7 +19,7 @@ function getYdlVersion() {
 }
 
 export default {
-    oninit: () => {
+    oncreate: () => {
         // Get settings
         m.request({
             method: 'GET',
