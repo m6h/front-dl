@@ -50,8 +50,13 @@ app.route('/api/thumbnail')
     .delete(ydlController.clearThumbnailCache)
     
 app.get('/api/download', ydlController.download)
-app.get('/api/version/ydl', ydlController.version)
 app.get('/api/update/ydl', ydlController.update)
+
+// Versions
+app.get('/api/version/ydl', ydlController.version)
+app.get('/api/version/ffmpeg', settingsController.ffmpegVersion)
+app.get('/api/version/atomicparsley', settingsController.atomicparsleyVersion)
+app.get('/api/version/python', settingsController.pythonVersion)
 
 app.route('/api/settings')
     .get(settingsController.get)
