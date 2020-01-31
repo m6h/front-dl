@@ -3,7 +3,6 @@ const { exec } = require('child_process')
 
 // Track settings
 var settings = {
-    version: {},
     htmlDownload: false,
     autoClear: false
 }
