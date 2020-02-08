@@ -13,7 +13,7 @@ Dev: [Babel][ba], [Webpack][w]
 The intended use case is to mount a media library folder as a volume at `/mnt/ydl/` in the Docker container, as shown in the `docker-compose.yml`. All **folders** within `/mnt/ydl/` will then be visible in the directory browser. youtube-dl will download directly to the specified directory. The file can then be read and streamed by your favorite media server solution.
 
 ## Directory browser
-The root directory visible in the app is based on the `path` variable in `app.js`, which is set to `/mnt/ydl/` inside the Docker container. 
+The root directory visible in the directory browser is `/mnt/ydl/` inside the container.
 
 ## Install
 Clone the repository then navigate into the directory and run docker-compose. Verify that the volume source path in `docker-compose.yml` is correct for your environment.
@@ -22,20 +22,10 @@ docker-compose up -d
 ```
 
 ## Updating [youtube-dl][ydl] 
-youtube-dl tends to need frequent updates to remain functional as websites regularly change and update. To update the youtube-dl version in this app, rebuild it and the latest version will be fetched.
+Click the update button in Settings, or rebuild the Docker image.
 
 ```sh
 docker-compose build --no-cache && docker-compose up -d
-```
-
-**or**
-
-alternatively, you can jump into the container and grab the updated youtube-dl binary manually
-```sh
-docker exec -it {container_name} bash
-```
-```sh
-curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && chmod +xr /usr/local/bin/youtube-dl
 ```
 
 [ydl]: https://github.com/ytdl-org/youtube-dl
