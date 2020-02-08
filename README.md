@@ -5,7 +5,7 @@ I created this web app because i wanted a faster and easier way to interact with
 ## Tech
 Client-side: [Mithril.js][m], [Bulma][bu], [Font Awesome][fa]
 
-Server-side: [Docker][d], [Node.js][n], [Express.js][e]
+Server-side: [Docker][d], [Node.js][n], [Express.js][e], [Socket.io][socket]
 
 Dev: [Babel][ba], [Webpack][w]
 
@@ -47,3 +47,4 @@ curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-d
 [fa]: https://fontawesome.com/
 [ba]: https://babeljs.io/
 [w]: https://webpack.js.org/
+[socket]: https://socket.io/
