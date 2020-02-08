@@ -158,7 +158,7 @@ export default {
                             m('input', {
                                 class: 'input',
                                 type:'text',
-                                placeholder: 'e.g. https://youtu.be/Iy7xDGi5lp4',
+                                placeholder: 'e.g. https://youtu.be/UKT5_l324wg',
                                 value: dl.url,
                                 oninput: vnode => {dl.url = vnode.target.value; getThumbnail()}
                             })
@@ -183,7 +183,7 @@ export default {
                             m('input', {
                                 class: 'input',
                                 type:'text',
-                                placeholder: 'e.g. ERB - James Bond vs Austin Powers',
+                                placeholder: 'e.g. Rootkit - Taking Me Higher',
                                 value: dl.fileName,
                                 oninput: vnode => dl.fileName = vnode.target.value
                             })
