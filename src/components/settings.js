@@ -1,6 +1,7 @@
 import m from 'mithril'
+import { app } from '../main' // Singleton class for app settings
 
-var settings = {}, version = {}
+var version = {}
 
 var tooltips = {
     htmlDownload: "Send downloads to the browser instead of a directory."
@@ -18,15 +19,6 @@ function getYdlVersion() {
 
 export default {
     oncreate: () => {
-        // Get settings
-        m.request({
-            method: 'GET',
-            responseType: 'json',
-            url: '/api/settings'
-        }).then(response => {
-            settings = response
-        }).catch(e => console.error(e))
-
         // Get versions
         getYdlVersion()
 
@@ -101,15 +93,15 @@ export default {
                     m('div', {class: 'box'}, [
                         m('div', {class: 'field'}, [
                             m('span', {class: 'has-tooltip-multiline', 'data-tooltip': tooltips.htmlDownload}, 'Download to browser'),
-                            m('input', {id: 'htmlDownload', type: 'checkbox', class: 'switch is-hidden', checked: settings.htmlDownload}),
+                            m('input', {id: 'htmlDownload', type: 'checkbox', class: 'switch is-hidden', checked: app.prefs.htmlDownload}),
                             m('label', {
                                 for: 'htmlDownload',
                                 class: 'is-pulled-right',
                                 style: 'margin-left: 1em',
                                 onclick: vnode => {
-                                    settings.htmlDownload = !settings.htmlDownload
+                                    app.prefs.htmlDownload = !app.prefs.htmlDownload
                                     // send xhr
-                                    switch(settings.htmlDownload) {
+                                    switch(app.prefs.htmlDownload) {
                                         case true:
                                             m.request({
                                                 method: 'PUT',
@@ -130,15 +122,15 @@ export default {
                         ]),
                         m('div', {class: 'field'}, [
                             m('span', {class: 'is-unselectable'}, 'Clear page after download'),
-                            m('input', {id: 'autoClear', type: 'checkbox', class: 'switch is-hidden', checked: settings.autoClear}),
+                            m('input', {id: 'autoClear', type: 'checkbox', class: 'switch is-hidden', checked: app.prefs.autoClear}),
                             m('label', {
                                 for: 'autoClear',
                                 class: 'is-pulled-right',
                                 style: 'margin-left: 1em',
                                 onclick: vnode => {
-                                    settings.autoClear = !settings.autoClear
+                                    app.prefs.autoClear = !app.prefs.autoClear
                                     // send xhr
-                                    switch(settings.autoClear) {
+                                    switch(app.prefs.autoClear) {
                                         case true:
                                             m.request({
                                                 method: 'PUT',

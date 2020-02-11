@@ -1,6 +1,7 @@
 import m from 'mithril'
 import * as qs from 'qs'
 import io from 'socket.io-client'
+import { app } from '../main' // Singleton class for app settings
 
 var dl = initDL()
 const socket = io()
@@ -111,6 +112,9 @@ function go() {
         socketId: socket.id
     }
 
+    // Change path depending on "download to browser" app setting. A normal path = download to directory. 'false' = download to browser.
+    app.prefs.htmlDownload ? sendDL.path = 'false' : sendDL.path = dl.path.join('/')
+
     m.request({
         method: 'GET',
         responseType: 'json',
@@ -132,6 +136,13 @@ export default {
                 m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
             })
         })
+
+        // If the "download to browser" setting is true hide the directory browser as it is not needed
+        if (app.prefs.htmlDownload) {
+            document.getElementById('directory').classList.add('is-hidden')
+        } else {
+            document.getElementById('directory').classList.remove('is-hidden')
+        }
     },
     onupdate: () => {
         // If fields have a value then enable download button
@@ -250,7 +261,7 @@ export default {
                     ]),
                 ]),
                 m('div', {class: 'column'}, [
-                    m('nav', {class: 'panel'}, [
+                    m('nav', {id: 'directory', class: 'panel'}, [
                         m('p', {class: 'panel-heading'}, 'Directory'),
                         m('div', {class: 'panel-block'}, [
                             m('a', {class: 'button is-small', onclick: vnode => {dl.path.pop(); getDirectory()}}, [
