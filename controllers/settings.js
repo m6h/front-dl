@@ -4,7 +4,8 @@ const { exec } = require('child_process')
 // Track settings
 var settings = {
     htmlDownload: false,
-    autoClear: false
+    autoClear: false,
+    dlType: 'video'
 }
 
 // GET
@@ -53,6 +54,15 @@ exports.update = (req, res) => {
             break
         case 'false':
             settings.autoClear = false
+            break
+    }
+
+    switch(req.query.dlType) {
+        case 'audio':
+            settings.dlType = 'audio'
+            break
+        case 'video':
+            settings.dlType = 'video'
             break
     }
 

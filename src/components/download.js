@@ -39,18 +39,32 @@ socket.on('connect', () => {
 })
 
 function typeSelect(vnode) {
-    dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
+    if (vnode) {
+        const type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
 
-    // remove 'is-info' class from all buttons, then add it to the clicked button
-    document.getElementById('t1').classList.remove('is-info')
-    document.getElementById('t2').classList.remove('is-info')
-    vnode.target.classList.add('is-info')
+        // Set type in app settings
+        app.prefs.dlType = type
 
-    // show metadata tag fields if audio is selected
-    if(dl.type == 'audio') {
-        document.getElementById('tags').classList.remove('is-hidden')
-    } else {
-        document.getElementById('tags').classList.add('is-hidden')
+        // Save selected type
+        m.request({
+            method: 'PUT',
+            responseType: 'json',
+            url: `/api/settings?dlType=${type}`
+        }).then(response => {}).catch(e => console.error(e))
+    }
+
+    // Toggle html classes on download type select buttons (audio or video)
+    switch(app.prefs.dlType) {
+        case 'audio':
+            document.getElementById('t1').classList.add('is-info')
+            document.getElementById('t2').classList.remove('is-info')
+            document.getElementById('tags').classList.remove('is-hidden')
+            break
+        case 'video':
+            document.getElementById('t1').classList.remove('is-info')
+            document.getElementById('t2').classList.add('is-info')
+            document.getElementById('tags').classList.add('is-hidden')
+            break
     }
 }
 
@@ -148,6 +162,8 @@ export default {
         } else {
             document.getElementById('directory').classList.remove('is-hidden')
         }
+
+        typeSelect()
     },
     onupdate: () => {
         // If fields have a value then enable download button
