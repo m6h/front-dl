@@ -11,7 +11,7 @@ exports.io = io
 // Static resources
 app.use('/public', express.static('./public/'))
 app.use('/bin', express.static('./bin/'))
-
+__basedir = __dirname
 
 
 // Routes //
