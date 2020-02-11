@@ -4,8 +4,6 @@ import io from 'socket.io-client'
 import { app } from '../main' // Singleton class for app settings
 
 var dl = initDL()
-const socket = io()
-
 function initDL() {
     return {
         url: '', fileName: '', type: '', path: [], directory: [], stdout: '',
@@ -30,6 +28,15 @@ function initDL() {
         }
     }
 }
+
+const socket = io()
+// Listen on socket. Sockets automatically join a room identified by their id. This room is where the server emits the stdout stream.
+socket.on('connect', () => {
+    socket.on('console_stdout', data => {
+        dl.stdout = data
+        m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
+    })
+})
 
 function typeSelect(vnode) {
     dl.type = vnode.target.innerText.toLowerCase() // equals content of currently selected button
@@ -135,14 +142,6 @@ export default {
         getDirectory()
     },
     oncreate: () => {
-        // Listen on socket. Sockets automatically join a room identified by their id. This room is where the server emits the stdout stream.
-        socket.on('connect', () => {
-            socket.on('console_stdout', data => {
-                dl.stdout = data
-                m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
-            })
-        })
-
         // If the "download to browser" setting is true hide the directory browser as it is not needed
         if (app.prefs.htmlDownload) {
             document.getElementById('directory').classList.add('is-hidden')
