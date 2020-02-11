@@ -141,7 +141,7 @@ exports.download = (req, res) => {
                         console.log(`AtomicParsley exited with code ${exitCode}`)
 
                         if (q.htmlDownload) {
-                            res.download(q.path + '.m4a')
+                            res.json('/public/cache/' + q.fileName + '.m4a')
                         } else {
                             res.json(exitCode)
                         }
@@ -175,7 +175,7 @@ exports.download = (req, res) => {
                     io.to(q.socketId).emit('console_stdout', 'Done')
                     
                     if (q.htmlDownload) {
-                        res.download(q.path + '.mkv')
+                        res.json('/public/cache/' + q.fileName + '.mkv')
                     } else {
                         res.json(exitCode)
                     }

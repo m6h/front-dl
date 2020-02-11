@@ -121,6 +121,12 @@ function go() {
         url: `/api/download?${qs.stringify(sendDL)}`
     }).then(response => {
         document.getElementById('download').classList.remove('is-loading')
+
+        // Fetch file if downloading to browser
+        if (app.prefs.htmlDownload) {
+            window.location.href = response
+        }
+
     }).catch(e => console.error(e))
 }
 
