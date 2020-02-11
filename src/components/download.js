@@ -6,7 +6,7 @@ import { app } from '../main' // Singleton class for app settings
 var dl = initDL()
 function initDL() {
     return {
-        url: '', fileName: '', type: '', path: [], directory: [], stdout: '',
+        url: '', fileName: '', path: [], directory: [], stdout: '',
         thumbnail: '/public/blank.png',
         tags: {
             artist: '',
@@ -20,9 +20,9 @@ function initDL() {
         command: () => {
             if (dl.stdout) {
                 return dl.stdout
-            } else if(dl.type == 'audio') {
+            } else if(app.prefs.dlType == 'audio') {
                 return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`
-            } else if(dl.type == 'video') {
+            } else if(app.prefs.dlType == 'video') {
                 return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`
             }
         }
@@ -71,9 +71,6 @@ function typeSelect(vnode) {
 // recreate the main object, reset buttons, and fetch directories
 function clearPage() {
     dl = initDL()
-    document.getElementById('t1').classList.remove('is-info')
-    document.getElementById('t2').classList.remove('is-info')
-    document.getElementById('tags').classList.add('is-hidden')
     getDirectory()
 }
 
@@ -126,7 +123,7 @@ function go() {
 
     var sendDL = {
         url: dl.url,
-        type: dl.type,
+        type: app.prefs.dlType,
         tags: dl.tags,
         path: '',
         fileName: dl.fileName,
@@ -167,11 +164,11 @@ export default {
     },
     onupdate: () => {
         // If fields have a value then enable download button
-        if(dl.url && dl.fileName && dl.type) {
+        if(dl.url && dl.fileName && app.prefs.dlType) {
             // if audio then check tag values exist
-            if(dl.type == 'audio' && dl.tags.artist && dl.tags.title && dl.tags.genre) {
+            if(app.prefs.dlType == 'audio' && dl.tags.artist && dl.tags.title && dl.tags.genre) {
                 goState(true)
-            } else if(dl.type == 'video') {
+            } else if(app.prefs.dlType == 'video') {
                 goState(true)
             } else {
                 goState(false)
