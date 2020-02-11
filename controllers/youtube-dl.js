@@ -85,11 +85,9 @@ exports.download = (req, res) => {
         // To the browser
         q.htmlDownload = true
         q.path = checkPath(__basedir + '/public/cache/' + q.fileName)
-        console.log('BROWSER: ' + q.cachePath)
     } else {
         // To directory
         q.path = checkPath('/mnt/ydl/' + q.path + '/' + q.fileName)
-        console.log('DIRECTORY: ' + q.path)
     }
 
     // Ensure minimum required query strings have values
@@ -143,7 +141,7 @@ exports.download = (req, res) => {
                         console.log(`AtomicParsley exited with code ${exitCode}`)
 
                         if (q.htmlDownload) {
-                            res.download(q.path)
+                            res.download(q.path + '.m4a')
                         } else {
                             res.json(exitCode)
                         }
@@ -177,7 +175,7 @@ exports.download = (req, res) => {
                     io.to(q.socketId).emit('console_stdout', 'Done')
                     
                     if (q.htmlDownload) {
-                        res.download(q.path)
+                        res.download(q.path + '.mkv')
                     } else {
                         res.json(exitCode)
                     }
