@@ -106,7 +106,8 @@ function go() {
         url: dl.url,
         type: dl.type,
         tags: dl.tags,
-        path: dl.fullPath(),
+        path: '',
+        fileName: dl.fileName,
         socketId: socket.id
     }
 

@@ -1,23 +1,25 @@
 const { exec, spawn } = require('child_process')
-const { posix } = require('path')
+const path = require('path')
 const crypto = require('crypto')
 const fs = require('fs')
 const { io } = require('../app')
+const util = require('util')
 
-function formatPath(queryPath) {
-    // prepend root directory. return error if any '/../' in path. clean up path using normalize.
-    // trailing slash is required to correctly match a query string beginning with '../'
-    const path = '/mnt/ydl/' + queryPath
-    if (path.match(/\/\.\.\//)) {
-        throw new Error("Navigation to parent directories is not allowed")
+function checkPath(queryPath) {
+    // Return error if any '/../' in path. clean up path using normalize.
+    // Trailing slash in desired root directory is required to correctly match a query string beginning with '../'
+    
+    // const location = '/mnt/ydl/' + queryPath
+    if (queryPath.match(/\/\.\.\//)) {
+        throw new Error("Cannot navigate to parent directories")
     } else {
-        return posix.normalize(path)
+        return path.posix.normalize(queryPath)
     }
 }
 
 // Get folder names for the directory browser
 exports.browse = (req, res) => {
-    const path = formatPath(req.query.path)
+    const path = checkPath('/mnt/ydl/' + req.query.path)
 
     exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
         error ? console.error(error) : res.json(stdout)
@@ -70,21 +72,33 @@ exports.clearThumbnailCache = (req, res) => {
 
 // Download
 exports.download = (req, res) => {
-    // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', socketId: ''}
+    // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', fileName: '', socketId: ''}
+
     // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
+    // path string 'false' = download to browser.
     
     const q = req.query
+
+    // Format and validate path
+    // If downloading to the browser set the path to a cache, otherwise assume downloading to a directory.
+    if (q.path == 'false') {
+        // To the browser
+        q.htmlDownload = true
+        q.path = checkPath(__basedir + '/public/cache/' + q.fileName)
+        console.log('BROWSER: ' + q.cachePath)
+    } else {
+        // To directory
+        q.path = checkPath('/mnt/ydl/' + q.path + '/' + q.fileName)
+        console.log('DIRECTORY: ' + q.path)
+    }
 
     // Ensure minimum required query strings have values
     if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title && q.tags.genre) || q.type == 'video') && q.path && q.socketId) {
 
-        // Format and validate path
-        const path = formatPath(q.path)
-
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         switch (q.type) {
             case 'audio':
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${path}.m4a`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${q.path}.m4a`, `${q.url}`])
                 
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
@@ -109,7 +123,7 @@ exports.download = (req, res) => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
                     io.to(q.socketId).emit('console_stdout', 'Done')
 
-                    var atomicParsley = spawn('AtomicParsley', [`${path}.m4a`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
+                    var atomicParsley = spawn('AtomicParsley', [`${q.path}.m4a`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
                     
                     // Set encoding so outputs can be read
                     atomicParsley.stdout.setEncoding('utf-8')
@@ -127,12 +141,17 @@ exports.download = (req, res) => {
 
                     atomicParsley.on('close', exitCode => {
                         console.log(`AtomicParsley exited with code ${exitCode}`)
-                        res.json(exitCode)
+
+                        if (q.htmlDownload) {
+                            res.download(q.path)
+                        } else {
+                            res.json(exitCode)
+                        }
                     })
                 })
                 break
             case 'video':
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${path}.mkv`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${q.path}.mkv`, `${q.url}`])
         
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
@@ -156,7 +175,12 @@ exports.download = (req, res) => {
                 youtubeDl.on('close', exitCode => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
                     io.to(q.socketId).emit('console_stdout', 'Done')
-                    res.json(exitCode) 
+                    
+                    if (q.htmlDownload) {
+                        res.download(q.path)
+                    } else {
+                        res.json(exitCode)
+                    }
                 })
                 break
         }
