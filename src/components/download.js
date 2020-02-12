@@ -145,6 +145,8 @@ function go() {
             window.location.href = response
         }
 
+        // Clear the page after download if that setting is enabled
+        app.prefs.autoClear ? clearPage() : null
     }).catch(e => console.error(e))
 }
 
