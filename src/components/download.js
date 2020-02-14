@@ -32,9 +32,21 @@ function initDL() {
 const socket = io()
 // Listen on socket. Sockets automatically join a room identified by their id. This room is where the server emits the stdout stream.
 socket.on('connect', () => {
+    // Output stdout to text area
     socket.on('console_stdout', data => {
         dl.stdout = data
         m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
+    })
+
+    // Download progress (on complete)
+    socket.on('download_complete', fileName => {
+        document.getElementById('download').classList.remove('is-loading')
+
+        // Fetch file if downloading to browser. fileName contains the file extension.
+        app.prefs.htmlDownload ? window.location.href = `/api/download/cache?fileName=${fileName}` : null
+
+        // Clear the page after download if that setting is enabled
+        app.prefs.autoClear ? clearPage() : null
     })
 })
 
@@ -137,17 +149,7 @@ function go() {
         method: 'GET',
         responseType: 'json',
         url: `/api/download?${qs.stringify(sendDL)}`
-    }).then(response => {
-        document.getElementById('download').classList.remove('is-loading')
-
-        // Fetch file if downloading to browser
-        if (app.prefs.htmlDownload) {
-            window.location.href = response
-        }
-
-        // Clear the page after download if that setting is enabled
-        app.prefs.autoClear ? clearPage() : null
-    }).catch(e => console.error(e))
+    }).then(response => {}).catch(e => console.error(e)) // response is handled via socket.io
 }
 
 export default {

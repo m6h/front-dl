@@ -50,6 +50,7 @@ app.route('/api/thumbnail')
     .delete(ydlController.clearThumbnailCache)
     
 app.get('/api/download', ydlController.download)
+app.get('/api/download/cache', ydlController.downloadFromCache)
 app.get('/api/update/ydl', ydlController.update)
 
 // Versions

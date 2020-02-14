@@ -92,6 +92,7 @@ exports.download = (req, res) => {
 
     // Ensure minimum required query strings have values
     if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title && q.tags.genre) || q.type == 'video') && q.path && q.socketId) {
+        res.json('')
 
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         switch (q.type) {
@@ -119,7 +120,6 @@ exports.download = (req, res) => {
                 // Once youtube-dl download is complete, add metadata to audio file, send http response, emit "Done" message to client socket, and log exit code
                 youtubeDl.on('close', exitCode => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
-                    io.to(q.socketId).emit('console_stdout', 'Done')
 
                     var atomicParsley = spawn('AtomicParsley', [`${q.path}.m4a`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
                     
@@ -127,9 +127,10 @@ exports.download = (req, res) => {
                     atomicParsley.stdout.setEncoding('utf-8')
                     atomicParsley.stderr.setEncoding('utf-8')
 
-                    // stdout to log
+                    // Emit command stdout stream to socket, and console log
                     atomicParsley.stdout.on('data', data => {
                         console.log(`AP stdout: ${data}`)
+                        io.to(q.socketId).emit('console_stdout', data)
                     })
 
                     // Log stderr if exists
@@ -139,11 +140,13 @@ exports.download = (req, res) => {
 
                     atomicParsley.on('close', exitCode => {
                         console.log(`AtomicParsley exited with code ${exitCode}`)
+                        io.to(q.socketId).emit('console_stdout', 'Done')
 
+                        // Tell client that download is complete. Emit cache path if downloading to browser.
                         if (q.htmlDownload) {
-                            res.json('/public/cache/' + q.fileName + '.m4a')
+                            io.to(q.socketId).emit('download_complete', `${q.fileName}.m4a`)
                         } else {
-                            res.json(exitCode)
+                            io.to(q.socketId).emit('download_complete', 'Done')
                         }
                     })
                 })
@@ -174,17 +177,40 @@ exports.download = (req, res) => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
                     io.to(q.socketId).emit('console_stdout', 'Done')
                     
+                    // Tell client that download is complete. Emit cache path if downloading to browser.
                     if (q.htmlDownload) {
-                        res.json('/public/cache/' + q.fileName + '.mkv')
+                        io.to(q.socketId).emit('download_complete',  `${q.fileName}.mkv`)
                     } else {
-                        res.json(exitCode)
+                        io.to(q.socketId).emit('download_complete', 'Done')
                     }
                 })
                 break
         }
     } else {
-        res.json('')
+        res.status(400).send('Bad Request')
     }
+}
+
+// Download a file from the cache as an attachment
+exports.downloadFromCache = (req, res) => {
+    const q = req.query
+
+    // Set root path and response header so file is downloaded as an attachment instead of opened in browser
+    var options = {
+        root: path.join(__basedir, 'public', 'cache'),
+        headers: {
+            'Content-Disposition': `attachment; filename="${q.fileName}"`
+        }
+    }
+
+    res.sendFile(q.fileName, options, error => {
+        if (error) {
+            console.error(error)
+            res.status(400).send('Bad Request')
+        } else {
+            console.log(`Sent file "${q.fileName}" from cache`)
+        }
+    })
 }
 
 // Get youtube-dl version
