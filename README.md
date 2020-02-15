@@ -15,33 +15,26 @@ Default host port to access the web app is `3001`, as specified in *docker-compo
 # Download modes
 > Can be changed at any time in Settings.
 
-## Browser mode
+### Browser mode
 Sends downloads to the browser in the standard download bar/area.
 ```mermaid
 graph TB
-  classDef outline stroke:#333,stroke-width:4px;
   style browser fill:lightgreen
   style fdl fill:#209cee
 
   fdl(front-dl)--Write-->browser{{Your browser}}
-
-
-  class cloud,browser,fdl,mediaServer,storage outline
 ```
 
-## Directory mode (default)
+### Directory mode (default)
 For integration with other services to store and stream media server-side.
 ```mermaid
 graph TB
-  classDef outline stroke:#333,stroke-width:4px;
   style browser fill:lightgreen
   style fdl fill:#209cee
   
-  fdl(front-dl)--Write-->storage[(Storage server)]
+  fdl(front-dl)--Write-->storage(Storage server)
   mediaServer--Read-->storage
   mediaServer(Media server)--Stream-->browser{{Your browser}}
-
-  class cloud,browser,fdl,mediaServer,storage outline
 ```
 
 ## Directory mode media
