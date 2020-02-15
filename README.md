@@ -10,16 +10,21 @@ Server-side: [Docker][d], [Node.js][n], [Express.js][e], [Socket.io][socket]
 Dev: [Babel][ba], [Webpack][w]
 
 ## Media
-The intended use case is to mount a media library folder as a volume at `/mnt/ydl/` in the Docker container, as shown in the `docker-compose.yml`. All **folders** within `/mnt/ydl/` will then be visible in the directory browser. youtube-dl will download to the specified directory, and the file can then be read and streamed by your favorite media server solution, such as JellyFin, Emby, Plex, etc..
+The intended use case is to mount a media library folder as a volume at `/mnt/ydl/` in the Docker container, as shown in the *docker-compose.yml*. All **folders** within `/mnt/ydl/` will then be visible in the directory browser. youtube-dl will download to the specified directory, and the file can then be read and streamed by your favorite media server solution, such as JellyFin, Emby, Plex, etc..
 
 ## Directory browser
 The root directory visible in the directory browser is `/mnt/ydl/` inside the container.
 
+## Prerequisites
+- [Docker][docker]
+- [Docker Compose][compose]
+
 ## Install
-Clone the repository then navigate into the directory and run docker-compose. Verify that the volume source path in `docker-compose.yml` is correct for your environment.
-```sh
-docker-compose up -d
-```
+- Verify that the volume source path to your media library in *docker-compose.yml* is correct for your environment. This is used for persistent storage when downloading to directories, as containers use an ephemeral filesystem.
+- Clone or download the repository, navigate into the directory, then run `docker-compose up -d`
+
+Default host port to access the web app is `3001`, as specified in *docker-compose.yml*
+
 
 ## Updating [youtube-dl][ydl] 
 Click the update button in Settings, or rebuild the Docker image.
@@ -38,3 +43,5 @@ docker-compose build --no-cache && docker-compose up -d
 [ba]: https://babeljs.io/
 [w]: https://webpack.js.org/
 [socket]: https://socket.io/
+[docker]: https://docs.docker.com/install/
+[compose]: https://docs.docker.com/compose/install/
