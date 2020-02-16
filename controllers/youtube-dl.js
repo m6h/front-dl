@@ -91,7 +91,7 @@ exports.download = (req, res) => {
     }
 
     // Ensure minimum required query strings have values
-    if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title && q.tags.genre) || q.type == 'video') && q.path && q.socketId) {
+    if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title) || q.type == 'video') && q.path && q.socketId) {
         res.json('')
 
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley

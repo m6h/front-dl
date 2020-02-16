@@ -170,7 +170,7 @@ export default {
         // If fields have a value then enable download button
         if(dl.url && dl.fileName && app.prefs.dlType) {
             // if audio then check tag values exist
-            if(app.prefs.dlType == 'audio' && dl.tags.artist && dl.tags.title && dl.tags.genre) {
+            if(app.prefs.dlType == 'audio' && dl.tags.artist && dl.tags.title) {
                 goState(true)
             } else if(app.prefs.dlType == 'video') {
                 goState(true)
