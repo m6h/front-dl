@@ -4,6 +4,7 @@
   "description": "youtube-dl web app front-end",
   "main": "app.js",
   "scripts": {
+    "compose": "docker-compose build && docker-compose up -d",
     "build": "babel ./src --out-dir ./bin",
     "bundle-dev": "npm run build && webpack --mode=development ./bin/main.js --output ./bin/bundle.js",
     "bundle-prod": "npm run build && webpack --mode=production ./bin/main.js --output ./bin/bundle.js",
