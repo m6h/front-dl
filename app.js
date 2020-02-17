@@ -49,14 +49,19 @@ app.get('/', (req, res) => {
 
 // api
 
-// Import youtube-dl controller
+// Import controllers
 const ydlController = require('./controllers/youtube-dl')
 const settingsController = require('./controllers/settings')
 
 app.get('/api/browse', ydlController.browse)
 
+// youtube-dl
+app.get('/api/download', ydlController.download) // {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', fileName: '', socketId: ''}
+app.get('/api/download/cache/:fileName', ydlController.downloadFromCache)
+app.get('/api/metadata', ydlController.metadata) // {url: ''}
+app.get('/api/update/ydl', ydlController.update)
 app.route('/api/thumbnail')
-    .get(ydlController.getThumbnail)
+    .get(ydlController.getThumbnail) // {url: ''}
     .delete(ydlController.clearThumbnailCache)
     
 app.get('/api/download', ydlController.download)
@@ -68,6 +73,7 @@ app.get('/api/version/ydl', ydlController.version)
 app.get('/api/version/ffmpeg', settingsController.ffmpegVersion)
 app.get('/api/version/atomicparsley', settingsController.atomicparsleyVersion)
 
+// Settings
 app.route('/api/settings')
     .get(settingsController.get)
     .put(settingsController.update)
