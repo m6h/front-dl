@@ -44,9 +44,20 @@ exports.getThumbnail = (req, res) => {
         fs.access(filePath, fs.constants.R_OK, (error) => {
             if (error) {
                 // Image can't be read (it doesn't exist). Fetch thumbnail image
-                exec(`youtube-dl --write-thumbnail --skip-download -o "${filePath}" ${q.url}`, (error, stdout, stderr) => {
-                    // If valid url respond with path to image
-                    error ? res.json('') : res.json(filePath)
+                var youtubeDl = spawn('youtube-dl', ['--write-thumbnail', '--skip-download', '-o', `${filePath}`, `${q.url}`])
+
+                // Set encoding so outputs can be read
+                youtubeDl.stderr.setEncoding('utf-8')
+
+                // Log stderr if exists
+                youtubeDl.stderr.on('data', data => {
+                    console.error(`ydl stderr: ${data}`)
+                })
+
+                // Respond with path to thumbnail
+                youtubeDl.on('close', exitCode => {
+                    console.log(`youtube-dl exited with code ${exitCode}`)
+                    res.json(filePath)
                 })
             } else {
                 // Image already exists. Respond with path to image
