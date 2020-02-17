@@ -43,7 +43,7 @@ socket.on('connect', () => {
         document.getElementById('download').classList.remove('is-loading')
 
         // Fetch file if downloading to browser. fileName contains the file extension.
-        app.prefs.htmlDownload ? window.location.href = `/api/download/cache?fileName=${fileName}` : null
+        app.prefs.htmlDownload ? window.location.href = `/api/download/cache/${fileName}` : null
 
         // Clear the page after download if that setting is enabled
         app.prefs.autoClear ? clearPage() : null

@@ -204,7 +204,7 @@ exports.download = (req, res) => {
 
 // Download a file from the cache as an attachment
 exports.downloadFromCache = (req, res) => {
-    const q = req.query
+    const q = req.params
 
     // Set root path and response header so file is downloaded as an attachment instead of opened in browser
     var options = {
