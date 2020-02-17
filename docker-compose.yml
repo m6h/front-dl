@@ -1,14 +1,21 @@
 version: '3.2'
 
 services:
-  node.js:
+  nodejs:
     build:
       context: ./
       dockerfile: front-dl.dockerfile
-    restart: unless-stopped
     volumes:
       - type: bind
         source: /mnt/cephfs/media
         target: /mnt/ydl
     ports:
       - '3001:3000'
+  mongodb:
+    build:
+      context: ./
+      dockerfile: mongodb.dockerfile
+    volumes:
+      - type: bind
+        source: /mnt/cephfs/db/front-dl
+        target: /data/db
