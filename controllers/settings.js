@@ -1,44 +1,16 @@
-const { db } = require('../app')
 const { exec } = require('child_process')
+const { Setting } = require('../models/settings')
 
-// Track settings
-var settings = {
-    htmlDownload: false,
-    autoClear: false,
-    dlType: 'video'
-}
-
-// GET
-exports.get = (req, res) => {
+// Get settings
+exports.get = async (req, res) => {
+    const settings = await Setting.findOne()
     res.json(settings)
 }
 
-exports.ffmpegVersion = (req, res) => {
-    exec("ffmpeg -version | awk '/ffmpeg version/ {print$3}'", (error, stdout, stderr) => {
-        if (error) {
-            console.error(error)
-            res.json('Unknown')
-        } else {
-            res.json(stdout)
-        }
-    })
-}
+// Update settings
+exports.update = async (req, res) => {
+    const settings = await Setting.findOne()
 
-exports.atomicparsleyVersion = (req, res) => {
-    exec("AtomicParsley --version | awk '{print$3}'", (error, stdout, stderr) => {
-        if (error) {
-            console.error(error)
-            res.json('Unknown')
-        } else {
-            res.json(stdout)
-        }
-    })
-}
-
-
-
-// PUT
-exports.update = (req, res) => {
     switch(req.query.htmlDownload) {
         case 'true':
             settings.htmlDownload = true
@@ -66,8 +38,30 @@ exports.update = (req, res) => {
             break
     }
 
-    res.json('')
+    await settings.save().catch(e => console.error(e))
+    res.json(settings)
 }
 
-// db.on('error', console.error.bind(console, 'MongoDB connection error:'))
+// Get ffmpeg version
+exports.ffmpegVersion = (req, res) => {
+    exec("ffmpeg -version | awk '/ffmpeg version/ {print$3}'", (error, stdout, stderr) => {
+        if (error) {
+            console.error(error)
+            res.json('Unknown')
+        } else {
+            res.json(stdout)
+        }
+    })
+}
 
+// Get AtomicParsley version
+exports.atomicparsleyVersion = (req, res) => {
+    exec("AtomicParsley --version | awk '{print$3}'", (error, stdout, stderr) => {
+        if (error) {
+            console.error(error)
+            res.json('Unknown')
+        } else {
+            res.json(stdout)
+        }
+    })
+}
