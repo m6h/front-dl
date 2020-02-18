@@ -52,6 +52,7 @@ app.get('/', (req, res) => {
 // Import controllers
 const ydlController = require('./controllers/youtube-dl')
 const settingsController = require('./controllers/settings')
+const suggestController = require('./controllers/suggest')
 
 app.get('/api/browse', ydlController.browse)
 
@@ -63,10 +64,12 @@ app.get('/api/update/ydl', ydlController.update)
 app.route('/api/thumbnail')
     .get(ydlController.getThumbnail) // {url: ''}
     .delete(ydlController.clearThumbnailCache)
-    
-app.get('/api/download', ydlController.download)
-app.get('/api/download/cache', ydlController.downloadFromCache)
-app.get('/api/update/ydl', ydlController.update)
+
+// Suggestions
+app.get('/api/suggest/genre', suggestController.getGenre)
+app.route('/api/suggest/genre/:name')
+    .put(suggestController.updateGenre)
+    .delete(suggestController.deleteGenre)
 
 // Versions
 app.get('/api/version/ydl', ydlController.version)
