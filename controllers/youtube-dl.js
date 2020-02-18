@@ -1,4 +1,4 @@
-const { exec, spawn } = require('child_process')
+const { exec, spawn, spawnSync } = require('child_process')
 const path = require('path')
 const crypto = require('crypto')
 const fs = require('fs')
