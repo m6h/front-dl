@@ -26,6 +26,6 @@ exports.updateGenre = async (req, res) => {
 
 // Delete a genre
 exports.deleteGenre = async (req, res) => {
-    const document = await Genre.remove({name: req.params.name})
+    const document = await Genre.deleteOne({name: req.params.name})
     res.json(document)
 }
