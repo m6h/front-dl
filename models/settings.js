@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 // Create model and schema. Export model.
 var Setting = mongoose.model('settings', new mongoose.Schema({
-    htmlDownload: {type: Boolean, default: false},
+    htmlDownload: {type: Boolean, default: true},
     autoClear: {type: Boolean, default: false},
     dlType: {type: String, default: 'video'}
 }))

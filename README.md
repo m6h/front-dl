@@ -7,7 +7,7 @@ The goal of this app is to create a faster and easier way to interact with youtu
 - [Docker Compose][compose]
 
 ## Install
-- Verify that the volume source path to your media library in *docker-compose.yml* is correct for your environment. This will be persistent storage when downloading to directories.
+- Verify that the volume sources in *docker-compose.yml* are appropriate for your environment. If uncertain, ignore and exclusively use browser mode.
 - Clone or download the repository, navigate into the directory, then run `docker-compose up -d`
 
 Default host port to access the web app is `3001`, as specified in *docker-compose.yml*
@@ -15,7 +15,7 @@ Default host port to access the web app is `3001`, as specified in *docker-compo
 # Download modes
 > Can be changed at any time in Settings.
 
-### Browser mode
+### Browser mode (default)
 Sends downloads to the browser in the standard download bar/area.
 ```mermaid
 graph TB
@@ -25,7 +25,7 @@ graph TB
   fdl(front-dl)--Write-->browser{{Your browser}}
 ```
 
-### Directory mode (default)
+### Directory mode
 For integration with other services to store and stream media server-side.
 ```mermaid
 graph TB
