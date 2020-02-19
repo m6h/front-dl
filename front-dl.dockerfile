@@ -31,6 +31,10 @@ RUN mkdir -p /media/dl/ && \
     cp -r ./share/* /usr/share/ && \
     rm -r /media/dl/
 
+# Download latest youtube-dl version
+RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
+    chmod +xr /usr/local/bin/youtube-dl
+
 WORKDIR /node/
 
 # Copy app files to /node/
@@ -45,10 +49,6 @@ EXPOSE 3000
 # npm dependencies and make
 RUN npm install && \
     npm run bundle-prod
-
-# Download latest youtube-dl version
-RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
-    chmod +xr /usr/local/bin/youtube-dl
 
 # Run foreground process
 CMD ["node", "app.js"]
