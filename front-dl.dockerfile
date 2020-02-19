@@ -37,18 +37,21 @@ RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtu
 
 WORKDIR /node/
 
+# Get npm dependencies
+COPY ["package.json", "package-lock.json", "/node/"]
+RUN npm install
+
 # Copy app files to /node/
 COPY ["./controllers/", "/node/controllers/"]
 COPY ["./models/", "/node/models/"]
 COPY ["./public/", "/node/public/"]
 COPY ["./src/", "/node/src/"]
-COPY [".babelrc", "app.js", "LICENSE", "package.json", "package-lock.json", "README.md", "/node/"]
+COPY [".babelrc", "app.js", "LICENSE", "README.md", "/node/"]
 
 EXPOSE 3000
 
-# npm dependencies and make
-RUN npm install && \
-    npm run bundle-prod
+# Bundle
+RUN npm run bundle-prod
 
 # Run foreground process
 CMD ["node", "app.js"]
