@@ -226,15 +226,27 @@ exports.downloadFromCache = (req, res) => {
 
 // Get the metadata of a video
 exports.metadata = (req, res) => {
-    var youtubeDl = spawnSync('youtube-dl', ['--dump-json', '--skip-download', `${req.query.url}`], {encoding: 'utf-8'})
+    var youtubeDl = spawn('youtube-dl', ['--dump-json', '--skip-download', `${req.query.url}`])
+    var output = ''
 
-    // Respond with output unless error
-    if (youtubeDl.error) {
-        console.error(`ydl error: ${youtubeDl.error}`)
-        res.json('')
-    } else {
-        res.json(JSON.parse(youtubeDl.stdout))
-    }
+    // Set encoding so outputs can be read
+    youtubeDl.stdout.setEncoding('utf-8')
+
+    // Log stderr if exists
+    youtubeDl.stderr.on('data', data => {
+        console.error(`ydl stderr: ${data}`)
+    })
+
+    // Collect stdout stream in variable
+    youtubeDl.stdout.on('data', data => {
+        output = output + data
+    })
+
+    // Respond with final output when process is completed
+    youtubeDl.on('close', exitCode => {
+        output ? res.json(JSON.parse(output)) : res.json('')
+    })
+
 }
 
 // Get youtube-dl version
