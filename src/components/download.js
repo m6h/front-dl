@@ -98,10 +98,12 @@ function getDirectory() {
     }).catch(e => console.error(e))
 }
 
-// fetch video thumbnail
-function getThumbnail() {
+// Fetch video metadata and thumbnail
+function getMetadata() {
     document.getElementById('url-control').classList.add('is-loading')
+    document.getElementById('title-control').classList.add('is-loading')
 
+    // Thumbnail
     m.request({
         method: 'GET',
         responseType: 'json',
@@ -113,6 +115,18 @@ function getThumbnail() {
         } else {
             dl.thumbnail = '/public/blank.png'
         }
+    }).catch(e => console.error(e))
+
+    // Metadata
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: `/api/metadata?url=${dl.url}`
+    }).then(response => {
+        document.getElementById('title-control').classList.remove('is-loading')
+
+        // Autofill fileName/title field
+        response ? dl.fileName = response.title : dl.fileName = ''
     }).catch(e => console.error(e))
 }
 
@@ -194,7 +208,10 @@ export default {
                                 type:'text',
                                 placeholder: 'e.g. https://youtu.be/UKT5_l324wg',
                                 value: dl.url,
-                                oninput: vnode => {dl.url = vnode.target.value; getThumbnail()}
+                                oninput: vnode => {
+                                    dl.url = vnode.target.value
+                                    getMetadata()
+                                }
                             })
                         ])
                     ]),
@@ -212,7 +229,7 @@ export default {
                     ]),
                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'File Name'),
-                        m('div', {class: 'control has-icons-left'}, [
+                        m('div', {id: 'title-control', class: 'control has-icons-left has-icons-right'}, [
                             m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
                             m('input', {
                                 class: 'input',
