@@ -20,7 +20,7 @@ function addStatic(c) {
         view: () => [
             m(navbar),
             m(c),
-            m('footer', {class: 'footer'})
+            m('footer', {class: 'footer has-background-white'})
         ]
     }
 }
