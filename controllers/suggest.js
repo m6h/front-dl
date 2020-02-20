@@ -2,7 +2,8 @@ const { Genre } = require('../models/suggest')
 
 // Get all genres
 exports.getGenre = async (req, res) => {
-    const genres = await Genre.find()
+    // Sort array in descending(-1) order based on weight property. [{name: 'first', weight: 5}, {name: 'second', weight: 4}]
+    const genres = await Genre.find().sort({weight: -1})
     res.json(genres)
 }
 
