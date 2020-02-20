@@ -38,6 +38,7 @@ app.get('/', (req, res) => {
             <link rel="stylesheet" href="/public/bulma.min.css">
             <link rel="stylesheet" href="/public/bulma-tooltip.min.css">
             <link rel="stylesheet" href="/public/bulma-switch.min.css">
+            <link rel="stylesheet" href="/public/styles.css">
         </head>
         <body>
             <script src="/bin/bundle.js"></script>

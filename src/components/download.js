@@ -13,6 +13,10 @@ function initDL() {
             title: '',
             genre: ''
         },
+        suggest: {
+            genres: [],
+            genresFiltered: []
+        },
         fullPath: () => {
             var fullPath = [...dl.path, dl.fileName] // clone dl.path and append dl.fileName
             return fullPath.join('/')
@@ -130,6 +134,20 @@ function getMetadata() {
     }).catch(e => console.error(e))
 }
 
+// fetch genre suggestions
+function getSuggestions() {
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: '/api/suggest/genre'
+    }).then(response => {
+        dl.suggest.genres = response
+
+        // Slice array to include only the top 4 results
+        dl.suggest.genresFiltered = response.slice(0, 4)
+    }).catch(e => console.error(e))
+}
+
 // enable or disable Go button
 function goState(s) {
     if(s) {
@@ -159,6 +177,14 @@ function go() {
     // Change path depending on "download to browser" app setting. A normal path = download to directory. 'false' = download to browser.
     app.prefs.htmlDownload ? sendDL.path = 'false' : sendDL.path = dl.path.join('/')
 
+    // Add genre to genre suggestions
+    m.request({
+        method: 'PUT',
+        responseType: 'json',
+        url: `/api/suggest/genre/${dl.tags.genre}`
+    }).then(response => {}).catch(e => console.error(e))
+
+    // Send download request
     m.request({
         method: 'GET',
         responseType: 'json',
@@ -169,6 +195,7 @@ function go() {
 export default {
     oninit: () => {
         getDirectory()
+        getSuggestions()
     },
     oncreate: () => {
         // If the "download to browser" setting is true hide the directory browser as it is not needed
@@ -289,12 +316,61 @@ export default {
                             m('div', {class: 'control has-icons-left'}, [
                                 m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-music'})),
                                 m('input', {
+                                    id: 'genre',
                                     class: 'input',
                                     type:'text',
                                     placeholder: 'e.g. House',
+                                    autocomplete: 'off',
                                     value: dl.tags.genre,
-                                    oninput: vnode => dl.tags.genre = vnode.target.value
+                                    oninput: vnode =>  {
+                                        dl.tags.genre = vnode.target.value
+                                        const input = vnode.target.value
+                                        var regex
+
+                                        // If only 1 letter, must begin with input, otherwise must contain input. Case (i)nsensitive matching.
+                                        if (input.length == 1) {
+                                            regex = new RegExp(`^${input}`, 'i')
+                                        } else {
+                                            regex = new RegExp(`${input}`, 'i')
+                                        }
+
+                                        // Filter into new array with only results that match the above regex.
+                                        // Slice array to include only the top 4 results.
+                                        dl.suggest.genresFiltered = dl.suggest.genres.filter(item => item.name.match(regex)).slice(0, 4)
+                                    },
+                                    onfocus: vnode => {
+                                        document.getElementById('suggest-genres').classList.remove('is-hidden')
+                                        vnode.target.classList.add('suggestions-field')
+                                    },
+                                    onblur: vnode => {
+                                        document.getElementById('suggest-genres').classList.add('is-hidden')
+                                        vnode.target.classList.remove('suggestions-field')
+                                    }
                                 })
+                            ]),
+                            m('div', {id: 'suggest-genres', class: 'suggestions is-hidden'}, [
+                                m('ul', {class: 'box'}, [
+                                    dl.suggest.genresFiltered.map(item => 
+                                        m('li', {onmousedown: () => dl.tags.genre = item.name}, [
+                                            m('span', {
+                                                class: 'icon',
+                                                onmousedown: () => {
+                                                    // Remove genre from suggestions. Clear input field.
+                                                    m.request({
+                                                        method: 'DELETE',
+                                                        responseType: 'json',
+                                                        url: `/api/suggest/genre/${item.name}`
+                                                    }).then(response => {
+                                                        dl.tags.genre = ''
+                                                        getSuggestions()
+                                                    }).catch(e => console.error(e))
+                                                    setTimeout(() => document.getElementById('genre').focus(), 50)
+                                                }
+                                            }, m('i', {class: 'fas fa-times'})),
+                                            m('div', item.name)
+                                        ])
+                                    )
+                                ])
                             ])
                         ]),
                     ]),
