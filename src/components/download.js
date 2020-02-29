@@ -198,7 +198,7 @@ function go() {
         method: 'PUT',
         responseType: 'json',
         url: `/api/suggest/genre/${dl.tags.genre}`
-    }).then(response => {}).catch(e => console.error(e))
+    }).then(response => getSuggestions()).catch(e => console.error(e))
 
     // Send download request
     m.request({
