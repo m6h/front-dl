@@ -104,8 +104,11 @@ function getDirectory() {
 
 // Fetch video metadata and thumbnail
 function getMetadata() {
-    document.getElementById('url-control').classList.add('is-loading')
-    document.getElementById('title-control').classList.add('is-loading')
+    // Get all input field elements. Convert htmlCollection to Array.
+    var inputFields = Array.from(document.getElementsByClassName('control'))
+
+    // Add loading spinner to all input fields
+    inputFields.forEach(item => item.classList.add('is-loading'))
 
     // Thumbnail
     m.request({
@@ -127,10 +130,23 @@ function getMetadata() {
         responseType: 'json',
         url: `/api/metadata?url=${dl.url}`
     }).then(response => {
-        document.getElementById('title-control').classList.remove('is-loading')
+        // Remove loading spinners on input fields
+        inputFields.forEach(item => item.classList.remove('is-loading'))
 
-        // Autofill fileName/title field
-        response ? dl.fileName = response.title : dl.fileName = ''
+        // Autofill fields.
+        // If Artist has a value then the media is likely a song with proper metadata
+        if (response.artist) {
+            // File name
+            response.title ? dl.fileName = `${response.artist} - ${response.track}` : dl.fileName = ''
+        } else {
+            // File name
+            response.title ? dl.fileName = response.title : dl.fileName = ''
+        }
+        // Artist
+        response.artist ? dl.tags.artist = response.artist : dl.tags.artist = ''
+        // Title (aka track)
+        response.track ? dl.tags.title = response.track : dl.tags.title = ''
+
     }).catch(e => console.error(e))
 }
 
@@ -256,7 +272,7 @@ export default {
                     ]),
                     m('div', {class: 'field'}, [
                         m('label', {class: 'label'}, 'File Name'),
-                        m('div', {id: 'title-control', class: 'control has-icons-left has-icons-right'}, [
+                        m('div', {class: 'control has-icons-left has-icons-right'}, [
                             m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-file'})),
                             m('input', {
                                 class: 'input',
