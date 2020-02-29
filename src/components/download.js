@@ -193,7 +193,7 @@ function go() {
     // Change path depending on "download to browser" app setting. A normal path = download to directory. 'false' = download to browser.
     app.prefs.htmlDownload ? sendDL.path = 'false' : sendDL.path = dl.path.join('/')
 
-    if (app.prefs.dlType == 'audio') {
+    if (app.prefs.dlType == 'audio' && dl.tags.genre) {
         // Add genre to genre suggestions
         m.request({
             method: 'PUT',
