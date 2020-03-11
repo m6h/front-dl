@@ -19,3 +19,4 @@ services:
       - type: bind
         source: /mnt/cephfs/db/front-dl
         target: /data/db
+    network_mode: service:nodejs # Join nodejs' network namespace to connect db using localhost.

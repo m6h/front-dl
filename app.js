@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3000
-const server = app.listen(port, () => console.log(`listening on http://localhost:${port}`))
+const server = app.listen(port, () => console.log(`Node.js starting on port ${port}`))
 const io = require('socket.io').listen(server)
 const mongoose = require('mongoose')
 
@@ -10,7 +10,7 @@ mongoose.set('useNewUrlParser', true)
 mongoose.set('useUnifiedTopology', true)
 
 // MongoDB connection using Mongoose. Log any initial connection errors.
-mongoose.connect('mongodb://mongodb/front-dl').catch(e => console.error(e))
+mongoose.connect('mongodb://localhost/front-dl').catch(e => console.error(e))
 
 // Listen for connection errors after initial connection
 mongoose.connection.on('error', e => console.error(e))
