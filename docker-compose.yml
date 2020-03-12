@@ -6,8 +6,8 @@ services:
       context: ./
       dockerfile: front-dl.dockerfile
     volumes:
-      - type: bind
-        source: /mnt/cephfs/media
+      - type: volume
+        source: nodejs
         target: /mnt/ydl
     ports:
       - '3001:3000'
@@ -16,7 +16,11 @@ services:
       context: ./
       dockerfile: mongodb.dockerfile
     volumes:
-      - type: bind
-        source: /mnt/cephfs/db/front-dl
+      - type: volume
+        source: mongodb
         target: /data/db
     network_mode: service:nodejs # Join nodejs' network namespace to connect db using localhost.
+
+volumes: 
+  nodejs:
+  mongodb:
