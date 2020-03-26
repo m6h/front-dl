@@ -151,13 +151,13 @@ exports.download = (req, res) => {
 
                     atomicParsley.on('close', exitCode => {
                         console.log(`AtomicParsley exited with code ${exitCode}`)
-                        io.to(q.socketId).emit('console_stdout', 'Done')
+                        io.to(q.socketId).emit('console_stdout', 'Download complete')
 
                         // Tell client that download is complete. Emit cache path if downloading to browser.
                         if (q.htmlDownload) {
                             io.to(q.socketId).emit('download_complete', `${q.fileName}.m4a`)
                         } else {
-                            io.to(q.socketId).emit('download_complete', 'Done')
+                            io.to(q.socketId).emit('download_complete', 'Download complete')
                         }
                     })
                 })
@@ -186,13 +186,13 @@ exports.download = (req, res) => {
                 // Send http response once download has completed, emit "Done" message to client socket, and log exit code
                 youtubeDl.on('close', exitCode => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
-                    io.to(q.socketId).emit('console_stdout', 'Done')
+                    io.to(q.socketId).emit('console_stdout', 'Download complete')
                     
                     // Tell client that download is complete. Emit cache path if downloading to browser.
                     if (q.htmlDownload) {
                         io.to(q.socketId).emit('download_complete',  `${q.fileName}.mkv`)
                     } else {
-                        io.to(q.socketId).emit('download_complete', 'Done')
+                        io.to(q.socketId).emit('download_complete', 'Download complete')
                     }
                 })
                 break
