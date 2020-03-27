@@ -6,7 +6,7 @@ import { app } from '../main' // Singleton class for app settings
 var dl = initDL()
 function initDL() {
     return {
-        url: '', fileName: '', path: [], directory: [], stdout: '',
+        url: '', fileName: '', path: [], directory: [], stdout: [], downloadProgress: 0,
         thumbnail: '/public/blank.png',
         tags: {
             artist: '',
@@ -22,12 +22,12 @@ function initDL() {
             return fullPath.join('/')
         },
         command: () => {
-            if (dl.stdout) {
+            if (dl.stdout[0]) {
                 return dl.stdout
             } else if(app.prefs.dlType == 'audio') {
-                return `youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`
+                return [`youtube-dl -f "bestaudio[ext=m4a]" --embed-thumbnail -o "${dl.fullPath()}.m4a" ${dl.url}`]
             } else if(app.prefs.dlType == 'video') {
-                return `youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`
+                return [`youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${dl.fullPath()}.mkv" ${dl.url}`]
             }
         }
     }
@@ -38,7 +38,19 @@ const socket = io()
 socket.on('connect', () => {
     // Output stdout to text area
     socket.on('console_stdout', data => {
-        dl.stdout = data
+        // Regex to match only the download % from stdout. Download % is not present in all output lines.
+        const match = data.match(/([0-9]{1,3}.[0-9])\%/)
+        // Use capture group 1 to get value without the % symbol.
+        match ? dl.downloadProgress = match[1] : null
+
+        // Append console stdout to array
+        length = dl.stdout.push(data)
+
+        // Maintain array length of 4
+        if (length > 6) {
+            dl.stdout.shift()
+        }
+
         m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
     })
 
@@ -416,16 +428,26 @@ export default {
                         )
                     ]),
                     m('div', {class: 'field'}, [
-                        m('label', {class: 'label'}, 'Command'),
-                        m('div', {class: 'control has-icons-left'}, [
-                            m('span', {class: 'icon is-left'}, m('i', {class: 'fas fa-terminal'})),
-                            m('textarea', {
-                                class: 'textarea',
-                                style:'padding-left: 2.2em; font-family: monospace',
-                                readonly: true,
-                                rows: 6,
-                                value: dl.command()
-                            })
+                        m('label', {class: 'label'}, m('i', {class: 'fas fa-terminal'})),
+                        m('div', {class: 'control'}, [
+                            m('progress', {
+                                class: 'progress is-info',
+                                style: `margin-bottom: 0;
+                                        height: 0.5em;
+                                        position: absolute;
+                                        z-index: 5;
+                                        border-radius: 0;
+                                        border-top-left-radius: 6px;
+                                        border-top-right-radius: 6px;`,
+                                value: dl.downloadProgress,
+                                max: 100
+                            }),
+                            m('div', {class: 'box', style:'font-family: monospace; white-space: nowrap; overflow-x: scroll;'}, [
+                                dl.command().map(item => 
+                                    // Remove the prepended app tags from youtube-dl. E.g. the "[youtube]" in "[youtube] id: Downloading thumbnail"
+                                    m('div', {style: 'width: 1em'}, item.replace(/\[[a-z]+\] +/i, ''))
+                                )
+                            ])
                         ])
                     ]),
                     m('div', {class: 'field is-grouped'}, [
