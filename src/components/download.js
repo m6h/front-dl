@@ -435,7 +435,6 @@ export default {
                                 style: `margin-bottom: 0;
                                         height: 0.5em;
                                         position: absolute;
-                                        z-index: 5;
                                         border-radius: 0;
                                         border-top-left-radius: 6px;
                                         border-top-right-radius: 6px;`,
