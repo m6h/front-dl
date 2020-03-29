@@ -1,0 +1,3 @@
+test:
+  script:
+    - youtube-dl --version
