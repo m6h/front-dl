@@ -1,3 +1,5 @@
+image: reg.hawes.xyz/front-dl:latest
+
 test:
   script:
     - youtube-dl --version
