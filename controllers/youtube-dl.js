@@ -19,11 +19,23 @@ function checkPath(queryPath) {
 
 // Get folder names for the directory browser
 exports.browse = (req, res) => {
-    const path = checkPath('/mnt/ydl/' + req.query.path)
+    const q = req.query
 
-    exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
-        error ? console.error(error) : res.json(stdout)
-    })
+    // Check if "path" query string exists. Empty string is valid.
+    if (Object.keys(q).includes('path')) {
+        const path = checkPath('/mnt/ydl/' + q.path)
+    
+        exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(error)
+                res.status(400).send('Bad Request')
+            } else {
+                res.json(stdout)
+            }
+        })
+    } else {
+        res.status(400).send('Bad Request')
+    }
 }
 
 // Fetch video thumbnail
