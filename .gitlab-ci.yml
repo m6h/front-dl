@@ -1,5 +1,33 @@
 image: reg.hawes.xyz/front-dl:latest
 
-test:
+services:
+- reg.hawes.xyz/mongodb:4.2.3
+
+stages:
+- build
+- test
+
+cache:
+  paths:
+  - node_modules/
+
+npm:
+  stage: build
   script:
-    - youtube-dl --version
+  - pwd
+  - cd $CI_PROJECT_DIR
+  - npm install
+  - npm run bundle-prod
+  artifacts:
+    expire_in: 1 day
+    paths:
+    - node_modules/
+    - bin/
+
+api:
+  stage: test
+  script:
+  - pwd
+  - sleep 3
+  - curl -fsSL http://localhost:3000/api/settings
+  - curl -fsSL http://localhost:3000/api/set
