@@ -65,9 +65,9 @@ const ydlController = require('./controllers/youtube-dl')
 const settingsController = require('./controllers/settings')
 const suggestController = require('./controllers/suggest')
 
-app.get('/api/browse', ydlController.browse)
 
 // youtube-dl
+app.get('/api/browse', ydlController.browse) // {path: ''}
 app.get('/api/download', ydlController.download) // {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', fileName: '', socketId: ''}
 app.get('/api/download/cache/:fileName', ydlController.downloadFromCache)
 app.get('/api/metadata', ydlController.metadata) // {url: ''}
