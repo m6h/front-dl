@@ -24,6 +24,15 @@ app.use('/public', express.static('./public/'))
 app.use('/bin', express.static('./bin/'))
 __basedir = __dirname
 
+// Handle SIGTERM
+process.on('SIGTERM', () => {
+    console.log('Stopping server...')
+    mongoose.connection.close(() => {
+        console.log('Database connection closed')
+        process.exit(0)
+    })
+})
+
 
 // Routes //
 
