@@ -3,6 +3,9 @@ image: reg.hawes.xyz/front-dl:latest
 services:
 - reg.hawes.xyz/mongodb:4.2.3
 
+variables:
+  C: 'curl -fsSL http://localhost:3000'
+
 stages:
 - build
 - test
@@ -14,8 +17,6 @@ cache:
 npm:
   stage: build
   script:
-  - pwd
-  - cd $CI_PROJECT_DIR
   - npm install
   - npm run bundle-prod
   artifacts:
@@ -27,7 +28,10 @@ npm:
 api:
   stage: test
   script:
-  - pwd
+  - node app.js
   - sleep 3
-  - curl -fsSL http://localhost:3000/api/settings
-  - curl -fsSL http://localhost:3000/api/set
+  - $C/api/settings
+  - $C/api/version/ydl
+  - $C/api/version/ffmpeg
+  - $C/api/version/atomicparsley
+  - $C/api/browse?path=
