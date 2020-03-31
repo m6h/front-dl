@@ -35,6 +35,8 @@ RUN mkdir -p /media/dl/ && \
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
     chmod +xr /usr/local/bin/youtube-dl
 
+RUN mkdir -p /mnt/ydl
+
 WORKDIR /node/
 
 # Get npm dependencies
