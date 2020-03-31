@@ -6,15 +6,17 @@ ARG TZ=US/Eastern
 ENV TZ=$TZ
 RUN apt update && apt install -y tzdata && \
     ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone
+    echo $TZ > /etc/timezone && \
+    rm -r /var/lib/apt/lists/*
 
-# Download prerequisites
-RUN apt install -y \
+# Download prerequisites, then clear apt cache
+RUN apt update && apt install -y \
         curl \
         xz-utils \
         python \
         ffmpeg \
-        atomicparsley
+        atomicparsley && \
+    rm -r /var/lib/apt/lists/*
 
 # Node.js version to use
 ENV NODE_VER='v12.14.1'
@@ -35,6 +37,7 @@ RUN mkdir -p /media/dl/ && \
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
     chmod +xr /usr/local/bin/youtube-dl
 
+# Create path for media library mount
 RUN mkdir -p /mnt/ydl
 
 WORKDIR /node/
