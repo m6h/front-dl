@@ -28,7 +28,7 @@ npm:
 api:
   stage: test
   script:
-  - node app.js
+  - node app.js &
   - sleep 3
   - $C/api/settings
   - $C/api/version/ydl
