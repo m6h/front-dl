@@ -4,7 +4,7 @@ services:
 - reg.hawes.xyz/mongodb:4.2.3
 
 variables:
-  C: 'curl -fsSL http://localhost:3000'
+  C: 'curl -fsSL -w "\n" http://localhost:3000'
 
 stages:
 - build
