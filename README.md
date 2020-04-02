@@ -6,11 +6,35 @@ The goal of this app is to create a faster and easier way to interact with youtu
 - [Docker][docker]
 - [Docker Compose][compose]
 
-## Install
-- Verify that the volume sources in *docker-compose.yml* are appropriate for your environment. If uncertain, ignore and exclusively use browser mode.
-- Clone or download the repository, navigate into the directory, then run `docker-compose up -d`
+## Install using Compose
+In order for downloads into a directory to persist, we must mount a [volume][1]. In this example, we assume our existing media library is located on the host at `/mnt/my/media`, and bind mount it into the Node.js container at `/mnt/ydl`, which is where the app expects it to be. 
 
-Default host port to access the web app is `3001`, as specified in *docker-compose.yml*
+The database mounts a volume named "mongodb" for simplicity.
+```yaml
+# docker-compose.yml
+version: '3.2'
+
+services:
+  nodejs:
+    image: m60h/front-dl:latest
+    environment:
+      DB_URL: mongodb://mongodb/front-dl
+    volumes:
+      - /mnt/my/media:/mnt/ydl
+    ports:
+      - '3001:3000'
+  mongodb:
+    image: mongo:4.2.3
+    volumes:
+      - mongodb:/data/db
+
+volumes:
+  mongodb:
+```
+<sup>front-dl assumes the database can be reached at `localhost`. By default, Docker Compose does not join all services to the same network namespace. Instead, they are made discoverable via their service name. So we set the database url to use `mongodb` as the host via an environment variable.</sup>
+
+Then run `docker-compose up -d` to start the containers. The app can be accessed via host port `3001`
+
 
 # Download modes
 > Can be changed at any time in Settings.
@@ -40,10 +64,12 @@ graph TB
 ## Directory mode media
 The root directory of the directory browser is `/mnt/ydl/` inside the container.
 
-When downloading to directory, a media library (or anywhere with persistent storage) should be mounted in the container at `/mnt/ydl/`, as shown in the *docker-compose.yml*. All **folders** within `/mnt/ydl/` will then be visible in the directory browser. youtube-dl will download to the specified directory, then the file can be read and streamed by your favorite media server solution, such as JellyFin, Emby, Plex, etc..
+When downloading to directory, your media library (or anywhere with persistent storage) should be mounted in the container at `/mnt/ydl/`. All **folders** within `/mnt/ydl/` will then be visible in the directory browser. youtube-dl will download to the selected directory, then the file can be read and streamed by your favorite media server solution, such as Jellyfin, Emby, Plex, etc..
 
-## Updating [youtube-dl][ydl] version
-Click the update button in Settings, or rebuild the Docker image using `docker-compose build --no-cache && docker-compose up -d`
+## Updating
+To update just the `youtube-dl` binary, click the update button in Settings. Images include the latest version of youtube-dl available at the time they were built.
+
+front-dl can be updated by pulling the latest image with `docker-compose pull` then recreating the containers with `docker-compose up -d`
 
 ## Tech
 Client-side: [Mithril.js][m], [Bulma][bu], [Font Awesome][fa]
@@ -64,3 +90,4 @@ Dev: [Babel][ba], [Webpack][w]
 [socket]: https://socket.io/
 [docker]: https://docs.docker.com/install/
 [compose]: https://docs.docker.com/compose/install/
+[1]: https://docs.docker.com/compose/compose-file/#volumes
