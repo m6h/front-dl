@@ -4,7 +4,7 @@ import { app } from '../main' // Singleton class for app settings
 var version = {}
 
 var tooltips = {
-    htmlDownload: "Send downloads to the browser instead of a directory."
+    htmlDownload: "Send downloads to the browser instead of a directory. Hides the directory browser."
 }
 
 function getYdlVersion() {
