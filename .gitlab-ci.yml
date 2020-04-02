@@ -43,8 +43,10 @@ GitLab:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/front-dl.dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA --destination $CI_REGISTRY_IMAGE:latest
+  - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/front-dl.dockerfile --destination $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA --destination $CI_REGISTRY_IMAGE:latest
+  only:
+  - master
 
 DockerHub:
   stage: push
@@ -52,5 +54,7 @@ DockerHub:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
-    - echo "{\"auths\":{\"$DOCKERHUB_REGISTRY\":{\"username\":\"$DOCKERHUB_USER\",\"password\":\"$DOCKERHUB_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/front-dl.dockerfile --destination $DOCKERHUB_IMAGE:$CI_COMMIT_SHORT_SHA --destination $DOCKERHUB_IMAGE:latest
+  - echo "{\"auths\":{\"$DOCKERHUB_REGISTRY\":{\"username\":\"$DOCKERHUB_USER\",\"password\":\"$DOCKERHUB_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/front-dl.dockerfile --destination $DOCKERHUB_IMAGE:$CI_COMMIT_SHORT_SHA --destination $DOCKERHUB_IMAGE:latest
+  only:
+  - master
