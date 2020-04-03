@@ -281,7 +281,7 @@ export default {
                                         left: 50%;
                                         transform: translate(-50%, -50%);`,
                             }, 'Thumbnail preview'),
-                            m('img', {src: dl.thumbnail})
+                            m('img', {style: 'width: auto; margin: auto;', src: dl.thumbnail})
                         ])
                     ]),
                     m('div', {class: 'field'}, [
