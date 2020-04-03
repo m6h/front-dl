@@ -100,7 +100,7 @@ exports.download = (req, res) => {
     // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
     // path string 'false' = download to browser.
     
-    const q = req.query
+    var q = req.query
 
     // Format and validate path
     // If downloading to the browser set the path to a cache, otherwise assume downloading to a directory.
@@ -120,7 +120,8 @@ exports.download = (req, res) => {
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         switch (q.type) {
             case 'audio':
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '--no-playlist', '-o', `${q.path}.m4a`, `${q.url}`])
+                // Prefer audio formats in this order: .m4a > .mp3 > other
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio', '--embed-thumbnail', '--no-playlist', '-o', `${q.path}.%(ext)s`, `${q.url}`])
                 
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
@@ -131,6 +132,11 @@ exports.download = (req, res) => {
                     // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
                     //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
                     (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+
+                    // Parse youtube-dl output for destination (file name with extension)
+                    //   then get just the extension using the "path" module. Allows using any file extension.
+                    const match = data.match(/.*Destination: .*/)
+                    match ? q.fileExtension = path.extname(match[0]) : null
 
                     io.to(q.socketId).emit('console_stdout', data)
                 })
@@ -144,7 +150,7 @@ exports.download = (req, res) => {
                 youtubeDl.on('close', exitCode => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
 
-                    var atomicParsley = spawn('AtomicParsley', [`${q.path}.m4a`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
+                    var atomicParsley = spawn('AtomicParsley', [`${q.path}${q.fileExtension}`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
                     
                     // Set encoding so outputs can be read
                     atomicParsley.stdout.setEncoding('utf-8')
@@ -167,7 +173,7 @@ exports.download = (req, res) => {
 
                         // Tell client that download is complete. Emit cache path if downloading to browser.
                         if (q.htmlDownload) {
-                            io.to(q.socketId).emit('download_complete', `${q.fileName}.m4a`)
+                            io.to(q.socketId).emit('download_complete', `${q.fileName}${q.fileExtension}`)
                         } else {
                             io.to(q.socketId).emit('download_complete', 'Download complete')
                         }
