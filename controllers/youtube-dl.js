@@ -120,7 +120,7 @@ exports.download = (req, res) => {
         // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
         switch (q.type) {
             case 'audio':
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '-o', `${q.path}.m4a`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]', '--embed-thumbnail', '--no-playlist', '-o', `${q.path}.m4a`, `${q.url}`])
                 
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
@@ -175,7 +175,7 @@ exports.download = (req, res) => {
                 })
                 break
             case 'video':
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '-o', `${q.path}.mkv`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '--no-playlist', '-o', `${q.path}.mkv`, `${q.url}`])
         
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
