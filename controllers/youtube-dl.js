@@ -238,7 +238,7 @@ exports.downloadFromCache = (req, res) => {
 
 // Get the metadata of a video
 exports.metadata = (req, res) => {
-    var youtubeDl = spawn('youtube-dl', ['--dump-json', '--skip-download', `${req.query.url}`])
+    var youtubeDl = spawn('youtube-dl', ['--dump-single-json', '--skip-download', `${req.query.url}`])
     var output = ''
 
     // Set encoding so outputs can be read
