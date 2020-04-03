@@ -1,7 +1,7 @@
 {
   "name": "front-dl",
   "version": "1.0.0",
-  "description": "youtube-dl web app front-end",
+  "description": "Web app front-end for youtube-dl",
   "main": "app.js",
   "scripts": {
     "compose": "docker-compose build && docker-compose up -d",
