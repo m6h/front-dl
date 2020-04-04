@@ -232,11 +232,12 @@ exports.download = (req, res) => {
     }
 }
 
-// Download a file from the cache as an attachment
+// Download a file from the cache as an attachment, then delete it.
 exports.downloadFromCache = (req, res) => {
     const q = req.params
 
-    // Set root path and response header so file is downloaded as an attachment instead of opened in browser
+    // Set root path and response header so file is downloaded as an attachment instead of opened in browser.
+    // fileName contains the file extension.
     var options = {
         root: path.join(__basedir, 'public', 'cache'),
         headers: {
@@ -250,6 +251,7 @@ exports.downloadFromCache = (req, res) => {
             res.status(400).send('Bad Request')
         } else {
             console.log(`Sent file "${q.fileName}" from cache`)
+            spawn('rm', [path.join(__basedir, 'public', 'cache', `${q.fileName}`)])
         }
     })
 }
