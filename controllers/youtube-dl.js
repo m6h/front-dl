@@ -117,7 +117,7 @@ exports.download = (req, res) => {
     if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title) || q.type == 'video') && q.path && q.socketId) {
         res.json('')
 
-        // Download the video with youtube-dl. If audio then also add metadata tags using AtomicParsley
+        // Download the video with youtube-dl. If audio then also add metadata tags.
         switch (q.type) {
             case 'audio':
                 // Prefer audio formats in this order: .m4a > .mp3 > other
@@ -146,37 +146,49 @@ exports.download = (req, res) => {
                     console.error(`ydl stderr: ${data}`)
                 })
 
-                // Once youtube-dl download is complete, add metadata to audio file, send http response, emit "Done" message to client socket, and log exit code
+                // Once youtube-dl download is complete, add metadata to audio file
                 youtubeDl.on('close', exitCode => {
                     console.log(`youtube-dl exited with code ${exitCode}`)
 
-                    var atomicParsley = spawn('AtomicParsley', [`${q.path}${q.fileExtension}`, '--overWrite', '--artist', `${q.tags.artist}`, '--title', `${q.tags.title}`, '--genre', `${q.tags.genre}`])
+                    var ffmpeg = spawn('ffmpeg', [
+                        '-i', `${q.path}${q.fileExtension}`, '-y',
+                        '-codec', 'copy',
+                        '-metadata', `artist=${q.tags.artist}`,
+                        '-metadata', `title=${q.tags.title}`,
+                        '-metadata', `genre=${q.tags.genre}`,
+                        `${q.path}-tmp${q.fileExtension}`
+                    ])
                     
                     // Set encoding so outputs can be read
-                    atomicParsley.stdout.setEncoding('utf-8')
-                    atomicParsley.stderr.setEncoding('utf-8')
+                    ffmpeg.stdout.setEncoding('utf-8')
+                    ffmpeg.stderr.setEncoding('utf-8')
 
                     // Emit command stdout stream to socket, and console log
-                    atomicParsley.stdout.on('data', data => {
-                        console.log(`AP stdout: ${data}`)
+                    ffmpeg.stdout.on('data', data => {
+                        console.log(`ffmpeg stdout: ${data}`)
                         io.to(q.socketId).emit('console_stdout', data)
                     })
 
                     // Log stderr if exists
                     youtubeDl.stderr.on('data', data => {
-                        console.error(`AP stderr: ${data}`)
+                        console.error(`ffmpeg stderr: ${data}`)
                     })
 
-                    atomicParsley.on('close', exitCode => {
-                        console.log(`AtomicParsley exited with code ${exitCode}`)
-                        io.to(q.socketId).emit('console_stdout', 'Download complete')
-
-                        // Tell client that download is complete. Emit cache path if downloading to browser.
-                        if (q.htmlDownload) {
-                            io.to(q.socketId).emit('download_complete', `${q.fileName}${q.fileExtension}`)
-                        } else {
-                            io.to(q.socketId).emit('download_complete', 'Download complete')
-                        }
+                    ffmpeg.on('close', exitCode => {
+                        // Replace original file with temporary file from ffmpeg
+                        var mv = spawn('mv', [`${q.path}-tmp${q.fileExtension}`, `${q.path}${q.fileExtension}`])
+                        
+                        mv.on('close', () => {
+                            console.log(`ffmpeg exited with code ${exitCode}`)
+                            io.to(q.socketId).emit('console_stdout', 'Download complete')
+    
+                            // Tell client that download is complete. Emit cache path if downloading to browser.
+                            if (q.htmlDownload) {
+                                io.to(q.socketId).emit('download_complete', `${q.fileName}${q.fileExtension}`)
+                            } else {
+                                io.to(q.socketId).emit('download_complete', 'Download complete')
+                            }
+                        })
                     })
                 })
                 break
