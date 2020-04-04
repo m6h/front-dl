@@ -9,7 +9,6 @@ function checkPath(queryPath) {
     // Return error if any '/../' in path. clean up path using normalize.
     // Trailing slash in desired root directory is required to correctly match a query string beginning with '../'
     
-    // const location = '/mnt/ydl/' + queryPath
     if (queryPath.match(/\/\.\.\//)) {
         throw new Error("Cannot navigate to parent directories")
     } else {
@@ -23,7 +22,7 @@ exports.browse = (req, res) => {
 
     // Check if "path" query string exists. Empty string is valid.
     if (Object.keys(q).includes('path')) {
-        const path = checkPath('/mnt/ydl/' + q.path)
+        const path = checkPath('/media/' + q.path)
     
         exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
             if (error) {
@@ -110,7 +109,7 @@ exports.download = (req, res) => {
         q.path = checkPath(__basedir + '/public/cache/' + q.fileName)
     } else {
         // To directory
-        q.path = checkPath('/mnt/ydl/' + q.path + '/' + q.fileName)
+        q.path = checkPath('/media/' + q.path + '/' + q.fileName)
     }
 
     // Ensure minimum required query strings have values
@@ -177,11 +176,11 @@ exports.download = (req, res) => {
                     ffmpeg.on('close', exitCode => {
                         // Replace original file with temporary file from ffmpeg
                         var mv = spawn('mv', [`${q.path}-tmp${q.fileExtension}`, `${q.path}${q.fileExtension}`])
-                        
+
                         mv.on('close', () => {
                             console.log(`ffmpeg exited with code ${exitCode}`)
                             io.to(q.socketId).emit('console_stdout', 'Download complete')
-    
+
                             // Tell client that download is complete. Emit cache path if downloading to browser.
                             if (q.htmlDownload) {
                                 io.to(q.socketId).emit('download_complete', `${q.fileName}${q.fileExtension}`)

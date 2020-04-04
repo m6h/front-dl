@@ -43,9 +43,6 @@ RUN mkdir -p /srv/ffmpeg/ && cd /srv/ffmpeg/ && \
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
     chmod +xr /usr/local/bin/youtube-dl
 
-# Create path for media library mount
-RUN mkdir -p /mnt/ydl
-
 WORKDIR /node/
 
 # Get npm dependencies

@@ -10,7 +10,7 @@ services:
     volumes:
       - type: volume
         source: nodejs
-        target: /mnt/ydl
+        target: /media
     ports:
       - '3001:3000'
   mongodb:
