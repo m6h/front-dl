@@ -210,7 +210,7 @@ function go() {
         m.request({
             method: 'PUT',
             responseType: 'json',
-            url: `/api/suggest/genre/${dl.tags.genre}`
+            url: `/api/suggest/genre/${encodeURIComponent(dl.tags.genre)}`
         }).then(response => getSuggestions()).catch(e => console.error(e))
     }
 
