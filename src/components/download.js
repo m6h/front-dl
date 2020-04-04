@@ -141,23 +141,39 @@ function getMetadata() {
         method: 'GET',
         responseType: 'json',
         url: `/api/metadata?url=${dl.url}`
-    }).then(response => {
+    }).then(r => {
         // Remove loading spinners on input fields
         inputFields.forEach(item => item.classList.remove('is-loading'))
 
-        // Autofill fields.
-        // If Artist has a value then the media is likely a song with proper metadata
-        if (response.artist) {
-            // File name
-            response.title ? dl.fileName = `${response.artist} - ${response.track}` : dl.fileName = ''
-        } else {
-            // File name
-            response.title ? dl.fileName = response.title : dl.fileName = ''
+        // Attempt to autofill fields based on the youtube-dl extractor used.
+        switch (r.extractor) {
+            case 'youtube':
+                // If Artist has a value it's probably a song from YouTube Music with proper metadata.
+                if (r.artist) {
+                    // File name
+                    r.title ? dl.fileName = `${r.artist} - ${r.track}` : dl.fileName = ''
+                } else {
+                    // File name
+                    r.title ? dl.fileName = r.title : dl.fileName = ''
+                }
+                // Artist
+                r.artist ? dl.tags.artist = r.artist : dl.tags.artist = ''
+                // Title (aka track)
+                r.track ? dl.tags.title = r.track : dl.tags.title = ''
+                // Genre
+                r.genre ? dl.tags.genre = r.genre : dl.tags.genre = ''
+                break
+            case 'soundcloud':
+                // File name
+                r.uploader ? dl.fileName = `${r.uploader} - ${r.title}` : dl.fileName = ''
+                // Artist
+                r.uploader ? dl.tags.artist = r.uploader : dl.tags.artist = ''
+                // Title
+                r.title ? dl.tags.title = r.title : dl.tags.title = ''
+                // Genre
+                r.genre ? dl.tags.genre = r.genre : dl.tags.genre = ''
+                break
         }
-        // Artist
-        response.artist ? dl.tags.artist = response.artist : dl.tags.artist = ''
-        // Title (aka track)
-        response.track ? dl.tags.title = response.track : dl.tags.title = ''
 
     }).catch(e => console.error(e))
 }
