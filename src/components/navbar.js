@@ -19,8 +19,9 @@ export default {
                 ]),
                 m('div', {class: 'navbar-menu'}, [
                     m('div', {class: 'navbar-start'}, [
-                        m('a', {class: 'navbar-item', href: '#!/'}, 'Home'),
-                        m('a', {class: 'navbar-item', href: '#!/settings'}, 'Settings'),
+                        m(m.route.Link, {class: 'navbar-item', href: '/'}, 'Single'),
+                        m(m.route.Link, {class: 'navbar-item', href: '/playlist'}, 'Playlist'),
+                        m(m.route.Link, {class: 'navbar-item', href: '/settings'}, 'Settings'),
                     ]),
                     m('div', {class: 'navbar-end'}, '')
                 ])
