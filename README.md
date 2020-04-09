@@ -1,4 +1,4 @@
-![](public/screenshot.png)
+![](public/images/screenshot.png)
 # Web app front-end for [youtube-dl][ydl] 
 The goal of this app is to create a faster and easier way to interact with youtube-dl. It runs youtube-dl commands and places downloaded files at the specified directory in the container **or** sends files to the browser in the standard download bar/area (see download modes). front-dl is not responsible for playing/streaming the media itself.
 
@@ -7,7 +7,7 @@ The goal of this app is to create a faster and easier way to interact with youtu
 - [Docker Compose][compose]
 
 ## Install using Compose
-In order for downloads into a directory to persist, we must mount a [volume][1]. In this example, we assume our existing media library is located on the host at `/mnt/my/media`, and bind mount it into the Node.js container at `/mnt/ydl`, which is where the app expects it to be. 
+In order for downloads into a directory to persist, we must mount a [volume][1]. In this example, we assume our existing media library is located on the host at `/mnt/my/media`, and bind mount it into the Node.js container at `/media`, which is where the app expects it to be. 
 
 The database mounts a volume named "mongodb" for simplicity.
 ```yaml
@@ -20,7 +20,7 @@ services:
     environment:
       DB_URL: mongodb://mongodb/front-dl
     volumes:
-      - /mnt/my/media:/mnt/ydl
+      - /mnt/my/media:/media
     ports:
       - '3001:3000'
   mongodb:
@@ -41,30 +41,18 @@ Then run `docker-compose up -d` to start the containers. The app can be accessed
 
 ### Browser mode (default)
 Sends downloads to the browser in the standard download bar/area.
-```mermaid
-graph TB
-  style browser fill:lightgreen
-  style fdl fill:#209cee
 
-  fdl(front-dl)--Write-->browser{{Your browser}}
-```
+![](public/images/browser-mode.svg)
 
 ### Directory mode
 For integration with other services to store and stream media server-side.
-```mermaid
-graph TB
-  style browser fill:lightgreen
-  style fdl fill:#209cee
-  
-  fdl(front-dl)--Write-->storage(Storage server)
-  mediaServer--Read-->storage
-  mediaServer(Media server)--Stream-->browser{{Your browser}}
-```
+
+![](public/images/directory-mode.svg)
 
 ## Directory mode media
-The root directory of the directory browser is `/mnt/ydl/` inside the container.
+The root directory of the directory browser is `/media/` inside the container.
 
-When downloading to directory, your media library (or anywhere with persistent storage) should be mounted in the container at `/mnt/ydl/`. All **folders** within `/mnt/ydl/` will then be visible in the directory browser. youtube-dl will download to the selected directory, then the file can be read and streamed by your favorite media server solution, such as Jellyfin, Emby, Plex, etc..
+When downloading to directory, your media library (or anywhere with persistent storage) should be mounted in the container at `/media/`. All **folders** within `/media/` will then be visible in the directory browser. youtube-dl will download to the selected directory, then the file can be read and streamed by your favorite media server solution, such as Jellyfin, Emby, Plex, etc..
 
 ## Updating
 To update just the `youtube-dl` binary, click the update button in Settings. Images include the latest version of youtube-dl available at the time they were built.
