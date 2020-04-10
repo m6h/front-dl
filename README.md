@@ -31,31 +31,28 @@ services:
 volumes:
   mongodb:
 ```
-<sup>front-dl assumes the database can be reached at `localhost`. By default, Docker Compose does not join all services to the same network namespace. Instead, they are made discoverable via their service name. So we set the database url to use `mongodb` as the host via an environment variable.</sup>
+<sup>Note: front-dl assumes the database can be reached at `localhost`. By default, Docker Compose does not join all services to the same network namespace. Instead, they are made [discoverable][2] via their service name. So in this example, we set the database url to use `mongodb` as the host via an environment variable.</sup>
 
 Then run `docker-compose up -d` to start the containers. The app can be accessed via host port `3001`
 
 
 # Download modes
-> Can be changed at any time in Settings.
+> Mutually exclusive. Can be changed at any time in the settings.
 
 ### Browser mode (default)
-Sends downloads to the browser in the standard download bar/area.
+Sends downloads to the browser in the standard download bar/area. Does not make use of the mounted volume in `/media`
 
 ![](public/images/browser-mode.svg)
 
 ### Directory mode
-For integration with other services to store and stream media server-side.
+Writes downloads to the mounted volume in `/media`. Used for integration with other services to store media then stream it using your favorite media server solution, such as Jellyfin, Plex, Emby, etc...
+
+The root of the directory browser is `/media` inside the container. When downloading to a directory, your media library (or anywhere with persistent storage) should be mounted in the front-dl container at `/media`. All **folders** within `/media` will then be visible in the directory browser to choose your download destination.
 
 ![](public/images/directory-mode.svg)
 
-## Directory mode media
-The root directory of the directory browser is `/media/` inside the container.
-
-When downloading to directory, your media library (or anywhere with persistent storage) should be mounted in the container at `/media/`. All **folders** within `/media/` will then be visible in the directory browser. youtube-dl will download to the selected directory, then the file can be read and streamed by your favorite media server solution, such as Jellyfin, Emby, Plex, etc..
-
 ## Updating
-To update just the `youtube-dl` binary, click the update button in Settings. Images include the latest version of youtube-dl available at the time they were built.
+To update just the `youtube-dl` binary, click the update button in settings. Images include the latest version of youtube-dl available at the time they were built.
 
 front-dl can be updated by pulling the latest image with `docker-compose pull` then recreating the containers with `docker-compose up -d`
 
@@ -79,3 +76,4 @@ Dev: [Babel][ba], [Webpack][w]
 [docker]: https://docs.docker.com/install/
 [compose]: https://docs.docker.com/compose/install/
 [1]: https://docs.docker.com/compose/compose-file/#volumes
+[2]: https://docs.docker.com/compose/networking/
