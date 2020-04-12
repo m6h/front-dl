@@ -23,6 +23,7 @@ exports.io = io
 app.use('/public', express.static('./public/'))
 app.use('/bin', express.static('./bin/'))
 __basedir = __dirname
+log = (app, msg) => console.log(`${new Date().toISOString()} - ${app} - ${msg.toString().replace(/\n/gm, '')}`)
 
 // Handle SIGTERM
 process.on('SIGTERM', () => {

@@ -26,7 +26,7 @@ exports.browse = (req, res) => {
     
         exec(`find "${path}" -maxdepth 1 -mindepth 1 -type d -printf '%f/'`, (error, stdout, stderr) => {
             if (error) {
-                console.error(error)
+                log('find', error)
                 res.status(400).send('Bad Request')
             } else {
                 res.json(stdout)
@@ -62,12 +62,12 @@ exports.getThumbnail = (req, res) => {
 
                 // Log stderr if exists
                 youtubeDl.stderr.on('data', data => {
-                    console.error(`ydl stderr: ${data}`)
+                    log('youtube-dl', data)
                 })
 
                 // Respond with path to thumbnail
                 youtubeDl.on('close', exitCode => {
-                    console.log(`youtube-dl exited with code ${exitCode}`)
+                    log('youtube-dl', exitCode)
                     res.json(filePath)
                 })
             } else {
@@ -84,7 +84,7 @@ exports.getThumbnail = (req, res) => {
 exports.clearThumbnailCache = (req, res) => {
     exec('rm ./public/cache/*.jpg', (error, stdout, stderr) => {
         if (error) {
-            console.error(error)
+            log('rm', error)
             res.json('')
         } else {
             res.json('')
@@ -130,7 +130,7 @@ exports.download = (req, res) => {
                 youtubeDl.stdout.on('data', data => {
                     // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
                     //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
-                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : log('youtube-dl', data)
 
                     // Parse youtube-dl output for destination (file name with extension)
                     //   then get just the extension using the "path" module. Allows using any file extension.
@@ -142,12 +142,12 @@ exports.download = (req, res) => {
 
                 // Log stderr if exists
                 youtubeDl.stderr.on('data', data => {
-                    console.error(`ydl stderr: ${data}`)
+                    log('youtube-dl', data)
                 })
 
                 // Once youtube-dl download is complete, add metadata to audio file
                 youtubeDl.on('close', exitCode => {
-                    console.log(`youtube-dl exited with code ${exitCode}`)
+                    log('youtube-dl', exitCode)
 
                     var ffmpeg = spawn('ffmpeg', [
                         '-i', `${q.path}${q.fileExtension}`, '-y',
@@ -164,13 +164,13 @@ exports.download = (req, res) => {
 
                     // Emit command stdout stream to socket, and console log
                     ffmpeg.stdout.on('data', data => {
-                        console.log(`ffmpeg stdout: ${data}`)
+                        log('ffmpeg', data)
                         io.to(q.socketId).emit('console_stdout', data)
                     })
 
                     // Log stderr if exists
-                    youtubeDl.stderr.on('data', data => {
-                        console.error(`ffmpeg stderr: ${data}`)
+                    ffmpeg.stderr.on('data', data => {
+                        log('ffmpeg', data)
                     })
 
                     ffmpeg.on('close', exitCode => {
@@ -178,7 +178,7 @@ exports.download = (req, res) => {
                         var mv = spawn('mv', [`${q.path}-tmp${q.fileExtension}`, `${q.path}${q.fileExtension}`])
 
                         mv.on('close', () => {
-                            console.log(`ffmpeg exited with code ${exitCode}`)
+                            log('ffmpeg', exitCode)
                             io.to(q.socketId).emit('console_stdout', 'Download complete')
 
                             // Tell client that download is complete. Emit cache path if downloading to browser.
@@ -202,19 +202,19 @@ exports.download = (req, res) => {
                 youtubeDl.stdout.on('data', data => {
                     // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
                     //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
-                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : console.log(`ydl stdout: ${data}`)
+                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : log('youtube-dl', data)
                     
                     io.to(q.socketId).emit('console_stdout', data)
                 })
         
                 // Log stderr if exists
                 youtubeDl.stderr.on('data', data => {
-                    console.error(`ydl stderr: ${data}`)
+                    log('youtube-dl', data)
                 })
         
                 // Send http response once download has completed, emit "Done" message to client socket, and log exit code
                 youtubeDl.on('close', exitCode => {
-                    console.log(`youtube-dl exited with code ${exitCode}`)
+                    log('youtube-dl', exitCode)
                     io.to(q.socketId).emit('console_stdout', 'Download complete')
                     
                     // Tell client that download is complete. Emit cache path if downloading to browser.
@@ -246,10 +246,10 @@ exports.downloadFromCache = (req, res) => {
 
     res.sendFile(q.fileName, options, error => {
         if (error) {
-            console.error(error)
+            log('res.sendFile', error)
             res.status(400).send('Bad Request')
         } else {
-            console.log(`Sent file "${q.fileName}" from cache`)
+            log('res.sendFile', q.fileName)
             spawn('rm', [path.join(__basedir, 'public', 'cache', `${q.fileName}`)])
         }
     })
@@ -265,7 +265,7 @@ exports.metadata = (req, res) => {
 
     // Log stderr if exists
     youtubeDl.stderr.on('data', data => {
-        console.error(`ydl stderr: ${data}`)
+        log('youtube-dl', data)
     })
 
     // Collect stdout stream in variable
@@ -275,6 +275,7 @@ exports.metadata = (req, res) => {
 
     // Respond with final output when process is completed
     youtubeDl.on('close', exitCode => {
+        log('youtube-dl', exitCode)
         output ? res.json(JSON.parse(output)) : res.json('')
     })
 
@@ -284,7 +285,7 @@ exports.metadata = (req, res) => {
 exports.version = (req, res) => {
     exec('youtube-dl --version', (error, stdout, stderr) => {
         if (error) {
-            console.error(error)
+            log('youtube-dl', error)
             res.json('Unknown')
         } else {
             res.json(stdout)
@@ -296,7 +297,7 @@ exports.version = (req, res) => {
 exports.update = (req, res) => {
     exec('curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && chmod +xr /usr/local/bin/youtube-dl', (error, stdout, stderr) => {
         if (error) {
-            console.error(error)
+            log('youtube-dl update', error)
             res.json('')
         } else {
             res.json(stdout)

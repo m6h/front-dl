@@ -37,7 +37,7 @@ exports.update = async (req, res) => {
 exports.ffmpegVersion = (req, res) => {
     exec("ffmpeg -version | awk '/ffmpeg version/ {print$3}'", (error, stdout, stderr) => {
         if (error) {
-            console.error(error)
+            log('ffmpeg', error)
             res.json('Unknown')
         } else {
             res.json(stdout)
@@ -49,7 +49,7 @@ exports.ffmpegVersion = (req, res) => {
 exports.atomicparsleyVersion = (req, res) => {
     exec("AtomicParsley --version | awk '{print$3}'", (error, stdout, stderr) => {
         if (error) {
-            console.error(error)
+            log('AtomicParsley', error)
             res.json('Unknown')
         } else {
             res.json(stdout)
