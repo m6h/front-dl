@@ -3,10 +3,6 @@ import { app } from '../main' // Singleton class for app settings
 
 var version = {}
 
-var tooltips = {
-    htmlDownload: "Send downloads to the browser instead of a directory. Hides the directory browser."
-}
-
 function getYdlVersion() {
     m.request({
         method: 'GET',
@@ -43,7 +39,7 @@ export default {
             m('div', {class: 'columns is-centered'}, [
                 m('div', {class: 'column is-narrow'}, [
                     m('div', {class: 'box'}, [
-                        m('div', {class: 'subtitle'}, 'Versions'),
+                        m('label', {class: 'label'}, 'Versions'),
                         m('div', [
                             m('span', 'youtube-dl: '),
                             m('span', {class: 'has-text-success'}, version.ydl)
@@ -92,62 +88,34 @@ export default {
                 m('div', {class: 'column is-narrow is-unselectable'}, [
                     m('div', {class: 'box'}, [
                         m('div', {class: 'field'}, [
-                            m('span', {class: 'has-tooltip-multiline', 'data-tooltip': tooltips.htmlDownload}, 'Download to browser'),
-                            m('input', {id: 'htmlDownload', type: 'checkbox', class: 'switch is-hidden', checked: app.prefs.htmlDownload}),
-                            m('label', {
-                                for: 'htmlDownload',
-                                class: 'is-pulled-right',
-                                style: 'margin-left: 1em',
-                                onclick: vnode => {
-                                    app.prefs.htmlDownload = !app.prefs.htmlDownload
-                                    // send xhr
-                                    switch(app.prefs.htmlDownload) {
-                                        case true:
-                                            m.request({
-                                                method: 'PUT',
-                                                responseType: 'json',
-                                                url: '/api/settings?htmlDownload=true'
-                                            }).then(response => {}).catch(e => console.error(e))
-                                            break
-                                        case false:
-                                            m.request({
-                                                method: 'PUT',
-                                                responseType: 'json',
-                                                url: '/api/settings?htmlDownload=false'
-                                            }).then(response => {}).catch(e => console.error(e))
-                                            break
+                            m('label', {class: 'label'}, 'Download mode'),
+                            m('div', {id: 'buttons', class: 'field is-grouped'}, [
+                                m('a', {
+                                    id: 'browser',
+                                    class: 'button is-fullwidth' + (app.prefs.dlMode == 'browser' ? ' is-info' : ''),
+                                    style: 'margin-right: 0.2em',
+                                    onclick: event => {
+                                        app.prefs.dlMode = 'browser'
+                                        m.request({
+                                            method: 'PUT',
+                                            responseType: 'json',
+                                            url: '/api/settings?dlMode=browser'
+                                        }).then(response => {}).catch(e => console.error(e))
                                     }
-                                }
-                            })
-                        ]),
-                        m('div', {class: 'field'}, [
-                            m('span', {class: 'is-unselectable'}, 'Clear page after download'),
-                            m('input', {id: 'autoClear', type: 'checkbox', class: 'switch is-hidden', checked: app.prefs.autoClear}),
-                            m('label', {
-                                for: 'autoClear',
-                                class: 'is-pulled-right',
-                                style: 'margin-left: 1em',
-                                onclick: vnode => {
-                                    app.prefs.autoClear = !app.prefs.autoClear
-                                    // send xhr
-                                    switch(app.prefs.autoClear) {
-                                        case true:
-                                            m.request({
-                                                method: 'PUT',
-                                                responseType: 'json',
-                                                url: '/api/settings?autoClear=true'
-                                            }).then(response => {}).catch(e => console.error(e))
-                                            break
-                                        case false:
-                                            m.request({
-                                                method: 'PUT',
-                                                responseType: 'json',
-                                                url: '/api/settings?autoClear=false'
-                                            }).then(response => {}).catch(e => console.error(e))
-                                            break
+                                }, 'Browser'),
+                                m('a', {
+                                    id: 'directory',
+                                    class: 'button is-fullwidth' + (app.prefs.dlMode == 'directory' ? ' is-info' : ''),
+                                    onclick: event => {
+                                        app.prefs.dlMode = 'directory'
+                                        m.request({
+                                            method: 'PUT',
+                                            responseType: 'json',
+                                            url: '/api/settings?dlMode=directory'
+                                        }).then(response => {}).catch(e => console.error(e))
                                     }
-                                }
-                            })
+                                }, 'Directory')
+                            ])
                         ])
                     ])
                 ])

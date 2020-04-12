@@ -2,15 +2,26 @@ const mongoose = require('mongoose')
 
 // Create model and schema. Export model.
 var Setting = mongoose.model('settings', new mongoose.Schema({
-    htmlDownload: {type: Boolean, default: true},
-    autoClear: {type: Boolean, default: false},
+    dlMode: {type: String, default: 'browser'},
     dlType: {type: String, default: 'video'}
 }))
 exports.Setting = Setting
 
 // Initialize database values if not present
 async function main() {
-    const settings = await Setting.findOne()
+
+    // Should only be 1 document in collection. Recreate if more than 1
+    const count = await Setting.countDocuments({})
+    
+    if (count > 1) {
+        Setting.collection.drop()
+    }
+
+    // Find first document where correct keys exist
+    const settings = await Setting.findOne({
+        dlMode: {$exists: true},
+        dlType: {$exists: true}
+    })
 
     if (settings) {
         // Settings exist

@@ -11,21 +11,12 @@ exports.get = async (req, res) => {
 exports.update = async (req, res) => {
     const settings = await Setting.findOne()
 
-    switch(req.query.htmlDownload) {
-        case 'true':
-            settings.htmlDownload = true
+    switch(req.query.dlMode) {
+        case 'browser':
+            settings.dlMode = 'browser'
             break
-        case 'false':
-            settings.htmlDownload = false
-            break
-    }
-    
-    switch(req.query.autoClear) {
-        case 'true':
-            settings.autoClear = true
-            break
-        case 'false':
-            settings.autoClear = false
+        case 'directory':
+            settings.dlMode = 'directory'
             break
     }
 
