@@ -1,10 +1,47 @@
 import m from 'mithril'
 import * as qs from 'qs'
-import { socket } from '../main'
+import io from 'socket.io-client'
 import { app } from '../main' // Singleton class for app settings
 
 var progress = 0 // Current percentage of download progress
 var stdout = []
+
+// Initialize socket
+const socket = io()
+
+// Listen on socket. Sockets automatically join a room identified by their id. This room is where the server emits the stdout stream.
+socket.on('connect', () => {
+    // Output stdout to text area
+    socket.on('console_stdout', data => {
+        // Regex to match only the download % from stdout. Download % is not present in all output lines.
+        const match = data.match(/([0-9]{1,3}.[0-9])\%/)
+        // Use capture group 1 to get value without the % symbol.
+        match ? progress = match[1] : null
+
+        // Append console stdout to array. Get new length of the array
+        const length = stdout.push(data)
+
+        // Maintain specific array length (lines in the output)
+        if (length > 6) {
+            stdout.shift()
+        }
+
+        m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
+    })
+
+    // Download progress (on complete)
+    socket.on('download_complete', fileName => {
+        document.getElementById('download').classList.remove('is-loading')
+
+        // Fetch file if downloading to browser. fileName contains the file extension.
+        if (app.prefs.dlMode == 'browser') {
+            window.location.href = `/api/download/cache/${fileName}`
+        }
+
+        // Clear the page after download if that setting is enabled
+        app.prefs.autoClear ? clearPage() : null
+    })
+})
 
 function pathWithFileName(vnode) {
     var fullPath = [...vnode.attrs.path, vnode.attrs.fileName] // Append fileName to path array
@@ -24,7 +61,7 @@ function command(vnode) {
 // send xhr to begin download
 function startDownload(vnode) {
     const el = vnode.dom.children
-    el['buttons'].children['download'].classList.add('is-loading')
+    el['download'].classList.add('is-loading')
 
     var sendDL = {
         url: vnode.attrs.url,
@@ -35,27 +72,29 @@ function startDownload(vnode) {
     }
 
     // Change path depending on app's download mode setting. A normal path = download to directory. 'false' = download to browser.
-    app.prefs.htmlDownload ? sendDL.path = 'false' : sendDL.path = vnode.attrs.path.join('/')
-    
-    console.log(sendDL)
+    if (app.prefs.dlMode == 'browser') {
+        sendDL.path = 'false'
+    } else {
+        sendDL.path = vnode.attrs.path.join('/')
+    }
 
-    // if (app.prefs.dlType == 'audio' && vnode.attrs.tags.genre) {
-    //     // Add genre to genre suggestions
-    //     m.request({
-    //         method: 'PUT',
-    //         responseType: 'json',
-    //         url: `/api/suggest/genre/${encodeURIComponent(vnode.attrs.tags.genre)}`
-    //     }).then(response => {
-    //         // getSuggestions()
-    //     }).catch(e => console.error(e))
-    // }
+    if (app.prefs.dlType == 'audio' && vnode.attrs.tags.genre) {
+        // Add genre to genre suggestions
+        m.request({
+            method: 'PUT',
+            responseType: 'json',
+            url: `/api/suggest/genre/${encodeURIComponent(vnode.attrs.tags.genre)}`
+        }).then(response => {
+            // getSuggestions()
+        }).catch(e => console.error(e))
+    }
 
-    // // Send download request
-    // m.request({
-    //     method: 'GET',
-    //     responseType: 'json',
-    //     url: `/api/download?${qs.stringify(sendDL)}`
-    // }).then(response => {}).catch(e => console.error(e)) // response is handled via socket.io
+    // Send download request
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: `/api/download?${qs.stringify(sendDL)}`
+    }).then(response => {}).catch(e => console.error(e)) // response is handled via socket.io
 }
 
 
@@ -66,40 +105,7 @@ export default {
     oninit: vnode => {
         vnode.state.progress = 0
     },
-    oncreate: vnode => {
-        // Listen on socket. Sockets automatically join a room identified by their id. This room is where the server emits the stdout stream.
-        socket.on('connect', () => {
-
-            // Output stdout to text area
-            socket.on('console_stdout', data => {
-                // Regex to match only the download % from stdout. Download % is not present in all output lines.
-                const match = data.match(/([0-9]{1,3}.[0-9])\%/)
-                // Use capture group 1 to get value without the % symbol.
-                match ? progress = match[1] : null
-
-                // Append console stdout to array
-                const length = stdout.push(data)
-
-                // Maintain specific array length (lines in the output)
-                if (length > 6) {
-                    stdout.shift()
-                }
-
-                m.redraw() // Manually trigger Mithril redraw so textarea gets updated live
-            })
-
-            // Download progress (on complete)
-            socket.on('download_complete', fileName => {
-                document.getElementById('download').classList.remove('is-loading')
-
-                // Fetch file if downloading to browser. fileName contains the file extension.
-                app.prefs.htmlDownload ? window.location.href = `/api/download/cache/${fileName}` : null
-
-                // Clear the page after download if that setting is enabled
-                app.prefs.autoClear ? clearPage() : null
-            })
-        })
-    },
+    oncreate: vnode => {},
     view: vnode => m('div', [
         m('div', {class: 'field'}, [
             m('label', {class: 'label'}, m('i', {class: 'fas fa-terminal'})),
@@ -123,14 +129,6 @@ export default {
                 ])
             ])
         ]),
-        m('div', {id: 'buttons', class: 'field is-grouped'}, [
-            m('button', {id: 'download', class: 'button is-fullwidth', disabled: 'true', onclick: event => startDownload(vnode)}, 'Download'),
-            m('a', {
-                class: 'button is-outlined is-danger',
-                style: 'margin-left: 1em',
-                'data-tooltip': 'Clear page',
-                // onclick: vnode => clearPage(),
-            }, m('span', {class: 'icon'}, m('i', {class: 'fas fa-times'}))),
-        ])
+        m('button', {id: 'download', class: 'button is-fullwidth', disabled: 'true', onclick: event => startDownload(vnode)}, 'Download')
     ])
 }
