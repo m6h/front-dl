@@ -1,11 +1,6 @@
 import m from 'mithril'
 
-function toggleNavBurger() {
-    document.querySelector('.navbar-burger').classList.toggle('is-active')
-    document.querySelector('.navbar-menu').classList.toggle('is-active')
-}
-
-function highlight(vnode) {
+function tab(vnode) {
     setTimeout(() => {
         // Get the window location after "#!/" to match against the id's of anchor elements.
         // Anchor's id must match url path (href).
@@ -16,44 +11,35 @@ function highlight(vnode) {
             location = 'single'
         }
     
-        // Get tab anchor elements in navbar
-        const el = vnode.dom.children[0].children[1].children[0].children
+        // Get tab list item elements in navbar
+        const el = vnode.dom.children[0].children
     
         // Remove highlight from all tabs
         Array.from(el).forEach(item => {
-            item.classList.remove('has-background-light')
-            item.removeAttribute('style')
+            item.classList.remove('is-active')
         })
     
         // Add highlight to current tab
-        el[location].classList.add('has-background-light')
-        el[location].style.borderTop = '0.15em solid transparent'
-        el[location].style.borderBottom = '0.15em solid #209cee'
+        el[location].classList.add('is-active')
     }, 10)
 }
 
 export default {
     oncreate: vnode => {
-        window.onhashchange = highlight(vnode)
+        window.onhashchange = tab(vnode)
     },
-    view: vnode => m('nav', {class: 'navbar has-shadow is-unselectable'}, [
-        m('div', {class: 'container'}, [
-            m('div', {class: 'navbar-brand'} , [
-                m(m.route.Link, {class: 'navbar-item', onclick: () => highlight(vnode), href:'/'}, [
-                    m('span', {class: 'title'}, 'front-dl')
-                ]),
-                m('a', {role: 'button', onclick: () => toggleNavBurger(), class: 'navbar-burger'}, [
-                    m('span'), m('span'), m('span')
-                ])
-            ]),
-            m('div', {class: 'navbar-menu'}, [
-                m('div', {class: 'navbar-start'}, [
-                    m(m.route.Link, {id:   'single', class: 'navbar-item has-text-grey-dark', onclick: () => highlight(vnode), href: '/'}, 'Single'),
-                    m(m.route.Link, {id: 'playlist', class: 'navbar-item has-text-grey-dark', onclick: () => highlight(vnode), href: '/playlist'}, 'Playlist'),
-                    m(m.route.Link, {id: 'settings', class: 'navbar-item has-text-grey-dark', onclick: () => highlight(vnode), href: '/settings'}, 'Settings'),
-                ]),
-                m('div', {class: 'navbar-end'}, '')
-            ])
-        ])
-    ])
+    view: vnode => m('div', {class: 'tabs is-centered', style: 'margin: 0'}, m('ul', [
+        m('li', {id: 'single'}, m(m.route.Link, {onclick: () => tab(vnode), href: '/'}, [
+            m('span', {class: 'icon is-small'}, m('i', {class: 'fas fa-square'})),
+            m('span', 'Single')
+        ])),
+        m('li', {id: 'playlist'}, m(m.route.Link, {onclick: () => tab(vnode), href: '/playlist'}, [
+            m('span', {class: 'icon is-small'}, m('i', {class: 'fas fa-th-large'})),
+            m('span', 'Playlist')
+        ])),
+        m('li', {id: 'settings'}, m(m.route.Link, {onclick: () => tab(vnode), href: '/settings'}, [
+            m('span', {class: 'icon is-small'}, m('i', {class: 'fas fa-cog'})),
+            m('span', 'Settings')
+        ]))
+    ]))
 }
