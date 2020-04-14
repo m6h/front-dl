@@ -3,6 +3,7 @@
     position: relative;
     cursor: default;
     user-select: none;
+    z-index: 10;
 }
 .suggestions ul {
     position: absolute;
