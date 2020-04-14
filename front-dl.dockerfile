@@ -41,7 +41,8 @@ RUN mkdir -p /srv/ffmpeg/ && cd /srv/ffmpeg/ && \
 
 # Install youtube-dl (latest)
 RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtube-dl && \
-    chmod +xr /usr/local/bin/youtube-dl
+    chmod +xr /usr/local/bin/youtube-dl && \
+    mkdir -p /etc/youtube-dl
 
 WORKDIR /node/
 

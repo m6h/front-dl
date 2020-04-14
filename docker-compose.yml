@@ -11,6 +11,9 @@ services:
       - type: volume
         source: nodejs
         target: /media
+      - type: volume
+        source: cookies
+        target: /etc/youtube-dl
     ports:
       - '3001:3000'
   mongodb:
@@ -21,7 +24,10 @@ services:
       - type: volume
         source: mongodb
         target: /data/db
+    ports:
+      - '3002:27017'
 
 volumes:
   nodejs:
+  cookies:
   mongodb:

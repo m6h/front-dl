@@ -55,7 +55,13 @@ exports.getThumbnail = (req, res) => {
         fs.access(filePath, fs.constants.R_OK, (error) => {
             if (error) {
                 // Image can't be read (it doesn't exist). Fetch thumbnail image
-                var youtubeDl = spawn('youtube-dl', ['--write-thumbnail', '--skip-download', '-o', `${filePath}`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', [
+                    '--cookies', '/etc/youtube-dl/cookies',
+                    '--write-thumbnail',
+                    '--skip-download',
+                    '-o', `${filePath}`,
+                    `${q.url}`
+                ])
 
                 // Set encoding so outputs can be read
                 youtubeDl.stderr.setEncoding('utf-8')
@@ -120,7 +126,15 @@ exports.download = (req, res) => {
         switch (q.type) {
             case 'audio':
                 // Prefer audio formats in this order: .m4a > .mp3 > other
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio', '--embed-thumbnail', '--no-playlist', '-o', `${q.path}.%(ext)s`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', [
+                    '-f', 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio',
+                    '--cookies', '/etc/youtube-dl/cookies',
+                    '--ignore-errors',
+                    '--embed-thumbnail',
+                    '--no-playlist',
+                    '-o', `${q.path}.%(ext)s`,
+                    `${q.url}`
+                ])
                 
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
@@ -192,7 +206,16 @@ exports.download = (req, res) => {
                 })
                 break
             case 'video':
-                var youtubeDl = spawn('youtube-dl', ['-f', 'bestvideo[height<=?1080]+bestaudio', '--merge-output-format', 'mkv', '--write-thumbnail', '--no-playlist', '-o', `${q.path}.mkv`, `${q.url}`])
+                var youtubeDl = spawn('youtube-dl', [
+                    '-f', 'bestvideo[height<=?1080]+bestaudio',
+                    '--merge-output-format', 'mkv',
+                    '--cookies', '/etc/youtube-dl/cookies',
+                    '--ignore-errors',
+                    '--write-thumbnail',
+                    '--no-playlist',
+                    '-o', `${q.path}.mkv`,
+                    `${q.url}`
+                ])
         
                 // Set encoding so outputs can be read
                 youtubeDl.stdout.setEncoding('utf-8')
@@ -257,7 +280,13 @@ exports.downloadFromCache = (req, res) => {
 
 // Get the metadata of a video
 exports.metadata = (req, res) => {
-    var youtubeDl = spawn('youtube-dl', ['--dump-single-json', '--skip-download', `${req.query.url}`])
+    var youtubeDl = spawn('youtube-dl', [
+        '--cookies', '/etc/youtube-dl/cookies',
+        '--ignore-errors',
+        '--dump-single-json',
+        '--skip-download',
+        `${req.query.url}`
+    ])
     var output = ''
 
     // Set encoding so outputs can be read
