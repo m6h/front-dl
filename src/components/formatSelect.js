@@ -1,11 +1,8 @@
 import m from 'mithril'
 import { app } from '../main' // Singleton class for app settings
 
-function set(vnode, event) {
+function set(vnode, format) {
     const el = vnode.dom.children['buttons'].children
-    
-    // Get type of clicked button based on its id
-    const format = event.target.id.toLowerCase()
     
     // Update style of buttons
     switch(format) {
@@ -47,13 +44,19 @@ export default {
                 id: 'audio',
                 class: 'button is-fullwidth' + (app.prefs.format == 'audio' ? ' is-info' : ''),
                 style: 'margin-right: 0.2em',
-                onclick: event => set(vnode, event)
-            }, 'Audio'),
+                onclick: event => set(vnode, 'audio')
+            }, [
+                m('span', {class: 'icon'}, m('i', {class: 'fas fa-music'})),
+                m('span', 'Audio')
+            ]),
             m('a', {
                 id: 'video',
                 class: 'button is-fullwidth' + (app.prefs.format == 'video' ? ' is-info' : ''),
-                onclick: event => set(vnode, event)
-            }, 'Video')
+                onclick: event => set(vnode, 'video')
+            }, [
+                m('span', {class: 'icon'}, m('i', {class: 'fas fa-film'})),
+                m('span', 'Video')
+            ])
         ])
     ])
 }

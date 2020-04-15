@@ -105,7 +105,10 @@ export default {
                                         url: '/api/settings?mode=browser'
                                     }).then(response => {}).catch(e => console.error(e))
                                 }
-                            }, 'Browser'),
+                            }, [
+                                m('span', {class: 'icon'}, m('i', {class: 'fas fa-globe'})),
+                                m('span', 'Browser')
+                            ]),
                             m('a', {
                                 id: 'directory',
                                 class: 'button is-fullwidth' + (app.prefs.mode == 'directory' ? ' is-info' : ''),
@@ -117,7 +120,10 @@ export default {
                                         url: '/api/settings?mode=directory'
                                     }).then(response => {}).catch(e => console.error(e))
                                 }
-                            }, 'Directory')
+                            }, [
+                                m('span', {class: 'icon'}, m('i', {class: 'fas fa-list'})),
+                                m('span', 'Directory')
+                            ])
                         ])
                     ])
                 ])

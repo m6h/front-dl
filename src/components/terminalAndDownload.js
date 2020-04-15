@@ -129,6 +129,14 @@ export default {
                 ])
             ])
         ]),
-        m('button', {id: 'download', class: 'button is-fullwidth', disabled: 'true', onclick: event => startDownload(vnode)}, 'Download')
+        m('button', {
+            class: 'button is-info is-fullwidth ' + (state.loading ? 'is-loading ' : ''),
+            // disabled: vnode.attrs.fileName ? false : true,
+            disabled: !ready(vnode),
+            onclick: event => download(vnode)
+        }, [
+            m('span', {class: 'icon'}, m('i', {class: 'fas fa-download'})),
+            m('span', 'Download')
+        ])
     ])
 }
