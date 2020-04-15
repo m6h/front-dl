@@ -1,6 +1,6 @@
 import m from 'mithril'
 import { app } from '../main' // Singleton class for app settings
-import typeButtons from '../components/typeSelect'
+import formatButtons from '../components/formatSelect'
 import directory from '../components/directoryBrowser'
 import terminalAndDownload from '../components/terminalAndDownload'
 import { getMetadata, getThumbnail, autofill } from '../components/metadata'
@@ -72,7 +72,7 @@ export default {
     },
     oncreate: () => {
         // If downloading to browser then hide the directory browser
-        if (app.prefs.dlMode == 'browser') {
+        if (app.prefs.mode == 'browser') {
             document.getElementById('directory').classList.add('is-hidden')
         } else {
             document.getElementById('directory').classList.remove('is-hidden')
@@ -80,11 +80,11 @@ export default {
     },
     onupdate: () => {
         // If fields have a value then enable download button
-        if(state.url && state.fileName && app.prefs.dlType) {
+        if(state.url && state.fileName && app.prefs.format) {
             // if audio then check tag values exist
-            if(app.prefs.dlType == 'audio' && state.tags.artist && state.tags.title) {
+            if(app.prefs.format == 'audio' && state.tags.artist && state.tags.title) {
                 goState(true)
-            } else if(app.prefs.dlType == 'video') {
+            } else if(app.prefs.format == 'video') {
                 goState(true)
             } else {
                 goState(false)
@@ -133,7 +133,7 @@ export default {
                     label: 'File Name', icon: 'fas fa-file', placeholder: 'e.g. Rootkit - Taking Me Higher', value: state.fileName,
                     oninput: event => state.fileName = event.target.value
                 }),
-                m(typeButtons),
+                m(formatButtons),
                 m('div', {id: 'tags', class: 'field is-hidden'}, [
                     m(dlInputField, {
                         label: 'Artist', icon: 'fas fa-music', placeholder: 'e.g. Rootkit', value: state.tags.artist,

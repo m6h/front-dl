@@ -1,5 +1,5 @@
 import m from 'mithril'
-import typeButtons from '../components/typeSelect'
+import formatButtons from '../components/formatSelect'
 import directory from '../components/directoryBrowser'
 import terminalAndDownload from '../components/terminalAndDownload'
 import { getMetadata, getThumbnail, autofill } from '../components/metadata'

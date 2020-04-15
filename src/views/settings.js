@@ -95,26 +95,26 @@ export default {
                         m('div', {id: 'buttons', class: 'field is-grouped'}, [
                             m('a', {
                                 id: 'browser',
-                                class: 'button is-fullwidth' + (app.prefs.dlMode == 'browser' ? ' is-info' : ''),
+                                class: 'button is-fullwidth' + (app.prefs.mode == 'browser' ? ' is-info' : ''),
                                 style: 'margin-right: 0.2em',
                                 onclick: event => {
-                                    app.prefs.dlMode = 'browser'
+                                    app.prefs.mode = 'browser'
                                     m.request({
                                         method: 'PUT',
                                         responseType: 'json',
-                                        url: '/api/settings?dlMode=browser'
+                                        url: '/api/settings?mode=browser'
                                     }).then(response => {}).catch(e => console.error(e))
                                 }
                             }, 'Browser'),
                             m('a', {
                                 id: 'directory',
-                                class: 'button is-fullwidth' + (app.prefs.dlMode == 'directory' ? ' is-info' : ''),
+                                class: 'button is-fullwidth' + (app.prefs.mode == 'directory' ? ' is-info' : ''),
                                 onclick: event => {
-                                    app.prefs.dlMode = 'directory'
+                                    app.prefs.mode = 'directory'
                                     m.request({
                                         method: 'PUT',
                                         responseType: 'json',
-                                        url: '/api/settings?dlMode=directory'
+                                        url: '/api/settings?mode=directory'
                                     }).then(response => {}).catch(e => console.error(e))
                                 }
                             }, 'Directory')

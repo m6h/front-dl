@@ -5,10 +5,10 @@ function set(vnode, event) {
     const el = vnode.dom.children['buttons'].children
     
     // Get type of clicked button based on its id
-    const type = event.target.id.toLowerCase()
+    const format = event.target.id.toLowerCase()
     
     // Update style of buttons
-    switch(type) {
+    switch(format) {
         case 'audio':
             el['audio'].classList.add('is-info')
             el['video'].classList.remove('is-info')
@@ -22,36 +22,36 @@ function set(vnode, event) {
     }
 
     // Set type in app settings
-    app.prefs.dlType = type
+    app.prefs.format = format
 
     // Save selected type
     m.request({
         method: 'PUT',
         responseType: 'json',
-        url: `/api/settings?dlType=${type}`
+        url: `/api/settings?format=${format}`
     }).then(response => {}).catch(e => console.error(e))
 }
 
 export default {
     oncreate: vnode => {
-        if(app.prefs.dlType == 'audio') {
+        if(app.prefs.format == 'audio') {
             document.getElementById('tags').classList.remove('is-hidden')
         } else {
             document.getElementById('tags').classList.add('is-hidden')
         }
     },
     view: vnode => m('div', {class: 'field'}, [
-        m('label', {class: 'label'}, 'Type'),
+        m('label', {class: 'label'}, 'Format'),
         m('div', {id: 'buttons', class: 'field is-grouped'}, [
             m('a', {
                 id: 'audio',
-                class: 'button is-fullwidth' + (app.prefs.dlType == 'audio' ? ' is-info' : ''),
+                class: 'button is-fullwidth' + (app.prefs.format == 'audio' ? ' is-info' : ''),
                 style: 'margin-right: 0.2em',
                 onclick: event => set(vnode, event)
             }, 'Audio'),
             m('a', {
                 id: 'video',
-                class: 'button is-fullwidth' + (app.prefs.dlType == 'video' ? ' is-info' : ''),
+                class: 'button is-fullwidth' + (app.prefs.format == 'video' ? ' is-info' : ''),
                 onclick: event => set(vnode, event)
             }, 'Video')
         ])

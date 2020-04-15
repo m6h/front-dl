@@ -100,7 +100,7 @@ exports.clearThumbnailCache = (req, res) => {
 
 // Download
 exports.download = (req, res) => {
-    // Query string: {url: '', type: '', tags: {artist: '', title: '', genre: ''}, path: '', fileName: '', socketId: ''}
+    // Query string: {url: '', format: '', tags: {artist: '', title: '', genre: ''}, path: '', fileName: '', socketId: ''}
 
     // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
     // path string 'false' = download to browser.
@@ -119,11 +119,11 @@ exports.download = (req, res) => {
     }
 
     // Ensure minimum required query strings have values
-    if (q.url && ((q.type == 'audio' && q.tags.artist && q.tags.title) || q.type == 'video') && q.path && q.socketId) {
+    if (q.url && ((q.format == 'audio' && q.tags.artist && q.tags.title) || q.format == 'video') && q.fileName && q.socketId) {
         res.json('')
 
         // Download the video with youtube-dl. If audio then also add metadata tags.
-        switch (q.type) {
+        switch (q.format) {
             case 'audio':
                 // Prefer audio formats in this order: .m4a > .mp3 > other
                 var youtubeDl = spawn('youtube-dl', [

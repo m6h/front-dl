@@ -11,21 +11,21 @@ exports.get = async (req, res) => {
 exports.update = async (req, res) => {
     const settings = await Setting.findOne()
 
-    switch(req.query.dlMode) {
+    switch(req.query.mode) {
         case 'browser':
-            settings.dlMode = 'browser'
+            settings.mode = 'browser'
             break
         case 'directory':
-            settings.dlMode = 'directory'
+            settings.mode = 'directory'
             break
     }
 
-    switch(req.query.dlType) {
+    switch(req.query.format) {
         case 'audio':
-            settings.dlType = 'audio'
+            settings.format = 'audio'
             break
         case 'video':
-            settings.dlType = 'video'
+            settings.format = 'video'
             break
     }
 
