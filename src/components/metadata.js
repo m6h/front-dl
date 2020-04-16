@@ -24,25 +24,6 @@ const getThumbnail = (meta = {}) => {
     }
 }
 
-// const getThumbnail = (url = '') =>
-//     new Promise(async (resolve, reject) => {
-//         var thumbnail = ''
-
-//         const res = await m.request({
-//             method: 'GET',
-//             responseType: 'json',
-//             url: `/api/thumbnail?url=${url}`
-//         }).catch(e => console.error(e))
-
-//         if (res) {
-//             thumbnail = res
-//         } else {
-//             thumbnail = '/public/blank.png'
-//         }
-
-//         res ? resolve(thumbnail) : reject()
-//     }).catch(e => console.error(e))
-
 // Fetch metadata
 const getMetadata = (url = '') => 
     m.request({

@@ -73,9 +73,6 @@ app.get('/api/download', ydlController.download) // {url: '', type: '', tags: {a
 app.get('/api/download/cache/:fileName', ydlController.downloadFromCache)
 app.get('/api/metadata', ydlController.metadata) // {url: ''}
 app.get('/api/update/ydl', ydlController.update)
-app.route('/api/thumbnail')
-    .get(ydlController.getThumbnail) // {url: ''}
-    .delete(ydlController.clearThumbnailCache)
 
 // Suggestions
 app.get('/api/suggest/genre', suggestController.getGenre)

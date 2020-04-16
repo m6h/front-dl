@@ -1,9 +1,6 @@
-const { exec, spawn, spawnSync } = require('child_process')
+const { exec, spawn } = require('child_process')
 const path = require('path')
-const crypto = require('crypto')
-const fs = require('fs')
 const { io } = require('../app')
-const util = require('util')
 
 function checkPath(queryPath) {
     // Return error if any '/../' in path. clean up path using normalize.
@@ -35,67 +32,6 @@ exports.browse = (req, res) => {
     } else {
         res.status(400).send('Bad Request')
     }
-}
-
-// Fetch video thumbnail
-exports.getThumbnail = (req, res) => {
-    // Query string: {url: ''}
-
-    const q = req.query
-
-    if (q.url) {
-        // Hash query string url with sha256 to generate file name in cache folder
-        // Create hash object and input (update) the string to hash
-        // Calculate output (digest) of the hash function as a standard hex string
-        const fileName = crypto.createHash('sha256').update(q.url).digest('hex')
-
-        const filePath = `./public/cache/${fileName}.jpg`
-
-        // If image at calculated path can be read (it exists) then return existing image path
-        fs.access(filePath, fs.constants.R_OK, (error) => {
-            if (error) {
-                // Image can't be read (it doesn't exist). Fetch thumbnail image
-                var youtubeDl = spawn('youtube-dl', [
-                    '--cookies', '/etc/youtube-dl/cookies',
-                    '--write-thumbnail',
-                    '--skip-download',
-                    '-o', `${filePath}`,
-                    `${q.url}`
-                ])
-
-                // Set encoding so outputs can be read
-                youtubeDl.stderr.setEncoding('utf-8')
-
-                // Log stderr if exists
-                youtubeDl.stderr.on('data', data => {
-                    log('youtube-dl', data)
-                })
-
-                // Respond with path to thumbnail
-                youtubeDl.on('close', exitCode => {
-                    log('youtube-dl', exitCode)
-                    res.json(filePath)
-                })
-            } else {
-                // Image already exists. Respond with path to image
-                res.json(filePath)
-            }
-        })
-    } else {
-        res.json('')
-    }
-}
-
-// Delete all .jpg's from the cache folder
-exports.clearThumbnailCache = (req, res) => {
-    exec('rm ./public/cache/*.jpg', (error, stdout, stderr) => {
-        if (error) {
-            log('rm', error)
-            res.json('')
-        } else {
-            res.json('')
-        }
-    })
 }
 
 // Download

@@ -72,20 +72,7 @@ export default {
                                 getYdlVersion()
                             }).catch(e => console.error(e))
                         }
-                    }, 'Update youtube-dl'),
-                    m('a', {
-                        class: 'button field is-fullwidth',
-                        onclick: vnode => {
-                            vnode.target.classList.add('is-loading')
-                            m.request({
-                                method: 'DELETE',
-                                responseType: 'json',
-                                url: '/api/thumbnail'
-                            }).then(response => {
-                                vnode.target.classList.remove('is-loading')
-                            }).catch(e => console.error(e))
-                        }
-                    }, 'Clear thumbnail cache')
+                    }, 'Update youtube-dl')
                 ])
             ]),
             m('div', {class: 'column is-narrow is-unselectable'}, [
