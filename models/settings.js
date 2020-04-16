@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 // Create model and schema. Export model.
 var Setting = mongoose.model('settings', new mongoose.Schema({
     mode: {type: String, default: 'browser'},
-    format: {type: String, default: 'video'}
+    format: {type: String, default: 'video'},
+    outputTemplate: {type: String, default: '%(playlist_index)s - %(title)s.%(ext)s'}
 }))
 exports.Setting = Setting
 
@@ -17,7 +18,8 @@ async function main() {
     // Find first document where correct keys exist
     const settings = await Setting.findOne({
         mode: {$exists: true},
-        format: {$exists: true}
+        format: {$exists: true},
+        outputTemplate: {$exists: true}
     })
 
     if (settings) {

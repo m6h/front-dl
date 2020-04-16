@@ -29,6 +29,10 @@ exports.update = async (req, res) => {
             break
     }
 
+    if (req.query.outputTemplate) {
+        settings.outputTemplate = req.query.outputTemplate
+    }
+
     await settings.save().catch(e => console.error(e))
     res.json(settings)
 }
