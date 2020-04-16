@@ -70,29 +70,6 @@ export default {
     oninit: () => {
         getSuggestions()
     },
-    oncreate: () => {
-        // If downloading to browser then hide the directory browser
-        if (app.prefs.mode == 'browser') {
-            document.getElementById('directory').classList.add('is-hidden')
-        } else {
-            document.getElementById('directory').classList.remove('is-hidden')
-        }
-    },
-    onupdate: () => {
-        // If fields have a value then enable download button
-        if(state.url && state.fileName && app.prefs.format) {
-            // if audio then check tag values exist
-            if(app.prefs.format == 'audio' && state.tags.artist && state.tags.title) {
-                goState(true)
-            } else if(app.prefs.format == 'video') {
-                goState(true)
-            } else {
-                goState(false)
-            }
-        } else {
-            goState(false)
-        }
-    },
     view: () => m('div', [
         m('div', {class: 'columns'}, [
             m('div', {class: 'column'}, [

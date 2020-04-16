@@ -1,9 +1,11 @@
 import m from 'mithril'
+import { app } from '../main'
 
 // Use state for all component instances
 var path = [] // The path e.g. ['foo', 'bar', 'folder'] = foo/bar/folder
 var folders = [] // Array of folder names in the current path.
 
+// Directory is hidden if download mode is Browser
 export default {
     // Get list of all folders in path
     get: vnode => {
@@ -17,7 +19,7 @@ export default {
         }).catch(e => console.error(e))
     },
     path: path,
-    view: vnode => m('nav', {id: 'directory', class: 'panel'}, [
+    view: vnode => m('nav', {class: 'panel' + (app.prefs.mode == 'directory' ? '' : ' is-hidden'), style: 'word-break: break-all'}, [
         m('p', {class: 'panel-heading'}, 'Directory'),
         m('div', {class: 'panel-block'}, [
             m('a', {class: 'button is-small', onclick: () => {path.pop(); vnode.state.get(vnode)}}, [
