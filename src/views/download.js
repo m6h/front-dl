@@ -134,7 +134,7 @@ export default {
                     oninput: event => state.fileName = event.target.value
                 }),
                 m(formatButtons),
-                m('div', {id: 'tags', class: 'field is-hidden'}, [
+                m('div', {class: 'field' + (app.prefs.format == 'audio' ? '' : ' is-hidden')}, [
                     m(dlInputField, {
                         label: 'Artist', icon: 'fas fa-music', placeholder: 'e.g. Rootkit', value: state.tags.artist,
                         oninput: event => state.tags.artist = event.target.value

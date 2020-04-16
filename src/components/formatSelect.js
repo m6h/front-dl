@@ -9,19 +9,17 @@ function set(vnode, format) {
         case 'audio':
             el['audio'].classList.add('is-info')
             el['video'].classList.remove('is-info')
-            document.getElementById('tags').classList.remove('is-hidden')
             break
         case 'video':
             el['audio'].classList.remove('is-info')
             el['video'].classList.add('is-info')
-            document.getElementById('tags').classList.add('is-hidden')
             break
     }
 
-    // Set type in app settings
+    // Set format in app settings
     app.prefs.format = format
 
-    // Save selected type
+    // Save selected format
     m.request({
         method: 'PUT',
         responseType: 'json',
@@ -30,13 +28,6 @@ function set(vnode, format) {
 }
 
 export default {
-    oncreate: vnode => {
-        if(app.prefs.format == 'audio') {
-            document.getElementById('tags').classList.remove('is-hidden')
-        } else {
-            document.getElementById('tags').classList.add('is-hidden')
-        }
-    },
     view: vnode => m('div', {class: 'field'}, [
         m('label', {class: 'label'}, 'Format'),
         m('div', {id: 'buttons', class: 'field is-grouped'}, [
