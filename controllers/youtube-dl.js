@@ -1,6 +1,7 @@
 const { exec, spawn } = require('child_process')
 const path = require('path')
 const { io } = require('../app')
+const fs = require('fs')
 
 function checkPath(queryPath) {
     // Return error if any '/../' in path. clean up path using normalize.
@@ -244,6 +245,32 @@ exports.metadata = (req, res) => {
         output ? res.json(JSON.parse(output)) : res.json('')
     })
 
+}
+
+// Get/Update cookies file used by youtube-dl
+exports.getCookies = (req, res) => {
+    fs.readFile('/etc/youtube-dl/cookies', 'utf-8', (error, data) => {
+        if (error) {
+            log('/etc/youtube-dl/cookies', error)
+            res.status(400).send('Bad Request')
+        } else {
+            res.send(data)
+        }
+    })
+}
+exports.putCookies = (req, res) => {
+    if (req.query.cookies) {
+        fs.writeFile('/etc/youtube-dl/cookies', req.query.cookies, 'utf-8', (error) => {
+            if (error) {
+                log('/etc/youtube-dl/cookies', error)
+                res.status(400).send('Bad Request')
+            } else {
+                res.status(200).send('OK')
+            }
+        })
+    } else {
+        res.status(400).send('Bad Request')
+    }
 }
 
 // Get youtube-dl version

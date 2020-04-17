@@ -73,6 +73,9 @@ app.get('/api/download', ydlController.download) // {url: '', type: '', tags: {a
 app.get('/api/download/cache/:fileName', ydlController.downloadFromCache)
 app.get('/api/metadata', ydlController.metadata) // {url: ''}
 app.get('/api/update/ydl', ydlController.update)
+app.route('/api/cookies')
+    .get(ydlController.getCookies)
+    .put(ydlController.putCookies) // {cookies: ''}
 
 // Suggestions
 app.get('/api/suggest/genre', suggestController.getGenre)

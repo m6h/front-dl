@@ -4,9 +4,15 @@ The goal of this app is to create a faster and easier way to interact with youtu
 
 ## Prerequisites
 - [Docker][docker]
-- [Docker Compose][compose]
 
-## Install using Compose
+## Important paths
+Container | Folder | Description
+----|--------|------------
+front-dl | `/media` | Where the app expects a media library (a folder for your media) to be mounted
+front-dl | `/etc/youtube-dl` | A file named `cookies` in this folder is used as youtube-dl's [cookie jar][3]
+MongoDB | `/data/db` | The default database path
+
+## Install example using [Docker Compose][compose]
 In order for downloads into a directory to persist, we must mount a [volume][1]. In this example, we assume our existing media library is located on the host at `/mnt/my/media`, and bind mount it into the Node.js container at `/media`, which is where the app expects it to be. 
 
 The database mounts a volume named "mongodb" for simplicity.
@@ -77,3 +83,4 @@ Dev: [Babel][ba], [Webpack][w]
 [compose]: https://docs.docker.com/compose/install/
 [1]: https://docs.docker.com/compose/compose-file/#volumes
 [2]: https://docs.docker.com/compose/networking/
+[3]: https://github.com/ytdl-org/youtube-dl#how-do-i-pass-cookies-to-youtube-dl
