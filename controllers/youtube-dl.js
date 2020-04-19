@@ -57,7 +57,7 @@ exports.download = (req, res) => {
 
     // Ensure minimum required query strings have values
     if (q.url && ((q.format == 'audio' && q.tags.artist && q.tags.title) || q.format == 'video') && q.fileName && q.socketId) {
-        res.json('')
+        res.status(200).send('OK')
 
         // Download the video with youtube-dl. If audio then also add metadata tags.
         switch (q.format) {
@@ -96,7 +96,7 @@ exports.download = (req, res) => {
                     log('youtube-dl', data)
                 })
 
-                // Once youtube-dl download is complete, add metadata to audio file
+                // Once download is complete, add metadata to audio file
                 youtubeDl.on('close', exitCode => {
                     log('youtube-dl', exitCode)
 
@@ -172,7 +172,7 @@ exports.download = (req, res) => {
                     log('youtube-dl', data)
                 })
         
-                // Send http response once download has completed, emit "Done" message to client socket, and log exit code
+                // Emit "Download complete" message to client socket once download has completed, and log exit code
                 youtubeDl.on('close', exitCode => {
                     log('youtube-dl', exitCode)
                     io.to(q.socketId).emit('console_stdout', 'Download complete')
@@ -186,6 +186,77 @@ exports.download = (req, res) => {
                 })
                 break
         }
+    } else {
+        res.status(400).send('Bad Request')
+    }
+}
+
+// Download playlist
+exports.downloadPlaylist = (req, res) => {
+    // Query string: {url: '', format: '', path: '', playlistName: '', outputTemplate: '', socketId: ''}
+
+    // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
+    var q = req.query
+
+    // Format and validate path
+    q.path = checkPath('/media/' + q.path + '/')
+
+    // Ensure minimum required query strings have values
+    if (q.url && (q.format == 'audio' || q.format == 'video') && q.playlistName && q.outputTemplate && q.socketId) {
+        res.status(200).send('OK')
+        var youtubeDl
+
+        switch (q.format) {
+            case 'audio':
+                // Prefer audio formats in this order: .m4a > .mp3 > other
+                youtubeDl = spawn('youtube-dl', [
+                    '-f', 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio',
+                    '--cookies', '/etc/youtube-dl/cookies',
+                    '--ignore-errors',
+                    '--embed-thumbnail',
+                    '-o', `${q.path}${q.outputTemplate}`,
+                    `${q.url}`
+                ])
+                break
+            case 'video':
+                youtubeDl = spawn('youtube-dl', [
+                    '-f', 'bestvideo[height<=?1080]+bestaudio',
+                    '--merge-output-format', 'mkv',
+                    '--cookies', '/etc/youtube-dl/cookies',
+                    '--ignore-errors',
+                    '--write-thumbnail',
+                    '-o', `${q.path}${q.outputTemplate}`,
+                    `${q.url}`
+                ])
+                break
+        }
+
+        // Set encoding so outputs can be read
+        youtubeDl.stdout.setEncoding('utf-8')
+        youtubeDl.stderr.setEncoding('utf-8')
+
+        // Emit command stdout stream to socket, and console log
+        youtubeDl.stdout.on('data', data => {
+            // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
+            //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
+            (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : log('youtube-dl', data)
+
+            io.to(q.socketId).emit('console_stdout', data)
+        })
+
+        // Log stderr if exists
+        youtubeDl.stderr.on('data', data => {
+            log('youtube-dl', data)
+        })
+
+        // Emit "Download complete" message to client socket once download has completed, and log exit code
+        youtubeDl.on('close', exitCode => {
+            log('youtube-dl', exitCode)
+            io.to(q.socketId).emit('console_stdout', 'Download complete')
+            
+            // Tell client that download is complete.
+            io.to(q.socketId).emit('download_complete', 'Download complete')
+        })
     } else {
         res.status(400).send('Bad Request')
     }
@@ -220,6 +291,7 @@ exports.metadata = (req, res) => {
     var youtubeDl = spawn('youtube-dl', [
         '--cookies', '/etc/youtube-dl/cookies',
         '--ignore-errors',
+        '--flat-playlist',
         '--dump-single-json',
         '--skip-download',
         `${req.query.url}`
