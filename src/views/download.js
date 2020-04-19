@@ -1,5 +1,5 @@
 import m from 'mithril'
-import { app } from '../main' // Singleton class for app settings
+import { app } from '../main'
 import formatButtons from '../components/formatSelect'
 import directory from '../components/directoryBrowser'
 import terminalAndDownload from '../components/terminalAndDownload'
@@ -33,24 +33,11 @@ function getSuggestions() {
     }).catch(e => console.error(e))
 }
 
-// enable or disable Go button
-function goState(s) {
-    if(s) {
-        // if true then enable go button
-        document.getElementById('download').classList.add('is-info')
-        document.getElementById('download').removeAttribute('disabled')
-    } else {
-        // else disable go button
-        document.getElementById('download').classList.remove('is-info')
-        document.getElementById('download').setAttribute('disabled', 'true')
-    }
-}
-
 // Reusable input field component
 const dlInputField = {
     view: vnode => m('div', {class: 'field'}, [
         m('label', {class: 'label'}, vnode.attrs.label),
-        m('div', {class: 'control has-icons-left has-icons-right ' + (state.loading ? 'is-loading' : '')}, [
+        m('div', {class: 'control has-icons-left has-icons-right' + (state.loading ? ' is-loading' : '')}, [
             m('span', {class: 'icon is-left'}, m('i', {class: vnode.attrs.icon})),
             m('input', {
                 class: 'input',
@@ -175,10 +162,11 @@ export default {
             m('div', {class: 'column'}, [
                 m(directory),
                 m(terminalAndDownload, {
+                    type: 'single',
                     url: state.url,
                     fileName: state.fileName,
-                    path: directory.path,
-                    tags: state.tags
+                    tags: state.tags,
+                    path: directory.path
                 })
             ])
         ])
