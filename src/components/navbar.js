@@ -6,8 +6,8 @@ function tab(vnode) {
         // Anchor's id must match url path (href).
         var location = window.location.hash.split('/')[1]
     
-        // If root path is empty string, replace empty string with default tab id
-        if (location == '') {
+        // Default to a specific tab when hashbang is missing or doesn't have a path after it
+        if (location == '' || location === undefined) {
             location = 'single'
         }
     
