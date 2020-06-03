@@ -3,7 +3,7 @@ import m from 'mithril'
 export { getMetadata, getThumbnail, autofill }
 
 // Return thumbnail url from metadata
-const getThumbnail = (meta = {}) => {
+function getThumbnail(meta = {}) {
     if (meta) {
         switch (meta.extractor) {
             case 'youtube':
@@ -25,15 +25,16 @@ const getThumbnail = (meta = {}) => {
 }
 
 // Fetch metadata
-const getMetadata = (url = '') => 
-    m.request({
+function getMetadata(url = '') {
+    return m.request({
         method: 'GET',
         responseType: 'json',
-        url: `/api/metadata?url=${url}`
+        url: '/api/metadata',
+        params: {url: url}
     }).catch(e => console.error(e))
+}
 
-
-const autofill = (res, meta = {fileName: '', tags: {artist: '', title: '', genre: ''}}) => {
+function autofill(res, meta = {fileName: '', tags: {artist: '', title: '', genre: ''}}) {
     // Attempt to autofill fields based on the youtube-dl extractor used.
     switch (res.extractor) {
         case 'youtube':

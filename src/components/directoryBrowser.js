@@ -12,7 +12,8 @@ export default {
         m.request({
             method: 'GET',
             responseType: 'json',
-            url: `/api/browse?path=${path.join('/')}`
+            url: '/api/browse',
+            params: {path: path.join('/')}
         }).then(response => {
             folders = response.split('/')
             folders.pop() // remove empty last element from using split()

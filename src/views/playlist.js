@@ -81,10 +81,11 @@ export default {
                                 m.request({
                                     method: 'PUT',
                                     responseType: 'json',
-                                    url: `/api/settings?outputTemplate=${encodeURIComponent(state.defaultOutputTemplate)}`
+                                    url: '/api/settings',
+                                    params: {outputTemplate: state.defaultOutputTemplate}
                                 }).catch(e => console.error(e))
                             },
-                            'data-tooltip': 'Reset to default output template'
+                            'data-tooltip': 'Reset to default'
                         }, m('i', {class: 'fas fa-undo-alt', style: 'height: 0.9em'})),
                     ],
                     oninput: event => {
@@ -95,7 +96,8 @@ export default {
                         m.request({
                             method: 'PUT',
                             responseType: 'json',
-                            url: `/api/settings?outputTemplate=${encodeURIComponent(event.target.value)}`
+                            url: '/api/settings',
+                            params: {outputTemplate: event.target.value}
                         }).catch(e => console.error(e))
                         
                     }

@@ -65,21 +65,21 @@ export default {
                 m('div', {class: 'box'}, [
                     m('a', {
                         class: 'button field is-fullwidth',
-                        onclick: vnode => {
-                            vnode.target.classList.add('is-loading')
+                        onclick: event => {
+                            event.target.classList.add('is-loading')
                             m.request({
                                 method: 'GET',
                                 responseType: 'json',
                                 url: '/api/update/ydl'
                             }).then(response => {
-                                vnode.target.classList.remove('is-loading')
+                                event.target.classList.remove('is-loading')
                                 getYdlVersion()
                             }).catch(e => console.error(e))
                         }
                     }, 'Update youtube-dl'),
                     m('a', {
                         class: 'button field is-fullwidth',
-                        onclick: vnode => {
+                        onclick: event => {
                             m.request({
                                 method: 'GET',
                                 responseType: 'text',
@@ -107,7 +107,8 @@ export default {
                                     m.request({
                                         method: 'PUT',
                                         responseType: 'json',
-                                        url: '/api/settings?mode=browser'
+                                        url: '/api/settings',
+                                        params: {mode: 'browser'}
                                     }).then(response => {}).catch(e => console.error(e))
                                 }
                             }, [
@@ -122,7 +123,8 @@ export default {
                                     m.request({
                                         method: 'PUT',
                                         responseType: 'json',
-                                        url: '/api/settings?mode=directory'
+                                        url: '/api/settings',
+                                        params: {mode: 'directory'}
                                     }).then(response => {}).catch(e => console.error(e))
                                 }
                             }, [
@@ -157,7 +159,8 @@ export default {
                             m.request({
                                 method: 'PUT',
                                 responseType: 'text',
-                                url: `/api/cookies?cookies=${encodeURIComponent(state.cookies)}`
+                                url: '/api/cookies',
+                                params: {cookies: state.cookies}
                             }).catch(e => console.error(e))
                         }
                     })

@@ -2,6 +2,7 @@ import m from 'mithril'
 import { app } from '../main'
 import * as qs from 'qs'
 import io from 'socket.io-client'
+import { getSuggestions } from '../views/download'
 
 const state = {
     progress: 0, // Current percentage of download progress
@@ -84,9 +85,10 @@ function download(vnode) {
                 m.request({
                     method: 'PUT',
                     responseType: 'json',
-                    url: `/api/suggest/genre/${encodeURIComponent(vnode.attrs.tags.genre)}`
+                    url: '/api/suggest/genre/:name',
+                    params: {name: vnode.attrs.tags.genre}
                 }).then(response => {
-                    // getSuggestions()
+                    getSuggestions()
                 }).catch(e => console.error(e))
             }
         
@@ -94,7 +96,8 @@ function download(vnode) {
             m.request({
                 method: 'GET',
                 responseType: 'json',
-                url: `/api/download?${qs.stringify(sendDL)}`
+                url: '/api/download',
+                params: sendDL
             }).then(response => {}).catch(e => console.error(e)) // response is handled via socket.io
             break
         case 'playlist':
@@ -113,7 +116,8 @@ function download(vnode) {
             m.request({
                 method: 'GET',
                 responseType: 'json',
-                url: `/api/downloadPlaylist?${qs.stringify(sendDL)}`
+                url: '/api/downloadPlaylist',
+                params: sendDL
             }).then(response => {}).catch(e => console.error(e)) // response is handled via socket.io
             break
     }

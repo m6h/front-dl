@@ -20,7 +20,7 @@ const state = {
 }
 
 // fetch genre suggestions
-function getSuggestions() {
+export function getSuggestions() {
     m.request({
         method: 'GET',
         responseType: 'json',
@@ -40,6 +40,7 @@ const dlInputField = {
         m('div', {class: 'control has-icons-left has-icons-right' + (state.loading ? ' is-loading' : '')}, [
             m('span', {class: 'icon is-left'}, m('i', {class: vnode.attrs.icon})),
             m('input', {
+                id: vnode.attrs.id,
                 class: 'input',
                 type:'text',
                 placeholder: vnode.attrs.placeholder,
@@ -108,10 +109,10 @@ export default {
                         oninput: event => state.tags.title = event.target.value
                     }),
                     m(dlInputField, {
-                        label: 'Genre', icon: 'fas fa-music', placeholder: 'e.g. House', value: state.tags.genre,
-                        oninput: vnode =>  {
-                            state.tags.genre = vnode.target.value
-                            const input = vnode.target.value
+                        label: 'Genre', id: 'genre', icon: 'fas fa-music', placeholder: 'e.g. House', value: state.tags.genre,
+                        oninput: event =>  {
+                            state.tags.genre = event.target.value
+                            const input = event.target.value
                             var regex
 
                             // If only 1 letter, must begin with input, otherwise must contain input. Case (i)nsensitive matching.
@@ -125,13 +126,13 @@ export default {
                             // Slice array to include only the top 4 results.
                             state.suggest.genresFiltered = state.suggest.genres.filter(item => item.name.match(regex)).slice(0, 4)
                         },
-                        onfocus: vnode => {
+                        onfocus: event => {
                             document.getElementById('suggest-genres').classList.remove('is-hidden')
-                            vnode.target.classList.add('suggestions-field')
+                            event.target.classList.add('suggestions-field')
                         },
-                        onblur: vnode => {
+                        onblur: event => {
                             document.getElementById('suggest-genres').classList.add('is-hidden')
-                            vnode.target.classList.remove('suggestions-field')
+                            event.target.classList.remove('suggestions-field')
                         }
                     }, m('div', {id: 'suggest-genres', class: 'suggestions is-hidden'}, [
                         m('ul', {class: 'box'}, [
@@ -144,7 +145,8 @@ export default {
                                             m.request({
                                                 method: 'DELETE',
                                                 responseType: 'json',
-                                                url: `/api/suggest/genre/${item.name}`
+                                                url: '/api/suggest/genre/:name',
+                                                params: {name: item.name}
                                             }).then(response => {
                                                 state.tags.genre = ''
                                                 getSuggestions()

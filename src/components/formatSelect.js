@@ -1,5 +1,5 @@
 import m from 'mithril'
-import { app } from '../main' // Singleton class for app settings
+import { app } from '../main'
 
 function set(vnode, format) {
     const el = vnode.dom.children['buttons'].children
@@ -23,7 +23,8 @@ function set(vnode, format) {
     m.request({
         method: 'PUT',
         responseType: 'json',
-        url: `/api/settings?format=${format}`
+        url: '/api/settings',
+        params: {format: format}
     }).then(response => {}).catch(e => console.error(e))
 }
 
