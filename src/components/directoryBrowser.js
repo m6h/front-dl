@@ -8,7 +8,7 @@ var folders = [] // Array of folder names in the current path.
 // Directory is hidden if download mode is Browser
 export default {
     // Get list of all folders in path
-    get: vnode => {
+    get: () => {
         m.request({
             method: 'GET',
             responseType: 'json',

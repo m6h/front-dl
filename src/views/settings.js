@@ -3,8 +3,9 @@ import { app } from '../main'
 
 const state = {
     version: {},
-    modal: false,
-    cookies: ''
+    cookies: '',
+    cookiesModal: false,
+    updatingYdl: false
 }
 
 function getYdlVersion() {
@@ -40,6 +41,7 @@ export default {
     },
     view: () => m('div', [
         m('div', {class: 'columns is-centered'}, [
+            // Info area
             m('div', {class: 'column is-narrow'}, [
                 m('div', {class: 'box'}, [
                     m('div', {class: 'has-text-centered'}, [
@@ -61,45 +63,13 @@ export default {
                     ])
                 ])
             ]),
-            m('div', {class: 'column is-narrow'}, [
-                m('div', {class: 'box'}, [
-                    m('a', {
-                        class: 'button field is-fullwidth',
-                        onclick: event => {
-                            event.target.classList.add('is-loading')
-                            m.request({
-                                method: 'GET',
-                                responseType: 'json',
-                                url: '/api/update/ydl'
-                            }).then(response => {
-                                event.target.classList.remove('is-loading')
-                                getYdlVersion()
-                            }).catch(e => console.error(e))
-                        }
-                    }, 'Update youtube-dl'),
-                    m('a', {
-                        class: 'button field is-fullwidth',
-                        onclick: event => {
-                            m.request({
-                                method: 'GET',
-                                responseType: 'text',
-                                url: '/api/cookies'
-                            }).then(response => {
-                                state.cookies = response
-                            }).catch(e => console.error(e))
-
-                            state.modal = true
-                        }
-                    }, 'Import cookies')
-                ])
-            ]),
+            // Settings buttons
             m('div', {class: 'column is-narrow is-unselectable'}, [
                 m('div', {class: 'box'}, [
                     m('div', {class: 'field'}, [
-                        m('label', {class: 'label'}, 'Download mode'),
-                        m('div', {id: 'buttons', class: 'field is-grouped'}, [
+                        m('span', 'Download mode'),
+                        m('div', {class: 'field is-grouped'}, [
                             m('a', {
-                                id: 'browser',
                                 class: 'button is-fullwidth' + (app.prefs.mode == 'browser' ? ' is-info' : ''),
                                 style: 'margin-right: 0.2em',
                                 onclick: event => {
@@ -116,7 +86,6 @@ export default {
                                 m('span', 'Browser')
                             ]),
                             m('a', {
-                                id: 'directory',
                                 class: 'button is-fullwidth' + (app.prefs.mode == 'directory' ? ' is-info' : ''),
                                 onclick: event => {
                                     app.prefs.mode = 'directory'
@@ -132,12 +101,48 @@ export default {
                                 m('span', 'Directory')
                             ])
                         ])
+                    ]),
+                    m('a', {
+                        class: 'button field is-fullwidth' + (state.updatingYdl ? ' is-loading' : ''),
+                        onclick: event => {
+                            state.updatingYdl = true
+
+                            m.request({
+                                method: 'GET',
+                                responseType: 'json',
+                                url: '/api/update/ydl'
+                            }).then(response => {
+                                state.updatingYdl = false
+                                getYdlVersion()
+                            }).catch(e => console.error(e))
+                        }
+                    }, [
+                        m('span', {class: 'icon'}, m('i', {class: 'fas fa-sync'})),
+                        m('span', 'Update youtube-dl')
+                    ]),
+                    m('a', {
+                        class: 'button field is-fullwidth',
+                        onclick: event => {
+                            m.request({
+                                method: 'GET',
+                                responseType: 'text',
+                                url: '/api/cookies'
+                            }).then(response => {
+                                state.cookies = response
+                            }).catch(e => console.error(e))
+
+                            state.cookiesModal = true
+                        }
+                    }, [
+                        m('span', {class: 'icon'}, m('i', {class: 'fas fa-file-import'})),
+                        m('span', 'Import cookies')
                     ])
                 ])
             ])
         ]),
-        m('div', {class: 'modal' + (state.modal ? ' is-active' : '')}, [
-            m('div', {class: 'modal-background', onclick: event => state.modal = false}),
+        // Cookies modal
+        m('div', {class: 'modal' + (state.cookiesModal ? ' is-active' : '')}, [
+            m('div', {class: 'modal-background', onclick: event => state.cookiesModal = false}),
             m('div', {class: 'modal-content'}, [
                 m('div', {class: 'box has-text-centered', style: 'padding: 0.5em'}, [
                     m('div', {class: 'label'}, [
@@ -166,7 +171,7 @@ export default {
                     })
                 ])
             ]),
-            m('div', {class: 'modal-close is-large', onclick: event => state.modal = false, 'aria-label': 'close'})
+            m('div', {class: 'modal-close is-large', onclick: event => state.cookiesModal = false, 'aria-label': 'close'})
         ])
     ])
 }
