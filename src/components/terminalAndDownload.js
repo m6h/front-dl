@@ -51,11 +51,11 @@ function command(vnode) {
     } else if(vnode.attrs.type == 'single' && app.prefs.format == 'audio') {
         return [`youtube-dl -f "bestaudio[ext=m4a]/bestaudio[ext=mp3]" --embed-thumbnail -o "${[...vnode.attrs.path, vnode.attrs.fileName].join('/')}.m4a" ${vnode.attrs.url}`]
     } else if(vnode.attrs.type == 'playlist' && app.prefs.format == 'audio') {
-        return [`youtube-dl -f "bestaudio[ext=m4a]/bestaudio[ext=mp3]" --embed-thumbnail -o "${[...vnode.attrs.path, vnode.attrs.outputTemplate].join('/')}" ${vnode.attrs.url}`]
+        return [`youtube-dl -f "bestaudio[ext=m4a]/bestaudio[ext=mp3]" --embed-thumbnail -o "${[...vnode.attrs.path, app.prefs.outputTemplate].join('/')}" ${vnode.attrs.url}`]
     } else if(vnode.attrs.type == 'single' && app.prefs.format == 'video') {
         return [`youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${[...vnode.attrs.path, vnode.attrs.fileName].join('/')}.mkv" ${vnode.attrs.url}`]
     } else if(vnode.attrs.type == 'playlist' && app.prefs.format == 'video') {
-        return [`youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${[...vnode.attrs.path, vnode.attrs.outputTemplate].join('/')}" ${vnode.attrs.url}`]
+        return [`youtube-dl -f "bestvideo[height<=?1080]+bestaudio" --merge-output-format "mkv" --write-thumbnail -o "${[...vnode.attrs.path, app.prefs.outputTemplate].join('/')}" ${vnode.attrs.url}`]
     }
 }
 
