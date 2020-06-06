@@ -15,9 +15,9 @@ const root = {
     view: vnode => [
         m(navbar),
         m('div', {class: 'container'}, [
-            m('div', {class: 'section', style: 'padding-top: 1.5em'}, vnode.children)
+            m('div', {class: 'section', style: 'padding-top: 0'}, vnode.children)
         ]),
-        m('footer', {class: 'footer has-background-white'})
+        m('footer', {class: 'footer has-background-white', style: 'padding-bottom: 10em;'})
     ]
 }
 

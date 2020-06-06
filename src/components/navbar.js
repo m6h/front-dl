@@ -28,7 +28,7 @@ export default {
     oncreate: vnode => {
         window.onhashchange = tab(vnode)
     },
-    view: vnode => m('div', {class: 'tabs is-centered', style: 'margin: 0'}, m('ul', [
+    view: vnode => m('div', {class: 'tabs is-centered'}, m('ul', [
         m('li', {id: 'single'}, m(m.route.Link, {onclick: () => tab(vnode), href: '/'}, [
             m('span', {class: 'icon is-small'}, m('i', {class: 'fas fa-square'})),
             m('span', 'Single')

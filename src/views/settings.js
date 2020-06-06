@@ -39,7 +39,7 @@ export default {
             state.version.atomicparsley = response
         }).catch(e => console.error(e))
     },
-    view: () => m('div', [
+    view: () => [
         m('div', {class: 'columns is-centered'}, [
             // Info area
             m('div', {class: 'column is-narrow'}, [
@@ -173,5 +173,5 @@ export default {
             ]),
             m('div', {class: 'modal-close is-large', onclick: event => state.cookiesModal = false, 'aria-label': 'close'})
         ])
-    ])
+    ]
 }

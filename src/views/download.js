@@ -59,7 +59,7 @@ export default {
     oninit: () => {
         getSuggestions()
     },
-    view: () => m('div', [
+    view: () => [
         m('div', {class: 'columns'}, [
             m('div', {class: 'column'}, [
                 m('div', {class: 'field'}, [
@@ -174,5 +174,5 @@ export default {
                 })
             ])
         ])
-    ])
+    ]
 }

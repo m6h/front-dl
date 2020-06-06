@@ -32,7 +32,7 @@ const dlInputField = {
 }
 
 export default {
-    view: vnode => m('div', [
+    view: vnode => [
         m('article', {class: 'message is-info' + (app.prefs.mode == 'directory' ? ' is-hidden' : '')}, [
             // Message if in Browser download mode
             m('div', {class: 'message-body'}, 'Playlists are currently only supported in Directory download mode')
@@ -140,5 +140,5 @@ export default {
         //         ]))
         //     ])
         // ])
-    ])
+    ]
 }
