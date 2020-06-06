@@ -1,3 +1,18 @@
+/* ===== Bulma overrides ===== */
+
+/* Less spacing between a field's label and its content */
+.label:not(:last-child) {
+    margin-bottom: 0;
+}
+
+/* More spacing between different field elements */
+.field:not(:last-child) {
+    margin-bottom: 1.25rem;
+}
+
+/* =========================== */
+
+
 /* Input field suggestions */
 .suggestions {
     position: relative;
