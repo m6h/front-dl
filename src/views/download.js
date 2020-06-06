@@ -47,7 +47,8 @@ const dlInputField = {
                 value: vnode.attrs.value,
                 oninput: vnode.attrs.oninput,
                 onfocus: vnode.attrs.onfocus,
-                onblur: vnode.attrs.onblur
+                onblur: vnode.attrs.onblur,
+                autocomplete: vnode.attrs.autocomplete
             })
         ]),
         vnode.children
@@ -109,7 +110,8 @@ export default {
                         oninput: event => state.tags.title = event.target.value
                     }),
                     m(dlInputField, {
-                        label: 'Genre', id: 'genre', icon: 'fas fa-music', placeholder: 'e.g. House', value: state.tags.genre,
+                        label: 'Genre', icon: 'fas fa-music', placeholder: 'e.g. House', value: state.tags.genre,
+                        id: 'genre', autocomplete: 'off',
                         oninput: event =>  {
                             state.tags.genre = event.target.value
                             const input = event.target.value
