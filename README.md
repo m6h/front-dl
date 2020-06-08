@@ -15,7 +15,7 @@ MongoDB | `/data/db` | The default database path
 ## Environment variables
 If set, an env will always take precedence if that same setting exists in the user interface (and therefore the database). This can be useful if you want to configure settings immediately upon container creation, regardless of what's in the database, and you know you won't want to change it later via the UI.
 
-Env | Description | Example | UI
+Env | Description | Example | [UI](https:// "If can be set via UI")
 ----|-------------|---------|----
 `DB_URL` | MongoDB [connection string][4] | `mongodb://mongodb/front-dl` | No
 `MODE` | `browser` or `directory`. The mode to use when downloading. See [download modes](#download-modes). | `browser` | Yes
