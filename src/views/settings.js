@@ -76,10 +76,9 @@ export default {
                                     app.prefs.mode = 'browser'
                                     m.request({
                                         method: 'PUT',
-                                        responseType: 'json',
                                         url: '/api/settings',
                                         params: {mode: 'browser'}
-                                    }).then(response => {}).catch(e => console.error(e))
+                                    }).catch(e => console.error(e))
                                 }
                             }, [
                                 m('span', {class: 'icon'}, m('i', {class: 'fas fa-globe'})),
@@ -91,10 +90,9 @@ export default {
                                     app.prefs.mode = 'directory'
                                     m.request({
                                         method: 'PUT',
-                                        responseType: 'json',
                                         url: '/api/settings',
                                         params: {mode: 'directory'}
-                                    }).then(response => {}).catch(e => console.error(e))
+                                    }).catch(e => console.error(e))
                                 }
                             }, [
                                 m('span', {class: 'icon'}, m('i', {class: 'fas fa-list'})),

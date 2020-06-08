@@ -87,10 +87,7 @@ export default {
                     m('figure', {class: 'image is-16by9'}, [
                         m('span', {
                             class: 'has-text-weight-light is-unselectable',
-                            style: `position: absolute;
-                                    top: 50%;
-                                    left: 50%;
-                                    transform: translate(-50%, -50%);`,
+                            style: 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);',
                         }, 'Thumbnail'),
                         m('img', {style: 'width: auto; margin: auto;', src: state.thumbnail})
                     ])
@@ -100,7 +97,7 @@ export default {
                     oninput: event => state.fileName = event.target.value
                 }),
                 m(formatButtons),
-                m('div', {class: 'field' + (app.prefs.format == 'audio' ? '' : ' is-hidden')}, [
+                m('div', {class: (app.prefs.format == 'audio' ? '' : 'is-hidden')}, [
                     m(dlInputField, {
                         label: 'Artist', icon: 'fas fa-music', placeholder: 'e.g. Rootkit', value: state.tags.artist,
                         oninput: event => state.tags.artist = event.target.value
