@@ -1,14 +1,6 @@
 FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Set timezone. Default to US/Eastern
-ARG TZ=US/Eastern
-ENV TZ=$TZ
-RUN apt update && apt install -y tzdata && \
-    ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone && \
-    rm -r /var/lib/apt/lists/*
-
 # Download prerequisites, then clear apt cache
 RUN apt update && apt install -y \
         curl \
@@ -45,22 +37,21 @@ RUN curl -L https://yt-dl.org/downloads/latest/youtube-dl > /usr/local/bin/youtu
     mkdir -p /etc/youtube-dl
 
 WORKDIR /node/
+EXPOSE 3000
+
+# Foreground process
+CMD ["node", "app.js"]
 
 # Get npm dependencies
 COPY ["package.json", "package-lock.json", "/node/"]
 RUN npm install
 
 # Copy app files to /node/
-COPY ["./controllers/", "/node/controllers/"]
+COPY [".babelrc", "app.js", "LICENSE", "README.md", "/node/"]
 COPY ["./models/", "/node/models/"]
 COPY ["./public/", "/node/public/"]
+COPY ["./controllers/", "/node/controllers/"]
 COPY ["./src/", "/node/src/"]
-COPY [".babelrc", "app.js", "LICENSE", "README.md", "/node/"]
-
-EXPOSE 3000
 
 # Bundle
 RUN npm run bundle-prod
-
-# Run foreground process
-CMD ["node", "app.js"]
