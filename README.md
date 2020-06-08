@@ -1,6 +1,6 @@
 ![](public/images/screenshot.png)
 # Web app front-end for [youtube-dl][ydl] 
-The goal of this app is to create a faster and easier way to interact with youtube-dl. It runs youtube-dl commands and places downloaded files at the specified directory in the container **or** sends files to the browser in the standard download bar/area (see download modes). front-dl is not responsible for playing/streaming the media itself.
+The goal of this app is to create a faster and easier way to interact with youtube-dl. It runs youtube-dl commands and places downloaded files at the specified directory in the container **or** sends files to the browser in the standard download bar/area (see [download modes](#download-modes)). front-dl is not responsible for playing/streaming the media itself.
 
 ## Prerequisites
 - [Docker][docker]
@@ -8,9 +8,18 @@ The goal of this app is to create a faster and easier way to interact with youtu
 ## Important paths
 Container | Folder | Description
 ----|--------|------------
-front-dl | `/media` | Where the app expects a media library (a folder for your media) to be mounted
+front-dl | `/media` | Where the app expects a media library (a folder for your media) to be mounted when using Directory mode.
 front-dl | `/etc/youtube-dl` | A file named `cookies` in this folder is used as youtube-dl's [cookie jar][3]
 MongoDB | `/data/db` | The default database path
+
+## Environment variables
+If set, an env will always take precedence if that same setting exists in the user interface (and therefore the database). This can be useful if you want to configure settings immediately upon container creation, regardless of what's in the database, and you know you won't want to change it later via the UI.
+
+Env | Description | Example | UI
+----|-------------|---------|----
+`DB_URL` | MongoDB [connection string][4] | `mongodb://mongodb/front-dl` | No
+`MODE` | `browser` or `directory`. The mode to use when downloading. See [download modes](#download-modes). | `browser` | Yes
+`FORMAT` | `audio` or `video`. The format to download the media in. E.g. an m4a audio file or mkv video file. | `audio` | Yes
 
 ## Install example using [Docker Compose][compose]
 In order for downloads into a directory to persist, we must mount a [volume][1]. In this example, we assume our existing media library is located on the host at `/mnt/my/media`, and bind mount it into the Node.js container at `/media`, which is where the app expects it to be. 
@@ -84,3 +93,4 @@ Dev: [Babel][ba], [Webpack][w]
 [1]: https://docs.docker.com/compose/compose-file/#volumes
 [2]: https://docs.docker.com/compose/networking/
 [3]: https://github.com/ytdl-org/youtube-dl#how-do-i-pass-cookies-to-youtube-dl
+[4]: https://docs.mongodb.com/manual/reference/connection-string/

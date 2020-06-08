@@ -66,7 +66,7 @@ export default {
             // Settings buttons
             m('div', {class: 'column is-narrow is-unselectable'}, [
                 m('div', {class: 'box'}, [
-                    m('div', {class: 'field'}, [
+                    m('div', {class: 'field' + (app.env.MODE ? ' controlled-by-env' : '')}, [
                         m('span', 'Download mode'),
                         m('div', {class: 'field is-grouped'}, [
                             m('a', {
@@ -98,7 +98,11 @@ export default {
                                 m('span', {class: 'icon'}, m('i', {class: 'fas fa-list'})),
                                 m('span', 'Directory')
                             ])
-                        ])
+                        ]),
+                        m('span', {
+                            class: 'controlled-by-env-warn has-text-weight-bold' + (app.env.MODE ? '' : ' is-hidden'),
+                            style: 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);',
+                        }, 'Controlled by env')
                     ]),
                     m('a', {
                         class: 'button field is-fullwidth' + (state.updatingYdl ? ' is-loading' : ''),

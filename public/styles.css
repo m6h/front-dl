@@ -48,3 +48,18 @@
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
+
+/* Setting being controlled by environment variable.
+   Disables all direct children of the ui element, except for elements with the -warn class  */
+.controlled-by-env {
+    position: relative;
+}
+.controlled-by-env > *:not(.controlled-by-env-warn) {
+    filter: opacity(0.15);
+    pointer-events: none;
+    user-select: none;
+}
+.controlled-by-env-warn {
+    user-select: none;
+    white-space: pre;
+}

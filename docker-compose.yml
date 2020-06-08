@@ -7,6 +7,8 @@ services:
       dockerfile: front-dl.dockerfile
     environment:
       DB_URL: mongodb://mongodb/front-dl
+      # MODE: browser
+      # FORMAT: audio
     volumes:
       - type: volume
         source: nodejs

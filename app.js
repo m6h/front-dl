@@ -90,6 +90,7 @@ app.get('/api/version/ffmpeg', settingsController.ffmpegVersion)
 app.get('/api/version/atomicparsley', settingsController.atomicparsleyVersion)
 
 // Settings
+app.get('/api/env', (req, res) => res.json(process.env))
 app.route('/api/settings')
     .get(settingsController.get)
     .put(settingsController.update)

@@ -7,7 +7,8 @@ import directory from './components/directoryBrowser'
 
 // App's global settings/preferences state.
 export const app = {
-    prefs: {}
+    prefs: {},
+    env: {}
 }
 
 // The root mithril component. Used to add static page elements.
@@ -21,21 +22,24 @@ const root = {
     ]
 }
 
-m.request({
-    method: 'GET',
-    responseType: 'json',
-    url: '/api/settings'
-}).then(response => {
-    app.prefs = response
+async function main() {
+    try {
+        // Fetch environment variables, and settings from the database.
+        app.env = await m.request({method: 'GET', url: '/api/env'})
+        app.prefs = await m.request({method: 'GET', url: '/api/settings'})
 
-    // Initialize directory's folder list on first run
-    directory.get()
+        // Environment variables have precedence over db/ui settings. If it exists, it overwrites the value in app prefs.
+        app.env.MODE ? app.prefs.mode = app.env.MODE : null
+        app.env.FORMAT ? app.prefs.format = app.env.FORMAT : null
 
-    // Application routes and their RouteResolvers
-    m.route(document.body, '/', {
-        '/':            {render: () => m(root, m(download))},
-        '/playlist':    {render: () => m(root, m(playlist))},
-        '/settings':    {render: () => m(root, m(settings))},
-    })
+        // Initialize directory's folder list on first run
+        directory.get()
 
-}).catch(e => console.error(e))
+        // Application routes and their RouteResolvers
+        m.route(document.body, '/', {
+            '/':            {render: () => m(root, m(download))},
+            '/playlist':    {render: () => m(root, m(playlist))},
+            '/settings':    {render: () => m(root, m(settings))},
+        })
+    } catch (e) {console.error(e)}
+} main()
