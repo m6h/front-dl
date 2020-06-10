@@ -42,6 +42,8 @@ socket.on('connect', () => {
         if (app.prefs.mode == 'browser') {
             window.location.href = `/api/download/cache/${fileName}`
         }
+
+        m.redraw() // Manually trigger redraw in case button gets stuck with is-loading class
     })
 })
 
