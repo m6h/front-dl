@@ -7,8 +7,13 @@ services:
       dockerfile: front-dl.dockerfile
     environment:
       DB_URL: mongodb://mongodb/front-dl
-      # MODE: browser
+      # MODE: directory
       # FORMAT: audio
+      # UID: 1234
+      # GID: 4321
+      # CHMOD: 777
+      # EMBED_THUMBNAIL: 'false'
+      # WRITE_THUMBNAIL: 'false'
     volumes:
       - type: volume
         source: nodejs

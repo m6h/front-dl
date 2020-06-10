@@ -14,6 +14,51 @@ function checkPath(queryPath) {
     }
 }
 
+// Set file permissions and/or owner:group after download. Optional, only takes effect if corresponding settings have values.
+function setPermissions(queryString = {}, paths = []) {
+    // Set owner
+    if (queryString.uid) {
+        paths.map(path => {
+            const chown = spawn('chown', ['--recursive', queryString.uid, path])
+            log({app: 'chown', event: 'info', msg: `"${path}"`})
+            
+            // Log stderr if exists
+            chown.stderr.setEncoding('utf-8')
+            chown.stderr.on('data', data => log({app: 'chown', event: 'stderr', msg: data}))
+
+            chown.on('close', exitCode => log({app: 'chown', event: 'close', msg: exitCode}))
+        })
+    }
+
+    // Set group
+    if (queryString.gid) {
+        paths.map(path => {
+            const chgrp = spawn('chgrp', ['--recursive', queryString.gid, path])
+            log({app: 'chgrp', event: 'info', msg: `"${path}"`})
+            
+            // Log stderr if exists
+            chgrp.stderr.setEncoding('utf-8')
+            chgrp.stderr.on('data', data => log({app: 'chgrp', event: 'stderr', msg: data}))
+
+            chgrp.on('close', exitCode => log({app: 'chgrp', event: 'close', msg: exitCode}))
+        })
+    }
+
+    // Set file permissions
+    if (queryString.chmod) {
+        paths.map(path => {
+            const chmod = spawn('chmod', ['--recursive', queryString.chmod, path])
+            log({app: 'chmod', event: 'info', msg: `"${path}"`})
+            
+            // Log stderr if exists
+            chmod.stderr.setEncoding('utf-8')
+            chmod.stderr.on('data', data => log({app: 'chmod', event: 'stderr', msg: data}))
+
+            chmod.on('close', exitCode => log({app: 'chmod', event: 'close', msg: exitCode}))
+        })
+    }
+}
+
 // Get folder names for the directory browser
 exports.browse = (req, res) => {
     const q = req.query
@@ -37,14 +82,21 @@ exports.browse = (req, res) => {
 
 // Download
 exports.download = (req, res) => {
-    // Query string: {url: '', format: '', tags: {artist: '', title: '', genre: ''}, path: '', fileName: '', socketId: ''}
+    // Query string: {
+    //     url: '', format: '', tags: {artist: '', title: '', genre: ''},
+    //     path: '', fileName: '', socketId: '',
+    //     embedThumbnail: 'true' or 'false',
+    //     writeThumbnail: 'true' or 'false',
+    //     uid: '', gid: '', chmod: ''
+    // }
 
-    // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
-    // path string 'false' = download to browser.
+    // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id).
+    // Path string 'false' means download to the browser.
     
     var q = req.query
+    log({app: 'api', event: 'download', msg: JSON.stringify(q)})
 
-    // Format and validate path
+    // Format and validate path. Appends file name to path.
     // If downloading to the browser set the path to a cache, otherwise assume downloading to a directory.
     if (q.path == 'false') {
         // To the browser
@@ -59,11 +111,13 @@ exports.download = (req, res) => {
     if (q.url && ((q.format == 'audio' && q.tags.artist && q.tags.title) || q.format == 'video') && q.fileName && q.socketId) {
         res.status(200).send('OK')
 
+        var youtubeDl, args
+
         // Download the video with youtube-dl. If audio then also add metadata tags.
         switch (q.format) {
             case 'audio':
                 // Prefer audio formats in this order: .m4a > .mp3 > other
-                var youtubeDl = spawn('youtube-dl', [
+                args = [
                     '-f', 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio',
                     '--cookies', '/etc/youtube-dl/cookies',
                     '--ignore-errors',
@@ -71,35 +125,69 @@ exports.download = (req, res) => {
                     '--no-playlist',
                     '-o', `${q.path}.%(ext)s`,
                     `${q.url}`
-                ])
-                
-                // Set encoding so outputs can be read
-                youtubeDl.stdout.setEncoding('utf-8')
-                youtubeDl.stderr.setEncoding('utf-8')
+                ]
 
-                // Emit command stdout stream to socket, and console log
-                youtubeDl.stdout.on('data', data => {
-                    // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
-                    //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
-                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : log({app: 'youtube-dl', event: 'stdout', msg: data})
+                // Remove the embed thumbnail argument if its query string value is set to false
+                if (q.embedThumbnail == 'false') {
+                    const index = args.indexOf('--embed-thumbnail')
+                    args.splice(index, 1)
+                }
 
-                    // Parse youtube-dl output for destination (file name with extension)
-                    //   then get just the extension using the "path" module. Allows using any file extension.
-                    const match = data.match(/.*Destination: .*/)
-                    match ? q.fileExtension = path.extname(match[0]) : null
+                log({app: 'api', event: 'youtube-dl_args', msg: JSON.stringify(args)})
+                youtubeDl = spawn('youtube-dl', args)
+                break
+            case 'video':
+                args = [
+                    '-f', 'bestvideo[height<=?1080]+bestaudio',
+                    '--merge-output-format', 'mkv',
+                    '--cookies', '/etc/youtube-dl/cookies',
+                    '--ignore-errors',
+                    '--write-thumbnail',
+                    '--no-playlist',
+                    '-o', `${q.path}.mkv`,
+                    `${q.url}`
+                ]
 
-                    io.to(q.socketId).emit('console_stdout', data)
-                })
+                // Remove the write thumbnail argument if its query string value is set to false
+                if (q.writeThumbnail == 'false') {
+                    const index = args.indexOf('--write-thumbnail')
+                    args.splice(index, 1)
+                }
 
-                // Log stderr if exists
-                youtubeDl.stderr.on('data', data => {
-                    log({app: 'youtube-dl', event: 'stderr', msg: data})
-                })
+                log({app: 'api', event: 'youtube-dl_args', msg: JSON.stringify(args)})
+                youtubeDl = spawn('youtube-dl', args)
+                break
+        }
 
-                // Once download is complete, add metadata to audio file
-                youtubeDl.on('close', exitCode => {
-                    log({app: 'youtube-dl', event: 'close', msg: exitCode})
+        // Set encoding so outputs can be read
+        youtubeDl.stdout.setEncoding('utf-8')
+        youtubeDl.stderr.setEncoding('utf-8')
 
+        // Emit command stdout stream to socket, and console log
+        youtubeDl.stdout.on('data', data => {
+            // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
+            //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
+            (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : log({app: 'youtube-dl', event: 'stdout', msg: data})
+
+            // Parse youtube-dl output for destination (file name with extension) then get just the extension using the "path" module.
+            // Allows detecting any file extension, but only works for audio formats.
+            const match = data.match(/.*Destination: .*/)
+            match ? q.fileExtension = path.extname(match[0]) : null
+
+            io.to(q.socketId).emit('console_stdout', data)
+        })
+
+        // Log stderr if exists
+        youtubeDl.stderr.on('data', data => {
+            log({app: 'youtube-dl', event: 'stderr', msg: data})
+        })
+
+        youtubeDl.on('close', exitCode => {
+            log({app: 'youtube-dl', event: 'close', msg: exitCode})
+
+            // Once download is complete, add metadata if audio file then emit, otherwise just emit.
+            switch (q.format) {
+                case 'audio':
                     var ffmpeg = spawn('ffmpeg', [
                         '-i', `${q.path}${q.fileExtension}`, '-y',
                         '-codec', 'copy',
@@ -136,6 +224,10 @@ exports.download = (req, res) => {
                         mv.on('close', exitCode => {
                             log({app: 'mv', event: 'close', msg: exitCode})
 
+                            // Set permissions if env is configured
+                            setPermissions(q, [`${q.path}${q.fileExtension}`])
+
+                            // Emit download complete message in the terminal preview
                             io.to(q.socketId).emit('console_stdout', 'Download complete')
 
                             // Tell client that download is complete. Emit cache path if downloading to browser.
@@ -146,41 +238,21 @@ exports.download = (req, res) => {
                             }
                         })
                     })
-                })
-                break
-            case 'video':
-                var youtubeDl = spawn('youtube-dl', [
-                    '-f', 'bestvideo[height<=?1080]+bestaudio',
-                    '--merge-output-format', 'mkv',
-                    '--cookies', '/etc/youtube-dl/cookies',
-                    '--ignore-errors',
-                    '--write-thumbnail',
-                    '--no-playlist',
-                    '-o', `${q.path}.mkv`,
-                    `${q.url}`
-                ])
-        
-                // Set encoding so outputs can be read
-                youtubeDl.stdout.setEncoding('utf-8')
-                youtubeDl.stderr.setEncoding('utf-8')
-        
-                // Emit command stdout stream to socket, and console log
-                youtubeDl.stdout.on('data', data => {
-                    // Omit lines that match this regex. Avoids logging verbose download percent progress output, such as:
-                    //     [download] 82.3% of 142.00MiB at 12.25MiB/s ETA 00:02
-                    (data.match(/download/) && data.match(/at/) && data.match(/ETA/)) ? null : log({app: 'youtube-dl', event: 'stdout', msg: data})
+                    break
+                case 'video':
+                    var paths = []
+
+                    // Don't include path to thumbnail .jpg if write thumbnail is disabled
+                    if (q.writeThumbnail == 'false') {
+                        paths = [`${q.path}.mkv`]
+                    } else {
+                        paths = [`${q.path}.mkv`, `${q.path}.jpg`]
+                    }
                     
-                    io.to(q.socketId).emit('console_stdout', data)
-                })
-        
-                // Log stderr if exists
-                youtubeDl.stderr.on('data', data => {
-                    log({app: 'youtube-dl', event: 'stderr', msg: data})
-                })
-        
-                // Emit "Download complete" message to client socket once download has completed, and log exit code
-                youtubeDl.on('close', exitCode => {
-                    log({app: 'youtube-dl', event: 'close', msg: exitCode})
+                    // Set permissions if env is configured.
+                    setPermissions(q, paths)
+
+                    // Emit download complete message in the terminal preview
                     io.to(q.socketId).emit('console_stdout', 'Download complete')
                     
                     // Tell client that download is complete. Emit cache path if downloading to browser.
@@ -189,9 +261,9 @@ exports.download = (req, res) => {
                     } else {
                         io.to(q.socketId).emit('download_complete', 'Download complete')
                     }
-                })
-                break
-        }
+                    break
+            }
+        })
     } else {
         res.status(400).send('Bad Request')
     }
@@ -199,10 +271,18 @@ exports.download = (req, res) => {
 
 // Download playlist
 exports.downloadPlaylist = (req, res) => {
-    // Query string: {url: '', format: '', path: '', playlistName: '', outputTemplate: '', socketId: ''}
+    // Query string: {
+    //     url: '', format: '', path: '', 
+    //     playlistName: '', outputTemplate: '', socketId: '',
+    //     embedThumbnail: 'true' or 'false',
+    //     writeThumbnail: 'true' or 'false',
+    //     uid: '', gid: '', chmod: ''
+    // }
 
-    // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id)
+    // Client sends Socket.io id so server can emit events to private room (Each socket automatically joins a room identified by its id).
+    
     var q = req.query
+    log({app: 'api', event: 'download', msg: JSON.stringify(q)})
 
     // Format and validate path
     q.path = checkPath('/media/' + q.path + '/')
@@ -210,22 +290,32 @@ exports.downloadPlaylist = (req, res) => {
     // Ensure minimum required query strings have values
     if (q.url && (q.format == 'audio' || q.format == 'video') && q.playlistName && q.outputTemplate && q.socketId) {
         res.status(200).send('OK')
-        var youtubeDl
+
+        var youtubeDl, args
 
         switch (q.format) {
             case 'audio':
                 // Prefer audio formats in this order: .m4a > .mp3 > other
-                youtubeDl = spawn('youtube-dl', [
+                args = [
                     '-f', 'bestaudio[ext=m4a]/bestaudio[ext=mp3]/bestaudio',
                     '--cookies', '/etc/youtube-dl/cookies',
                     '--ignore-errors',
                     '--embed-thumbnail',
                     '-o', `${q.path}${q.outputTemplate}`,
                     `${q.url}`
-                ])
+                ]
+
+                // Remove the embed thumbnail argument if its query string value is set to false
+                if (q.embedThumbnail == 'false') {
+                    const index = args.indexOf('--embed-thumbnail')
+                    args.splice(index, 1)
+                }
+
+                log({app: 'api', event: 'youtube-dl_args', msg: JSON.stringify(args)})
+                youtubeDl = spawn('youtube-dl', args)
                 break
             case 'video':
-                youtubeDl = spawn('youtube-dl', [
+                args = [
                     '-f', 'bestvideo[height<=?1080]+bestaudio',
                     '--merge-output-format', 'mkv',
                     '--cookies', '/etc/youtube-dl/cookies',
@@ -233,7 +323,16 @@ exports.downloadPlaylist = (req, res) => {
                     '--write-thumbnail',
                     '-o', `${q.path}${q.outputTemplate}`,
                     `${q.url}`
-                ])
+                ]
+
+                // Remove the write thumbnail argument if its query string value is set to false
+                if (q.writeThumbnail == 'false') {
+                    const index = args.indexOf('--write-thumbnail')
+                    args.splice(index, 1)
+                }
+
+                log({app: 'api', event: 'youtube-dl_args', msg: JSON.stringify(args)})
+                youtubeDl = spawn('youtube-dl', args)
                 break
         }
 
@@ -255,9 +354,13 @@ exports.downloadPlaylist = (req, res) => {
             log({app: 'youtube-dl', event: 'stderr', msg: data})
         })
 
-        // Emit "Download complete" message to client socket once download has completed, and log exit code
         youtubeDl.on('close', exitCode => {
             log({app: 'youtube-dl', event: 'close', msg: exitCode})
+
+            // Set permissions if env is configured
+            setPermissions(q, [q.path])
+
+            // Emit download complete message in the terminal preview
             io.to(q.socketId).emit('console_stdout', 'Download complete')
             
             // Tell client that download is complete.

@@ -13,13 +13,19 @@ front-dl | `/etc/youtube-dl` | A file named `cookies` in this folder is used as 
 MongoDB | `/data/db` | The default database path
 
 ## Environment variables
-If set, an env will always take precedence if that same setting exists in the user interface (and therefore the database). This can be useful if you want to configure settings immediately upon container creation, regardless of what's in the database, and you know you won't want to change it later via the UI.
+Some settings are available both in the UI and as an environment variable. If the env is set, it will always take precedence.
 
-Env | Description | Example | [UI](https:// "If can be set via UI")
-----|-------------|---------|----
-`DB_URL` | MongoDB [connection string][4] | `mongodb://mongodb/front-dl` | No
-`MODE` | `browser` or `directory`. The mode to use when downloading. See [download modes](#download-modes). | `browser` | Yes
-`FORMAT` | `audio` or `video`. The format to download the media in. E.g. an m4a audio file or mkv video file. | `audio` | Yes
+Env | [UI](https:// "If can be controlled via UI") | Description | Example | 
+----|----------------------------------------------|-------------|---------|
+`DB_URL` | No | MongoDB [connection string][4]. Default: `mongodb://localhost/front-dl` | `mongodb://mongodb/front-dl`
+`PORT` | No | Port for Node.js to listen on. Default: `3000` | `3000`
+`UID` | Yes | File's owner for all downloads. Not retroactive. | `1000`
+`GID` | Yes | File's group for all downloads. Not retroactive. | `1000`
+`CHMOD` | Yes | File permissions for all downloads. File mode bits for the chmod command. Not retroactive. | `664`
+`EMBED_THUMBNAIL` | Yes | `true` or `false`. Embed thumbnail as cover art for audio downloads | `true`
+`WRITE_THUMBNAIL` | Yes | `true` or `false`. Write thumbnail as separate image file for video downloads | `true`
+`MODE` | Yes | `browser` or `directory`. The mode to use when downloading. See [download modes](#download-modes). | `browser`
+`FORMAT` | Yes | `audio` or `video`. The format to download the media in. E.g. an m4a audio file or mkv video file. | `audio`
 
 ## Install example using [Docker Compose][compose]
 In order for downloads into a directory to persist, we must mount a [volume][1]. In this example, we assume our existing media library is located on the host at `/mnt/my/media`, and bind mount it into the Node.js container at `/media`, which is where the app expects it to be. 

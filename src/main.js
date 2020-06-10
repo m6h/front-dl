@@ -31,6 +31,11 @@ async function main() {
         // Environment variables have precedence over db/ui settings. If it exists, it overwrites the value in app prefs.
         app.env.MODE ? app.prefs.mode = app.env.MODE : null
         app.env.FORMAT ? app.prefs.format = app.env.FORMAT : null
+        app.env.EMBED_THUMBNAIL ? app.prefs.embedThumbnail = app.env.EMBED_THUMBNAIL : null
+        app.env.WRITE_THUMBNAIL ? app.prefs.writeThumbnail = app.env.WRITE_THUMBNAIL : null
+        app.env.UID ? app.prefs.uid = app.env.UID : null
+        app.env.GID ? app.prefs.gid = app.env.GID : null
+        app.env.CHMOD ? app.prefs.chmod = app.env.CHMOD : null
 
         // Initialize directory's folder list on first run
         directory.get()

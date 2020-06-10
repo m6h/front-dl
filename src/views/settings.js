@@ -18,6 +18,41 @@ function getYdlVersion() {
     }).catch(e => console.error(e))
 }
 
+// Component for on/off toggles
+const toggle = {
+    view: vnode => m('div', {
+        class: 'field has-tooltip-multiline' + (vnode.attrs.env ? ' controlled-by-env' : ''),
+        style: 'display: flex',
+        'data-tooltip': vnode.attrs.tooltip
+    }, [
+        m('span', {style: 'flex: 1; margin-right: 1em'}, vnode.attrs.label),
+        m('input', {id: vnode.attrs.id, type: 'checkbox', class: 'switch is-info is-hidden', checked: vnode.attrs.value == 'true' ? true : false}),
+        m('label', {for: vnode.attrs.id, onclick: vnode.attrs.onclick}),
+        m(controlledByEnvWarn, {env: vnode.attrs.env})
+    ])
+}
+
+// Component for input fields
+const input = {
+    view: vnode => m('div', {
+        class: 'field has-tooltip-multiline' + (vnode.attrs.env ? ' controlled-by-env' : ''),
+        style: 'display: flex; align-items: center;',
+        'data-tooltip': vnode.attrs.tooltip
+    }, [
+        m('span', {style: 'flex: 1; margin-right: 1em'}, vnode.attrs.label),
+        m('input', {class: 'input', style: 'width: 5em', type: 'text', value: vnode.attrs.value, oninput: vnode.attrs.oninput}),
+        m(controlledByEnvWarn, {env: vnode.attrs.env})
+    ])
+}
+
+// Component to overlay warning text on setting when controlled by environment variable
+const controlledByEnvWarn = {
+    view: vnode => m('span', {
+        class: 'controlled-by-env-warn has-text-weight-bold' + (vnode.attrs.env ? '' : ' is-hidden'),
+        style: 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);',
+    }, 'Controlled by env')
+}
+
 export default {
     oncreate: () => {
         // Get versions
@@ -99,10 +134,7 @@ export default {
                                 m('span', 'Directory')
                             ])
                         ]),
-                        m('span', {
-                            class: 'controlled-by-env-warn has-text-weight-bold' + (app.env.MODE ? '' : ' is-hidden'),
-                            style: 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);',
-                        }, 'Controlled by env')
+                        m(controlledByEnvWarn, {env: app.env.MODE})
                     ]),
                     m('a', {
                         class: 'button field is-fullwidth' + (state.updatingYdl ? ' is-loading' : ''),
@@ -139,6 +171,88 @@ export default {
                         m('span', {class: 'icon'}, m('i', {class: 'fas fa-file-import'})),
                         m('span', 'Import cookies')
                     ])
+                ])
+            ]),
+            // Settings toggles & inputs
+            m('div', {class: 'column is-narrow is-unselectable'}, [
+                m('div', {class: 'box'}, [
+                    m(toggle, {
+                        id: 'embedThumbnail', label: 'Embed thumbnails',
+                        tooltip: 'Embed thumbnail as cover art for audio downloads',
+                        env: app.env.EMBED_THUMBNAIL, value: app.prefs.embedThumbnail,
+                        onclick: event => {
+                            // Toggle state
+                            if (app.prefs.embedThumbnail == 'true') {
+                                app.prefs.embedThumbnail = 'false'
+                            } else if (app.prefs.embedThumbnail == 'false') {
+                                app.prefs.embedThumbnail = 'true'
+                            }
+                    
+                            m.request({
+                                method: 'PUT',
+                                url: '/api/settings',
+                                params: {embedThumbnail: app.prefs.embedThumbnail}
+                            }).catch(e => console.error(e))
+                        }
+                    }),
+                    m(toggle, {
+                        id: 'writeThumbnail', label: 'Write thumbnails',
+                        tooltip: 'Write thumbnail as separate image file for video downloads',
+                        env: app.env.WRITE_THUMBNAIL, value: app.prefs.writeThumbnail,
+                        onclick: event => {
+                            // Toggle state
+                            if (app.prefs.writeThumbnail == 'true') {
+                                app.prefs.writeThumbnail = 'false'
+                            } else if (app.prefs.writeThumbnail == 'false') {
+                                app.prefs.writeThumbnail = 'true'
+                            }
+                    
+                            m.request({
+                                method: 'PUT',
+                                url: '/api/settings',
+                                params: {writeThumbnail: app.prefs.writeThumbnail}
+                            }).catch(e => console.error(e))
+                        }
+                    }),
+                    m(input, {
+                        label: 'uid', tooltip: "File's owner for all downloads. Not retroactive.",
+                        env: app.env.UID, value: app.prefs.uid,
+                        oninput: event => {
+                            app.prefs.uid = event.target.value
+                    
+                            m.request({
+                                method: 'PUT',
+                                url: '/api/settings',
+                                params: {uid: app.prefs.uid}
+                            }).catch(e => console.error(e))
+                        }
+                    }),
+                    m(input, {
+                        label: 'gid', tooltip: "File's group for all downloads. Not retroactive.",
+                        env: app.env.GID, value: app.prefs.gid,
+                        oninput: event => {
+                            app.prefs.gid = event.target.value
+                    
+                            m.request({
+                                method: 'PUT',
+                                url: '/api/settings',
+                                params: {gid: app.prefs.gid}
+                            }).catch(e => console.error(e))
+                        }
+                    }),
+                    m(input, {
+                        label: 'chmod', tooltip: "File permissions for all downloads. File mode bits for the chmod command. Not retroactive.",
+                        env: app.env.CHMOD, value: app.prefs.chmod,
+                        oninput: event => {
+                            app.prefs.chmod = event.target.value
+                    
+                            m.request({
+                                method: 'PUT',
+                                url: '/api/settings',
+                                params: {chmod: app.prefs.chmod}
+                            }).catch(e => console.error(e))
+                        }
+                    })
                 ])
             ])
         ]),

@@ -65,13 +65,11 @@ function download(vnode) {
         case 'single':
             state.loading = true
 
-            var sendDL = {
-                url: vnode.attrs.url,
-                fileName: vnode.attrs.fileName,
-                tags: vnode.attrs.tags,
-                format: app.prefs.format,
-                socketId: socket.id
-            }
+            var sendDL = app.prefs
+            sendDL.url = vnode.attrs.url,
+            sendDL.fileName = vnode.attrs.fileName,
+            sendDL.tags = vnode.attrs.tags,
+            sendDL.socketId = socket.id
         
             // Change path depending on app's download mode setting. A normal path = download to directory. 'false' = download to browser.
             if (app.prefs.mode == 'browser') {
@@ -80,8 +78,8 @@ function download(vnode) {
                 sendDL.path = vnode.attrs.path.join('/')
             }
         
+            // If a genre was input, add it to the suggestions
             if (app.prefs.format == 'audio' && vnode.attrs.tags.genre) {
-                // Add genre to genre suggestions
                 m.request({
                     method: 'PUT',
                     responseType: 'json',
@@ -103,14 +101,11 @@ function download(vnode) {
         case 'playlist':
             state.loading = true
 
-            var sendDL = {
-                url: vnode.attrs.url,
-                playlistName: vnode.attrs.playlistName,
-                format: app.prefs.format,
-                outputTemplate: app.prefs.outputTemplate,
-                path: vnode.attrs.path.join('/'),
-                socketId: socket.id
-            }
+            var sendDL = app.prefs
+            sendDL.url = vnode.attrs.url,
+            sendDL.playlistName = vnode.attrs.playlistName,
+            sendDL.path = vnode.attrs.path.join('/'),
+            sendDL.socketId = socket.id
         
             // Send download request
             m.request({

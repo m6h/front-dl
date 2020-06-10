@@ -109,7 +109,7 @@ export default {
                     m(dlInputField, {
                         label: 'Genre', icon: 'fas fa-music', placeholder: 'e.g. House', value: state.tags.genre,
                         id: 'genre', autocomplete: 'off',
-                        oninput: event =>  {
+                        oninput: event => {
                             state.tags.genre = event.target.value
                             const input = event.target.value
                             var regex
