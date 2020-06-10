@@ -83,7 +83,7 @@ exports.browse = (req, res) => {
 // Download
 exports.download = (req, res) => {
     // Query string: {
-    //     url: '', format: '', tags: {artist: '', title: '', genre: ''},
+    //     url: '', format: '', tags: {artist: '', title: '', genre: '', album: '', track: ''},
     //     path: '', fileName: '', socketId: '',
     //     embedThumbnail: 'true' or 'false',
     //     writeThumbnail: 'true' or 'false',
@@ -194,6 +194,8 @@ exports.download = (req, res) => {
                         '-metadata', `artist=${q.tags.artist}`,
                         '-metadata', `title=${q.tags.title}`,
                         '-metadata', `genre=${q.tags.genre}`,
+                        '-metadata', `album=${q.tags.album}`,
+                        '-metadata', `track=${q.tags.track}`,
                         `${q.path}-tmp${q.fileExtension}`
                     ])
                     

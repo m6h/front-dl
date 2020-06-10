@@ -72,7 +72,7 @@ const suggestController = require('./controllers/suggest')
 // youtube-dl
 app.get('/api/download', ydlController.download)
 // Query string: {
-//     url: '', format: '', tags: {artist: '', title: '', genre: ''},
+//     url: '', format: '', tags: {artist: '', title: '', genre: '', album: '', track: ''},
 //     path: '', fileName: '', socketId: '',
 //     embedThumbnail: 'true' or 'false',
 //     writeThumbnail: 'true' or 'false',

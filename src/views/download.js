@@ -8,11 +8,7 @@ import { getMetadata, getThumbnail, autofill } from '../components/metadata'
 const state = {
     url: '', fileName: '', loading: false,
     thumbnail: '/public/images/blank.png',
-    tags: {
-        artist: '',
-        title: '',
-        genre: ''
-    },
+    tags: {artist: '', title: '', genre: '', album: '', track: ''},
     suggest: {
         genres: [],
         genresFiltered: []
@@ -106,6 +102,8 @@ export default {
                         label: 'Title', icon: 'fas fa-music', placeholder: 'e.g. Taking Me Higher', value: state.tags.title,
                         oninput: event => state.tags.title = event.target.value
                     }),
+                    m('div', {class: 'is-unselectable', style: 'text-align: center'}, 'Optional'),
+                    m('div', {style: 'border-bottom: 1px solid; margin-top: 0.5em; margin-bottom: 0.5em;'}),
                     m(dlInputField, {
                         label: 'Genre', icon: 'fas fa-music', placeholder: 'e.g. House', value: state.tags.genre,
                         id: 'genre', autocomplete: 'off',
@@ -157,7 +155,16 @@ export default {
                                 ])
                             )
                         ])
-                    ]))
+                    ])),
+                    m(dlInputField, {
+                        label: 'Album', icon: 'fas fa-music', placeholder: 'e.g. Taking Me Higher', value: state.tags.album,
+                        oninput: event => state.tags.album = event.target.value
+                    }),
+                    m(dlInputField, {
+                        label: 'Track Number', icon: 'fas fa-music', placeholder: 'e.g. 1', value: state.tags.track,
+                        oninput: event => state.tags.track = event.target.value
+                    }),
+                    m('div', {style: 'border-bottom: 1px solid; margin-top: 0.5em; margin-bottom: 0.5em;'})
                 ])
             ]),
             m('div', {class: 'column'}, [

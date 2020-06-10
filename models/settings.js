@@ -36,7 +36,7 @@ async function main() {
         // Settings exist
     } else {
         // Settings do not exist or do not have correct key/values. Create with default values.
-        Setting.collection.drop().catch(e => console.error(e))
+        Setting.collection.drop().catch(e => {})
 
         const document = new Setting()
         document.save().catch(e => console.error(e))

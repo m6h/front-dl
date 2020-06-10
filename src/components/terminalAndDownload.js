@@ -67,7 +67,7 @@ function download(vnode) {
         case 'single':
             state.loading = true
 
-            var sendDL = app.prefs
+            var sendDL = {...app.prefs}
             sendDL.url = vnode.attrs.url,
             sendDL.fileName = vnode.attrs.fileName,
             sendDL.tags = vnode.attrs.tags,
@@ -103,7 +103,7 @@ function download(vnode) {
         case 'playlist':
             state.loading = true
 
-            var sendDL = app.prefs
+            var sendDL = {...app.prefs}
             sendDL.url = vnode.attrs.url,
             sendDL.playlistName = vnode.attrs.playlistName,
             sendDL.path = vnode.attrs.path.join('/'),
