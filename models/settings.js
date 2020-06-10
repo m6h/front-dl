@@ -4,7 +4,12 @@ const mongoose = require('mongoose')
 var Setting = mongoose.model('settings', new mongoose.Schema({
     mode: {type: String, default: 'browser'},
     format: {type: String, default: 'video'},
-    outputTemplate: {type: String, default: '%(playlist_index)s - %(title)s.%(ext)s'}
+    outputTemplate: {type: String, default: '%(playlist_index)s - %(title)s.%(ext)s'},
+    embedThumbnail: {type: String, default: 'true'},
+    writeThumbnail: {type: String, default: 'true'},
+    uid: {type: String, default: ''},
+    gid: {type: String, default: ''},
+    chmod: {type: String, default: ''}
 }))
 exports.Setting = Setting
 
@@ -17,16 +22,21 @@ async function main() {
 
     // Find first document where correct keys exist
     const settings = await Setting.findOne({
-        mode: {$exists: true},
-        format: {$exists: true},
-        outputTemplate: {$exists: true}
+        mode:           {$exists: true, $type: 'string'},
+        format:         {$exists: true, $type: 'string'},
+        outputTemplate: {$exists: true, $type: 'string'},
+        embedThumbnail: {$exists: true, $type: 'string'},
+        writeThumbnail: {$exists: true, $type: 'string'},
+        uid:            {$exists: true, $type: 'string'},
+        gid:            {$exists: true, $type: 'string'},
+        chmod:          {$exists: true, $type: 'string'}
     })
 
     if (settings) {
         // Settings exist
     } else {
         // Settings do not exist or do not have correct key/values. Create with default values.
-        Setting.collection.drop().catch(e => {})
+        Setting.collection.drop().catch(e => console.error(e))
 
         const document = new Setting()
         document.save().catch(e => console.error(e))

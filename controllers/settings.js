@@ -9,32 +9,26 @@ exports.get = async (req, res) => {
 
 // Update settings
 exports.update = async (req, res) => {
-    const settings = await Setting.findOne()
+    const q = req.query
 
-    switch(req.query.mode) {
-        case 'browser':
-            settings.mode = 'browser'
-            break
-        case 'directory':
-            settings.mode = 'directory'
-            break
+    // Ensure that query string contains a valid value
+    if (q.mode || q.format || q.outputTemplate || q.embedThumbnail || q.writeThumbnail || (q.uid || q.uid == '') || (q.gid || q.gid == '') || (q.chmod || q.chmod == '')) {
+        const settings = await Setting.findOne()
+    
+        if (q.mode == 'browser' || q.mode == 'directory') {settings.mode = q.mode}
+        if (q.format == 'audio' || q.format == 'video') {settings.format = q.format}
+        if (q.outputTemplate) {settings.outputTemplate = q.outputTemplate}
+        if (q.embedThumbnail) {settings.embedThumbnail = q.embedThumbnail}
+        if (q.writeThumbnail) {settings.writeThumbnail = q.writeThumbnail}
+        if (q.uid || q.uid == '') {settings.uid = q.uid}
+        if (q.gid || q.gid == '') {settings.gid = q.gid}
+        if (q.chmod || q.chmod == '') {settings.chmod = q.chmod}
+    
+        await settings.save().catch(e => console.error(e))
+        res.json(settings)
+    } else {
+        res.status(400).send('Bad Request')
     }
-
-    switch(req.query.format) {
-        case 'audio':
-            settings.format = 'audio'
-            break
-        case 'video':
-            settings.format = 'video'
-            break
-    }
-
-    if (req.query.outputTemplate) {
-        settings.outputTemplate = req.query.outputTemplate
-    }
-
-    await settings.save().catch(e => console.error(e))
-    res.json(settings)
 }
 
 // Get ffmpeg version
