@@ -1,6 +1,6 @@
 import m from 'mithril'
 import navbar from './components/navbar'
-import download from './views/download'
+import download from './views/single'
 import playlist from './views/playlist'
 import settings from './views/settings'
 import directory from './components/directoryBrowser'

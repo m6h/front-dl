@@ -2,7 +2,7 @@ import m from 'mithril'
 import { app } from '../main'
 import * as qs from 'qs'
 import io from 'socket.io-client'
-import { getSuggestions } from '../views/download'
+import { getSuggestions } from '../views/single'
 
 const state = {
     progress: 0, // Current percentage of download progress

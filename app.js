@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
 // API
 
 // Import controllers
-const ydlController = require('./controllers/youtube-dl')
+const ydlController = require('./controllers/download')
 const settingsController = require('./controllers/settings')
 const suggestController = require('./controllers/suggest')
 

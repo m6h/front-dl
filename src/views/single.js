@@ -27,7 +27,7 @@ export function getSuggestions() {
         // Slice array to include only the top 4 results
         state.suggest.genresFiltered = response.slice(0, 4)
     }).catch(e => console.error(e))
-}
+} getSuggestions()
 
 // Reusable input field component
 const dlInputField = {
@@ -52,9 +52,6 @@ const dlInputField = {
 }
 
 export default {
-    oninit: () => {
-        getSuggestions()
-    },
     view: () => [
         m('div', {class: 'columns'}, [
             m('div', {class: 'column'}, [
