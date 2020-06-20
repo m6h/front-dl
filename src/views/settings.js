@@ -8,16 +8,6 @@ const state = {
     updatingYdl: false
 }
 
-function getYdlVersion() {
-    m.request({
-        method: 'GET',
-        responseType: 'json',
-        url: '/api/version/ydl'
-    }).then(response => {
-        state.version.ydl = response
-    }).catch(e => console.error(e))
-}
-
 // Component for on/off toggles
 const toggle = {
     view: vnode => m('div', {
@@ -53,27 +43,34 @@ const controlledByEnvWarn = {
     }, 'Controlled by env')
 }
 
+
+function getYdlVersion() {
+    m.request({
+        method: 'GET',
+        responseType: 'json',
+        url: '/api/version/ydl'
+    }).then(response => {
+        state.version.ydl = response
+    }).catch(e => console.error(e))
+} getYdlVersion()
+
+m.request({
+    method: 'GET',
+    responseType: 'json',
+    url: '/api/version/ffmpeg'
+}).then(response => {
+    state.version.ffmpeg = response
+}).catch(e => console.error(e))
+
+m.request({
+    method: 'GET',
+    responseType: 'json',
+    url: '/api/version/atomicparsley'
+}).then(response => {
+    state.version.atomicparsley = response
+}).catch(e => console.error(e))
+
 export default {
-    oncreate: () => {
-        // Get versions
-        getYdlVersion()
-
-        m.request({
-            method: 'GET',
-            responseType: 'json',
-            url: '/api/version/ffmpeg'
-        }).then(response => {
-            state.version.ffmpeg = response
-        }).catch(e => console.error(e))
-
-        m.request({
-            method: 'GET',
-            responseType: 'json',
-            url: '/api/version/atomicparsley'
-        }).then(response => {
-            state.version.atomicparsley = response
-        }).catch(e => console.error(e))
-    },
     view: () => [
         m('div', {class: 'columns is-centered'}, [
             // Info area
