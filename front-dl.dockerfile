@@ -3,10 +3,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Download prerequisites, then clear apt cache
 RUN apt update && apt install -y \
+        atomicparsley \
         curl \
-        xz-utils \
+        imagemagick \
         python \
-        atomicparsley && \
+        webp \
+        xz-utils && \
     rm -r /var/lib/apt/lists/*
 
 # Node.js version to use

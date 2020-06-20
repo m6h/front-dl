@@ -177,27 +177,8 @@ export default {
             m('div', {class: 'column is-narrow is-unselectable'}, [
                 m('div', {class: 'box'}, [
                     m(toggle, {
-                        id: 'embedThumbnail', label: 'Embed thumbnails',
-                        tooltip: 'Embed thumbnail as cover art for audio downloads',
-                        env: app.env.EMBED_THUMBNAIL, value: app.prefs.embedThumbnail,
-                        onclick: event => {
-                            // Toggle state
-                            if (app.prefs.embedThumbnail == 'true') {
-                                app.prefs.embedThumbnail = 'false'
-                            } else if (app.prefs.embedThumbnail == 'false') {
-                                app.prefs.embedThumbnail = 'true'
-                            }
-                    
-                            m.request({
-                                method: 'PUT',
-                                url: '/api/settings',
-                                params: {embedThumbnail: app.prefs.embedThumbnail}
-                            }).catch(e => console.error(e))
-                        }
-                    }),
-                    m(toggle, {
                         id: 'writeThumbnail', label: 'Write thumbnails',
-                        tooltip: 'Write thumbnail as separate image file for video downloads',
+                        tooltip: 'Write thumbnail image file for videos, and embed thumbnail as cover art for m4a audio',
                         env: app.env.WRITE_THUMBNAIL, value: app.prefs.writeThumbnail,
                         onclick: event => {
                             // Toggle state

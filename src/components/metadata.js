@@ -53,7 +53,7 @@ function autofill(res, meta = {fileName: '', tags: {artist: '', title: '', genre
             // Genre
             res.genre ? meta.tags.genre = res.genre : null
             // Album
-            res.album ? meta.tags.album = res.album : null
+            // res.album ? meta.tags.album = res.album : null
             break
         case 'soundcloud':
             // File name
