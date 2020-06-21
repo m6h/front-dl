@@ -12,12 +12,13 @@ exports.update = async (req, res) => {
     const q = req.query
 
     // Ensure that query string contains a valid value
-    if (q.mode || q.format || q.outputTemplate || q.writeThumbnail || (q.uid || q.uid == '') || (q.gid || q.gid == '') || (q.chmod || q.chmod == '')) {
+    if (q.mode || q.format || q.outputTemplate || q.embedThumbnail || q.writeThumbnail || (q.uid || q.uid == '') || (q.gid || q.gid == '') || (q.chmod || q.chmod == '')) {
         const settings = await Setting.findOne()
     
         if (q.mode == 'browser' || q.mode == 'directory') {settings.mode = q.mode}
         if (q.format == 'audio' || q.format == 'video') {settings.format = q.format}
         if (q.outputTemplate) {settings.outputTemplate = q.outputTemplate}
+        if (q.embedThumbnail) {settings.embedThumbnail = q.embedThumbnail}
         if (q.writeThumbnail) {settings.writeThumbnail = q.writeThumbnail}
         if (q.uid || q.uid == '') {settings.uid = q.uid}
         if (q.gid || q.gid == '') {settings.gid = q.gid}

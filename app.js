@@ -64,13 +64,13 @@ app.get('/', (req, res) => {
 // API
 
 // Import controllers
-const ydlController = require('./controllers/download')
+const downloadController = require('./controllers/download')
 const settingsController = require('./controllers/settings')
 const suggestController = require('./controllers/suggest')
 
 
 // youtube-dl
-app.get('/api/download', ydlController.download)
+app.get('/api/download', downloadController.download)
 // Query string: {
 //     url: '', format: '', tags: {artist: '', title: '', genre: '', album: '', track: ''},
 //     path: '', fileName: '', socketId: '',
@@ -79,7 +79,7 @@ app.get('/api/download', ydlController.download)
 //     uid: '', gid: '', chmod: ''
 // }
 
-app.get('/api/downloadPlaylist', ydlController.downloadPlaylist)
+app.get('/api/downloadPlaylist', downloadController.downloadPlaylist)
     // Query string: {
     //     url: '', format: '', path: '', 
     //     playlistName: '', outputTemplate: '', socketId: '',
@@ -88,13 +88,13 @@ app.get('/api/downloadPlaylist', ydlController.downloadPlaylist)
     //     uid: '', gid: '', chmod: ''
     // }
 
-app.get('/api/download/cache/:fileName', ydlController.downloadFromCache)
-app.get('/api/browse', ydlController.browse) // {path: ''}
-app.get('/api/metadata', ydlController.metadata) // {url: ''}
-app.get('/api/update/ydl', ydlController.update)
+app.get('/api/download/cache/:fileName', downloadController.downloadFromCache)
+app.get('/api/browse', downloadController.browse) // {path: ''}
+app.get('/api/metadata', downloadController.metadata) // {url: ''}
+app.get('/api/update/ydl', downloadController.update)
 app.route('/api/cookies')
-    .get(ydlController.getCookies)
-    .put(ydlController.putCookies) // {cookies: ''}
+    .get(downloadController.getCookies)
+    .put(downloadController.putCookies) // {cookies: ''}
 
 // Suggestions
 app.get('/api/suggest/genre', suggestController.getGenre)
@@ -103,7 +103,7 @@ app.route('/api/suggest/genre/:name')
     .delete(suggestController.deleteGenre)
 
 // Versions
-app.get('/api/version/ydl', ydlController.version)
+app.get('/api/version/ydl', downloadController.version)
 app.get('/api/version/ffmpeg', settingsController.ffmpegVersion)
 app.get('/api/version/atomicparsley', settingsController.atomicparsleyVersion)
 

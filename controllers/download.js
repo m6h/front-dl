@@ -86,6 +86,7 @@ exports.download = (req, res) => {
     // Query string: {
     //     url: '', format: '', tags: {artist: '', title: '', genre: '', album: '', track: ''},
     //     path: '', fileName: '', socketId: '',
+    //     embedThumbnail: 'true' or 'false',
     //     writeThumbnail: 'true' or 'false',
     //     uid: '', gid: '', chmod: ''
     // }
@@ -141,8 +142,8 @@ exports.download = (req, res) => {
                 break
         }
 
-        // Remove the write thumbnail argument if its query string value is set to false
-        if (q.writeThumbnail == 'false') {
+        // Remove the thumbnail argument if its query string value is set to false
+        if (q.embedThumbnail == 'false' || q.writeThumbnail == 'false') {
             const index = args.indexOf('--write-thumbnail')
             args.splice(index, 1)
         }
@@ -265,7 +266,7 @@ exports.download = (req, res) => {
 
                     // Embed the thumbnail if it was downloaded.
                     // "REMOVE_ALL" keyword exists for --artwork argument to delete all embedded cover art.
-                    if (q.writeThumbnail == 'true') {
+                    if (q.embedThumbnail == 'true') {
                         await new Promise((resolve, reject) => {
                             const atomicparsley = spawn('AtomicParsley', [
                                 `${q.path}${q.extFound.audio}`,
