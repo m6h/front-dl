@@ -94,7 +94,7 @@ function download(vnode) {
         
             // Send download request
             m.request({
-                method: 'GET',
+                method: 'POST',
                 responseType: 'json',
                 url: '/api/download',
                 params: sendDL
@@ -104,17 +104,17 @@ function download(vnode) {
             state.loading = true
 
             var sendDL = {...app.prefs}
-            sendDL.url = vnode.attrs.url,
             sendDL.playlistName = vnode.attrs.playlistName,
             sendDL.path = vnode.attrs.path.join('/'),
             sendDL.socketId = socket.id
         
             // Send download request
             m.request({
-                method: 'GET',
+                method: 'POST',
                 responseType: 'json',
                 url: '/api/downloadPlaylist',
-                params: sendDL
+                params: sendDL,
+                body: {playlistEntries: vnode.attrs.playlistEntries}
             }).then(response => {}).catch(e => console.error(e)) // response is handled via socket.io
             break
     }

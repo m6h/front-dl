@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 var Setting = mongoose.model('settings', new mongoose.Schema({
     mode: {type: String, default: 'browser'},
     format: {type: String, default: 'video'},
-    outputTemplate: {type: String, default: '%(playlist_index)s - %(title)s.%(ext)s'},
     embedThumbnail: {type: String, default: 'true'},
     writeThumbnail: {type: String, default: 'true'},
     uid: {type: String, default: ''},
@@ -24,7 +23,6 @@ async function main() {
     const settings = await Setting.findOne({
         mode:           {$exists: true, $type: 'string'},
         format:         {$exists: true, $type: 'string'},
-        outputTemplate: {$exists: true, $type: 'string'},
         embedThumbnail: {$exists: true, $type: 'string'},
         writeThumbnail: {$exists: true, $type: 'string'},
         uid:            {$exists: true, $type: 'string'},

@@ -3,11 +3,11 @@ import { app } from '../main'
 import formatButtons from '../components/formatSelect'
 import directory from '../components/directoryBrowser'
 import terminalAndDownload from '../components/terminalAndDownload'
-import { getMetadata } from '../components/metadata'
+import { getMetadata, getThumbnail } from '../components/metadata'
 
 const state = {
-    url: '', playlistName: '', loading: false,
-    // tableHidden: true,
+    url: '', playlistEntries: [], playlistName: '', loading: false,
+    tableHidden: true,
     defaultOutputTemplate: '%(playlist_index)s - %(title)s.%(ext)s'
 }
 
@@ -51,10 +51,11 @@ export default {
                             if (res && res._type == 'playlist') {
                                 // Playlist Name
                                 res.title ? state.playlistName = res.title : state.playlistName = ''
+                                res.entries ? state.playlistEntries = res.entries : null
                             }
 
-                            // Remove loading spinner from input fields
                             state.loading = false
+                            state.tableHidden = false
                         })
                     }
                 }),
@@ -65,80 +66,47 @@ export default {
                     }
                 }),
                 m(formatButtons),
-                m(dlInputField, {
-                    icon: 'far fa-file-alt', value: app.prefs.outputTemplate,
-                    label: [
-                        m('span', 'Output Template'),
-                        m('a', {class: 'has-text-dark', style: 'margin-left: 0.4em', href: 'https://github.com/ytdl-org/youtube-dl#output-template', target: '_blank'}, [
-                            m('i', {class: 'fas fa-question-circle', style: 'height: 0.9em'})
-                        ]),
-                        m('a', {
-                            class: 'has-text-dark',
-                            style: 'margin-left: 0.4em',
-                            onclick: event => {
-                                app.prefs.outputTemplate = state.defaultOutputTemplate
-
-                                m.request({
-                                    method: 'PUT',
-                                    responseType: 'json',
-                                    url: '/api/settings',
-                                    params: {outputTemplate: state.defaultOutputTemplate}
-                                }).catch(e => console.error(e))
-                            },
-                            'data-tooltip': 'Reset to default'
-                        }, m('i', {class: 'fas fa-undo-alt', style: 'height: 0.9em'})),
-                    ],
-                    oninput: event => {
-                        // Set output template in app settings
-                        app.prefs.outputTemplate = event.target.value
-
-                        // Save output template
-                        m.request({
-                            method: 'PUT',
-                            responseType: 'json',
-                            url: '/api/settings',
-                            params: {outputTemplate: event.target.value}
-                        }).catch(e => console.error(e))
-                        
-                    }
-                })
+                m('article', {class: 'message is-info is-small'}, [
+                    m('div', {class: 'message-body'}, 'Note: fetching metadata for playlists can be slow')
+                ]),
             ]),
             m('div', {class: 'column'}, [
                 m(directory),
                 m(terminalAndDownload, {
                     type: 'playlist',
                     url: state.url,
+                    playlistEntries: state.playlistEntries,
                     playlistName: state.playlistName,
                     path: directory.path
                 })
             ])
+        ]),
+        m('table', {id: 'table', class: 'table' + (state.tableHidden ? ' is-hidden' : ''), style: 'width: 100%'}, [
+            m('thead', [
+                m('th'),
+                m('th', {style: 'width: 160px'}),
+                m('th'),
+            ]),
+            m('tbody', [
+                state.playlistEntries.map((item, index) => m('tr', [
+                    m('th', {style: 'vertical-align: middle; text-align: center'}, index + 1),
+                    m('td', {style: 'vertical-align: middle'}, [
+                        m('div', {class: 'box', style: 'padding: 0'}, [
+                            m('figure', {class: 'image is-16by9'}, [
+                                m('span', {
+                                    class: 'has-text-weight-light is-unselectable',
+                                    style: `position: absolute;
+                                            top: 50%;
+                                            left: 50%;
+                                            transform: translate(-50%, -50%);`,
+                                }, 'Thumbnail'),
+                                m('img', {style: 'width: auto; margin: auto;', src: getThumbnail(item)})
+                            ])
+                        ])
+                    ]),
+                    m('td', {style: 'vertical-align: middle'}, item.title ? item.title : 'Unknown')
+                ]))
+            ])
         ])
-        // m('table', {id: 'table', class: 'table' + (state.tableHidden ? ' is-hidden' : '')}, [
-        //     m('thead', [
-        //         m('th'),
-        //         m('th', {style: 'width: 160px'}),
-        //         m('th', 'File Name'),
-        //     ]),
-        //     m('tbody', [
-        //         playlist.entries.map((item, index) => m('tr', [
-        //             m('th', {style: 'vertical-align: middle; text-align: center'}, index + 1),
-        //             m('td', {style: 'vertical-align: middle'}, [
-        //                 m('div', {class: 'box', style: 'padding: 0'}, [
-        //                     m('figure', {class: 'image is-16by9'}, [
-        //                         m('span', {
-        //                             class: 'has-text-weight-light is-unselectable',
-        //                             style: `position: absolute;
-        //                                     top: 50%;
-        //                                     left: 50%;
-        //                                     transform: translate(-50%, -50%);`,
-        //                         }, 'Thumbnail'),
-        //                         m('img', {style: 'width: auto; margin: auto;', src: getThumbnail(item)})
-        //                     ])
-        //                 ])
-        //             ]),
-        //             m('td', {style: 'vertical-align: middle'}, item ? item.title : 'Unknown')
-        //         ]))
-        //     ])
-        // ])
     ]
 }

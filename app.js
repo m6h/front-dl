@@ -22,6 +22,7 @@ exports.io = io
 // Static resources
 app.use('/public', express.static('./public/'))
 app.use('/bin', express.static('./bin/'))
+app.use(express.json({limit: '1GB'})) // Parse JSON body payloads
 __basedir = __dirname
 log = (args = {app: '', event: '', msg: ''}) => {
     console.log(`${new Date().toISOString()} - ${args.app} - ${args.event} - ${args.msg.toString().replace(/\n/gm, ' ')}`)
@@ -70,7 +71,7 @@ const suggestController = require('./controllers/suggest')
 
 
 // youtube-dl
-app.get('/api/download', downloadController.download)
+app.post('/api/download', downloadController.download)
 // Query string: {
 //     url: '', format: '', tags: {artist: '', title: '', genre: '', album: '', track: ''},
 //     path: '', fileName: '', socketId: '',
@@ -79,7 +80,7 @@ app.get('/api/download', downloadController.download)
 //     uid: '', gid: '', chmod: ''
 // }
 
-app.get('/api/downloadPlaylist', downloadController.downloadPlaylist)
+app.post('/api/downloadPlaylist', downloadController.downloadPlaylist)
     // Query string: {
     //     url: '', format: '', path: '', 
     //     playlistName: '', outputTemplate: '', socketId: '',
