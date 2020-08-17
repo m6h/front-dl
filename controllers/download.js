@@ -24,8 +24,9 @@ function download(q = {
     
     const ret = {} // Return object
 
-    // Replace any forward slashes in the file name with an underscore
-    q.fileName = q.fileName.replace(new RegExp('/', 'g'), '_')
+    // Replace certain characters in file names
+    q.fileName = q.fileName.replace(new RegExp('/', 'g'), '_') // Forward slash
+    q.fileName = q.fileName.replace(new RegExp('–|—', 'g'), '-') // En and em dash
 
     log({app: 'api', event: 'info', msg: 'Download request query string: ' + JSON.stringify(q)})
 
